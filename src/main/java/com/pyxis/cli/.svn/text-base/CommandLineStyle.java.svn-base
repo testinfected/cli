@@ -1,0 +1,5 @@
+package com.pyxis.cli;
+
+public interface CommandLineStyle extends Parser, Specifier, CommandLineDescription
+{
+}

@@ -1,0 +1,159 @@
+/*
+ * Copyright (c) 2006 Pyxis Technologies inc.
+ *
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA,
+ * or see the FSF site: http://www.fsf.org.
+ */
+
+package com.pyxis.cli;
+
+import com.pyxis.cli.coercion.StringCoercer;
+
+import java.util.Iterator;
+
+public class Option
+{
+    private String name;
+    private String shortForm;
+    private String longForm;
+    private String argumentPattern;
+    private String description;
+    private Object value;
+    private Coercer coercer = new StringCoercer();
+    private Stub stub = Stub.NOTHING;
+
+    public Option( String name )
+    {
+        this.name = name;
+    }
+
+    public boolean isValid()
+    {
+        return hasShortForm() || hasLongForm();
+    }
+
+    public void consume( Iterator<String> arguments ) throws ParsingException
+    {
+        if (requiresArgument() && !arguments.hasNext()) throw new ArgumentMissingException( this );
+        value = requiresArgument() ? convert( arguments.next() ) : Boolean.TRUE;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public boolean matches(String opt) 
+    {
+        return opt.equals( shortForm ) || opt.equals( longForm );
+    }
+
+    public void setShortForm( String shortOpt )
+    {
+        this.shortForm = shortOpt;
+    }
+
+    public void setLongForm( String longOpt )
+    {
+        this.longForm = longOpt;
+    }
+
+    public void setDescription( String description )
+    {
+        this.description = description;
+    }
+
+    public void setArgumentPattern( String arg )
+    {
+        this.argumentPattern = arg;
+    }
+
+    public Object getValue()
+    {
+        return value;
+    }
+
+    public void setValue( Object value )
+    {
+        this.value = value;
+    }
+
+    public void setCoercer( Coercer coercer)
+    {
+        this.coercer = coercer;
+    }
+
+    public void setStub( Stub stub )
+    {
+        this.stub = stub;
+    }
+
+    public boolean wasGiven()
+    {
+        return value != null;
+    }
+
+    public void call()
+    {
+        stub.call( this );
+    }
+
+    public void describeTo( OptionDescription optionDescription )
+    {
+        optionDescription.appendOption( name, shortForm, longForm, argumentPattern, description );
+    }
+
+    public interface Stub
+    {
+        public static final Stub NOTHING = new DoNothing();
+
+        public static class DoNothing implements Stub
+        {
+            public void call( Option option )
+            {
+            }
+        }
+
+        void call( Option option );
+    }
+
+    private Object convert( String value ) throws InvalidArgumentException
+    {
+        try
+        {
+            return coercer.convert( value );
+        }
+        catch (Exception e)
+        {
+            throw new InvalidArgumentException( this, value, e );
+        }
+    }
+
+    private boolean hasShortForm()
+    {
+        return shortForm != null;
+    }
+
+    private boolean hasLongForm()
+    {
+        return longForm != null;
+    }
+
+    private boolean requiresArgument()
+    {
+        return argumentPattern != null;
+    }
+}
+

@@ -1,0 +1,91 @@
+package com.pyxis.cli;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class CommandLine
+{
+    private final List<String> operands = new ArrayList<String>();
+    private final Collection<Option> options = new ArrayList<Option>();
+
+    private String banner = "";
+
+    public CommandLine()
+    {
+    }
+
+    public void setBanner(String banner)
+    {
+        this.banner = banner;
+    }
+
+    public void addOption( Option option )
+    {
+        options.add( option );
+    }
+
+    public int getOperandCount()
+    {
+        return operands.size();
+    }
+
+    public String[] getOperands()
+    {
+        return operands.toArray( new String[operands.size()] );
+    }
+
+    public String getOperand(int index)
+    {
+        if (index >= operands.size()) return null;
+        return operands.get( index );
+    }
+
+    public boolean hasOptionValue(String name)
+    {
+        return getOptionValues().containsKey( name );
+    }
+
+    public Map<String, ?> getOptionValues()
+    {
+        Map<String, Object> opts = new HashMap<String, Object>();
+        for (Option opt : options)
+        {
+            if (opt.wasGiven()) opts.put( opt.getName(), opt.getValue() );
+        }
+
+        return opts;
+    }
+
+    public Object getOptionValue(String name)
+    {
+        return getOptionValues().get( name );
+    }
+
+    public String[] parse(Parser parser, String... args) throws ParsingException
+    {
+        Collections.addAll( operands, parser.parse( new Options( options ), args ) );
+        callStubs();
+        return getOperands();
+    }
+
+    public void formatHelp(CommandLineDescription formatter)
+    {
+        formatter.appendBanner( banner );
+        for (Option option : options)
+        {
+            formatter.appendOption( option );
+        }
+    }
+
+    private void callStubs()
+    {
+        for (Option option : options)
+        {
+            if (option.wasGiven()) option.call();
+        }
+    }
+}

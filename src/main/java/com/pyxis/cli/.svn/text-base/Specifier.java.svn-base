@@ -1,0 +1,6 @@
+package com.pyxis.cli;
+
+public interface Specifier
+{
+    void build(OptionBuilder builder, String... options);
+}

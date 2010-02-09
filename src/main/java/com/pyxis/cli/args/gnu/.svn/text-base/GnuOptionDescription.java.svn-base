@@ -1,0 +1,79 @@
+package com.pyxis.cli.gnu;
+
+import com.pyxis.cli.OptionDescription;
+import com.pyxis.cli.util.StringUtil;
+
+import java.io.IOException;
+
+class GnuOptionDescription implements OptionDescription
+{
+    private final StringBuilder line;
+    private final int columnWidth;
+
+    public GnuOptionDescription(int columnWidth)
+    {
+        this.line = new StringBuilder();
+        this.columnWidth = columnWidth;
+    }
+
+    public void appendOption(String name, String shortForm, String longForm, String argumentPattern, String description)
+    {
+        if (shortForm != null)
+            line.append( "-" ).append( shortForm );
+        else
+            line.append( "  " );
+
+        if (longForm != null)
+        {
+            if (shortForm != null) line.append( ", " );
+            else line.append( "  " );
+            line.append( "--" ).append( longForm );
+        }
+
+        if (argumentPattern != null) line.append( " " ).append( argumentPattern );
+
+        if (description != null)
+        {
+            justifyOrWrap( line );
+            line.append( description );
+        }
+    }
+
+    public void justifyOrWrap(StringBuilder line)
+    {
+        if (tooLong( line ))
+        {
+            wrap( line );
+            justify( columnWidth );
+        }
+        else
+        {
+            justify( distanceToRightMargin( this.line ) );
+        }
+    }
+
+    public void justify(int margin)
+    {
+        line.append( StringUtil.leftJustify( "", margin ) );
+    }
+
+    public boolean tooLong(StringBuilder line)
+    {
+        return distanceToRightMargin( line ) <= 0;
+    }
+
+    public int distanceToRightMargin(StringBuilder line)
+    {
+        return columnWidth - line.length();
+    }
+
+    public static void wrap(StringBuilder line)
+    {
+        line.append( "\n" );
+    }
+
+    public void appendTo(Appendable output) throws IOException
+    {
+        output.append( line );
+    }
+}

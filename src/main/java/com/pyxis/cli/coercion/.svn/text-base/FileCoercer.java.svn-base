@@ -1,0 +1,13 @@
+package com.pyxis.cli.coercion;
+
+import com.pyxis.cli.Coercer;
+
+import java.io.File;
+
+public class FileCoercer implements Coercer<File>
+{
+    public File convert( String value )
+    {
+        return new File( value );
+    }
+}

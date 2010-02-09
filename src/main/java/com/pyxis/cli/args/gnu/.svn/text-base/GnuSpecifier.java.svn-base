@@ -1,0 +1,81 @@
+package com.pyxis.cli.gnu;
+
+import com.pyxis.cli.Specifier;
+import com.pyxis.cli.OptionBuilder;
+import com.pyxis.cli.util.StringUtil;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class GnuSpecifier implements Specifier
+{
+    public void build(OptionBuilder builder, String... options)
+    {
+        Grammar grammar = new Grammar();
+        for (String opt : options)
+        {
+            Matcher matcher = Pattern.compile( "--([^\\s]+)(?:\\s(.+))?" ).matcher( opt );
+            if (matcher.matches())
+            {
+                String longOption = matcher.group( 1 );
+                builder.withLongForm( grammar.checkLongOption( longOption ) );
+
+                String argumentPattern = matcher.group( 2 );
+                builder.wantsArgument( grammar.checkArgumentPattern( argumentPattern ) );
+
+                continue;
+            }
+
+            matcher = Pattern.compile( "-([^\\s]+)(?:\\s+(.+))?" ).matcher( opt );
+            if (matcher.matches())
+            {
+                String shortOption = matcher.group( 1 );
+                builder.withShortForm( grammar.checkShortOption( shortOption) );
+
+                String argumentPattern = matcher.group( 2 );
+                builder.wantsArgument( grammar.checkArgumentPattern( argumentPattern ) );
+
+                continue;
+            }
+
+            builder.withDescription( grammar.checkDescription( opt ) );
+        }
+    }
+
+    private static class Grammar {
+
+        boolean shortOptionHasBeenGiven;
+        boolean longOptionHasBeenGiven;
+        boolean argumentPatternHasBeenGiven;
+        boolean descriptionPatternHasBeenGiven;
+
+        public String checkShortOption(String shortOption)
+        {
+            if (shortOptionHasBeenGiven) throw new IllegalArgumentException( "Short form given twice" );
+            this.shortOptionHasBeenGiven = true;
+            return shortOption;
+        }
+
+        public String checkLongOption(String longOption)
+        {
+            if (longOptionHasBeenGiven) throw new IllegalArgumentException( "Long form given twice" );
+            this.longOptionHasBeenGiven = true;
+            return longOption;
+        }
+
+        public String checkArgumentPattern(String argumentPattern)
+        {
+            if (StringUtil.isBlank( argumentPattern )) return null;
+            if (argumentPatternHasBeenGiven) throw new IllegalArgumentException( "Argument pattern given twice");
+            this.argumentPatternHasBeenGiven = true;
+            return argumentPattern;
+        }
+
+        public String checkDescription(String description)
+        {
+            if (descriptionPatternHasBeenGiven) throw new IllegalArgumentException( "Description given twice" );
+            descriptionPatternHasBeenGiven = true;
+            return description;
+        }
+    }
+}

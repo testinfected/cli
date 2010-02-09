@@ -1,0 +1,10 @@
+package com.pyxis.cli;
+
+import java.io.IOException;
+
+public interface OptionDescription
+{
+    void appendOption(String name, String shortForm, String longForm, String argumentPattern, String description);
+
+    void appendTo(Appendable output) throws IOException;
+}
