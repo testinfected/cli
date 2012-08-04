@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.*;
 
 public class CLIUsageTest {
-    private CLI cli;
+    CLI cli;
 
     @Test public void
     usingSimpleSwitches() throws ParsingException {
@@ -63,7 +63,7 @@ public class CLIUsageTest {
     @Test public void
     definingAnOptionWithAShortFormAndALongForm() throws Exception {
         cli = new CLI() {{
-            define(option("debug").withShortForm("-x").withLongForm("debug"));
+            define(option("debug").withShortForm("x").withLongForm("debug"));
         }};
         cli.parse("--debug");
         assertTrue(cli.hasOption("debug"));
@@ -186,7 +186,6 @@ public class CLIUsageTest {
 
     @Test public void
     detectingAnUnrecognizedOption() throws Exception {
-
         cli = new CLI();
         try {
             cli.parse("-whatever");

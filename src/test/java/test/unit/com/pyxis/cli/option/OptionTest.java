@@ -13,14 +13,14 @@ import static org.junit.Assert.*;
 
 public class OptionTest
 {
-    @Test
-    public void optionValueIsNullByDefault() throws ParsingException {
+    @Test public void
+    optionValueIsNullByDefault() throws ParsingException {
         Option option = new Option("option");
         assertNull(option.getValue());
     }
 
-    @Test
-    public void optionRequiresShortOrLongOptToBeValid() {
+    @Test public void
+    optionRequiresShortOrLongOptToBeValid() {
         Option option = new Option("option");
         assertFalse(option.isValid());
         option.setShortForm("b");
@@ -31,15 +31,15 @@ public class OptionTest
         assertTrue(option.isValid());
     }
 
-    @Test
-    public void optionWithoutArgumentIsConsideredBoolean() throws ParsingException {
+    @Test public void
+    optionWithoutArgumentIsConsideredBoolean() throws ParsingException {
         Option option = new Option("option");
         option.consume(arguments());
         assertEquals(Boolean.TRUE, option.getValue());
     }
 
-    @Test
-    public void optionCanRequireAnArgument() throws ParsingException {
+    @Test public void
+    optionCanRequireAnArgument() throws ParsingException {
         Option option = new Option("option");
         option.setArgumentPattern("ARG");
 
@@ -54,8 +54,8 @@ public class OptionTest
         assertEquals("value", option.getValue());
     }
 
-    @Test
-    public void optionTypeCanBeEnforced() throws ParsingException {
+    @Test public void
+    optionTypeCanBeEnforced() throws ParsingException {
         Option option = new Option("block size");
         option.setArgumentPattern("SIZE");
         option.setCoercer(new IntegerCoercer());
@@ -64,8 +64,8 @@ public class OptionTest
         assertEquals(1024, option.getValue());
     }
 
-    @Test
-    public void optionCanHaveADefaultValue() throws ParsingException {
+    @Test public void
+    optionCanHaveADefaultValue() throws ParsingException {
         Option option = new Option("block size");
         option.setValue(1024);
 

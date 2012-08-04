@@ -12,21 +12,21 @@ import static org.junit.Assert.assertEquals;
 
 public class GnuDescriptionTest
 {
-    private GnuDescription description = new GnuDescription(20);
+    GnuDescription description = new GnuDescription(20);
 
-    @Test
-    public void displaysEmptyUsageByDefault() throws IOException {
+    @Test public void
+    displaysEmptyUsageByDefault() throws IOException {
         assertEquals("Usage: ", getHelp(description));
     }
 
-    @Test
-    public void displaysBannerIfIncluded() throws IOException {
+    @Test public void
+    displaysBannerIfIncluded() throws IOException {
         description.setBanner("My cool program v1.0");
         assertEquals("Usage: My cool program v1.0", getHelp(description));
     }
 
-    @Test
-    public void helpMessageIncludesBannerAndDescriptionsOfOptions() throws ParsingException, IOException {
+    @Test public void
+    helpMessageIncludesBannerAndDescriptionsOfOptions() throws ParsingException, IOException {
         description.setBanner("My cool program v1.0");
         description.formatOption(optionNamed("raw").withLongForm("raw").withDescription("Specifies raw ouput format").make());
         description.formatOption(optionNamed("block size").withShortForm("b").withLongForm("block-size").wantsArgument("SIZE").withDescription("Specifies block size").make());

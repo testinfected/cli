@@ -26,30 +26,29 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class StringUtilTest {
-    @Test
-    public void recognizesEmptyStrings() {
+    @Test public void
+    recognizesEmptyStrings() {
         assertTrue(StringUtil.isEmpty(""));
         assertFalse(StringUtil.isEmpty("obviously not"));
     }
 
-    @Test
-    public void considersNullAsEmpty() {
+    @Test public void
+    considersNullAsEmpty() {
         assertTrue(StringUtil.isEmpty(null));
     }
 
-    @Test
-    public void recognizesBlankStrings() {
+    @Test public void recognizesBlankStrings() {
         assertTrue(StringUtil.isBlank("  "));
         assertFalse(StringUtil.isBlank("obviously not"));
     }
 
-    @Test
-    public void doesNotConfuseBlankAndEmpty() {
+    @Test public void
+    doesNotConfuseBlankAndEmpty() {
         assertFalse(StringUtil.isEmpty("  "));
     }
 
-    @Test
-    public void considersNullAsBlankString() {
+    @Test public void
+    considersNullAsBlankString() {
         assertTrue(StringUtil.isBlank(null));
     }
 }

@@ -9,40 +9,40 @@ import static org.junit.Assert.assertEquals;
 
 public class GnuBuilderTest
 {
-    private GnuBuilder builder = new GnuBuilder();
+    GnuBuilder builder = new GnuBuilder();
 
-    @Test
-    public void dashIsPrefixForShortOption() {
+    @Test public void
+    dashIsPrefixForShortOption() {
         Option option = define("-b");
         assertEquals("b", option.getShortForm());
     }
 
-    @Test
-    public void doubleDashIsPrefixForLongOption() {
+    @Test public void
+    doubleDashIsPrefixForLongOption() {
         Option option = define("--block-size");
         assertEquals("block-size", option.getLongForm());
     }
 
-    @Test
-    public void shortOptionAcceptsAnArgumentPattern() {
+    @Test public void
+    shortOptionAcceptsAnArgumentPattern() {
         Option option = define("-b SIZE");
         assertEquals("SIZE", option.getArgumentPattern());
     }
 
-    @Test
-    public void longOptionAcceptsAnArgumentPattern() {
+    @Test public void
+    longOptionAcceptsAnArgumentPattern() {
         Option option = define("--block-size SIZE");
         assertEquals("SIZE", option.getArgumentPattern());
     }
 
-    @Test
-    public void optionAcceptsADescription() {
+    @Test public void
+    optionAcceptsADescription() {
         Option option = define("-b", "description");
         assertEquals("description", option.getDescription());
     }
 
-    @Test
-    public void optionsCanBeSpecifiedInLiteralForm() throws ParsingException {
+    @Test public void
+    optionsCanBeSpecifiedInLiteralForm() throws ParsingException {
         Option option = define("-b", "--block-size SIZE", "Specifies block size");
         assertEquals("Specifies block size", option.getDescription());
         assertEquals("b", option.getShortForm());

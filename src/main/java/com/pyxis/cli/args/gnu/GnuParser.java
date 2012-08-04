@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 import static java.util.Arrays.asList;
 
 /**
- * Not quite yet GNU compliant
+ * Not quite GNU compliant yet
  */
 public class GnuParser implements ArgsParser
 {
