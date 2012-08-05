@@ -25,7 +25,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/testinfected/cli.git</connection>
-        <developerConnection>scm:git:git://github.com/testinfected/cli.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:testinfected/cli.git</developerConnection>
         <url>https://github.com/testinfected/cli</url>
     </scm>
     <developers>
