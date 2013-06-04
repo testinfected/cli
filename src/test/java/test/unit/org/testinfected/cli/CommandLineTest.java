@@ -25,26 +25,26 @@ public class CommandLineTest {
 
     @Test(expected = IndexOutOfBoundsException.class) public void
     accessingOutOfRangeOperandsFails() {
-        assertNull(cl.getParameter(1));
+        assertNull(cl.getOperand(1));
     }
 
     @Test public void
     operandsAreAccessibleByIndex() throws Exception {
         cl.parse(new GnuParser(), "first", "second", "third");
-        assertEquals("first", cl.getParameter(0));
-        assertEquals("second", cl.getParameter(1));
-        assertEquals("third", cl.getParameter(2));
+        assertEquals("first", cl.getOperand(0));
+        assertEquals("second", cl.getOperand(1));
+        assertEquals("third", cl.getOperand(2));
     }
 
     @Test public void
     optionsHaveNoValueUnlessGiven() throws Exception {
         cl.addOption(optionNamed("debug").withShortForm("d").make());
         assertFalse(cl.hasOptionValue("debug"));
-        assertNull(cl.getSingleOptionValue("debug"));
+        assertNull(cl.getOptionValue("debug"));
 
         cl.parse(new GnuParser(), "-d");
         assertTrue(cl.hasOptionValue("debug"));
-        assertEquals(Boolean.TRUE, cl.getSingleOptionValue("debug"));
+        assertEquals(Boolean.TRUE, cl.getOptionValue("debug"));
     }
 
     @Test public void

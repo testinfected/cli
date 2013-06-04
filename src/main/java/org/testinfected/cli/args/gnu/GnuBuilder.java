@@ -2,7 +2,7 @@ package org.testinfected.cli.args.gnu;
 
 import org.testinfected.cli.args.ArgsBuilder;
 import org.testinfected.cli.option.Option;
-import org.testinfected.cli.util.StringUtil;
+import org.testinfected.cli.util.Strings;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,7 +74,7 @@ public class GnuBuilder implements ArgsBuilder
         }
 
         public String validateArgumentPattern(String argumentPattern) {
-            if (StringUtil.isBlank(argumentPattern)) return null;
+            if (Strings.blank(argumentPattern)) return null;
             if (argumentPatternHasBeenGiven) throw new IllegalArgumentException("Argument pattern given twice");
             this.argumentPatternHasBeenGiven = true;
             return argumentPattern;

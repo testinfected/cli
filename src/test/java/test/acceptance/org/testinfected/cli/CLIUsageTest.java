@@ -70,15 +70,15 @@ public class CLIUsageTest {
     }
 
     @Test public void
-    usingCommandLineParameters() throws Exception {
+    usingCommandLineOperands() throws Exception {
         cli = new CLI() {{
             define(option("debug").withLongForm("debug"));
         }};
         cli.parse("--debug", "input", "output");
 
         assertEquals(2, cli.getOperandCount());
-        assertEquals("input", cli.getParameter(0));
-        assertEquals("output", cli.getParameter(1));
+        assertEquals("input", cli.getOperand(0));
+        assertEquals("output", cli.getOperand(1));
     }
 
     @Test public void
@@ -94,7 +94,7 @@ public class CLIUsageTest {
         assertTrue(cli.hasOption("human"));
         assertEquals("1024", cli.getOption("block size"));
         assertTrue(cli.hasOption("debug"));
-        assertEquals("[input, output]", Arrays.toString(cli.getParameters()));
+        assertEquals("[input, output]", Arrays.toString(cli.getOperands()));
     }
 
     @Test public void
@@ -150,33 +150,33 @@ public class CLIUsageTest {
     executingACallbackWhenAnOptionIsDetected() throws Exception {
         final CaptureLocale captureLocale = new CaptureLocale();
         cli = new CLI() {{
-            define(option("localeOption", "-l LOCALE").asType(Locale.class).whenPresent(captureLocale));
+            define(option("locale", "-l LOCALE").asType(Locale.class).whenPresent(captureLocale));
         }};
 
         cli.parse("-l", "FR");
-        assertEquals(Locale.FRENCH, captureLocale.localeOption);
+        assertEquals(Locale.FRENCH, captureLocale.locale);
     }
 
     @Test public void
     displayingHelp() throws Exception {
         cli = new CLI() {{
-            withBanner("My cool program v1.0");
+            withBanner("program [options] param");
 
-            define(option("raw").withLongForm("raw").withDescription("Specifies raw ouput format"));
+            define(option("raw").withLongForm("raw").withDescription("Specifies raw output format"));
             define(option("block size").withShortForm("b").withLongForm("block-size").wantsArgument("SIZE").withDescription("Specifies block size"));
             define(option("debug").withShortForm("x").withDescription("Turn debugging on"));
         }};
         assertEquals(
-                "Usage: My cool program v1.0\n" +
+                "Usage: program [options] param\n" +
                         "\n" +
                         "Options:\n" +
-                        "    --raw                      Specifies raw ouput format\n" +
+                        "    --raw                      Specifies raw output format\n" +
                         "-b, --block-size SIZE          Specifies block size\n" +
                         "-x                             Turn debugging on",
                 usage(cli));
     }
 
-    // What would be more appropriate than an IllegalArgumentException ?
+    // What would be more appropriate than an IllegalArgumentException?
     @Test(expected = IllegalArgumentException.class)
     public void aShortOrLongFormMustBeSuppliedForOptionToBeValid() {
         cli = new CLI() {{
@@ -193,7 +193,7 @@ public class CLIUsageTest {
         }
         catch (UnrecognizedOptionException expected) {
             assertEquals("-whatever", expected.getTrigger());
-            assertThat(expected.getMessage(), containsString("unrecognized"));
+            assertThat(expected.getMessage(), containsString("whatever"));
 
         }
     }
@@ -210,7 +210,8 @@ public class CLIUsageTest {
         catch (InvalidArgumentException expected) {
             assertEquals("block size", expected.getUnsatisfiedOption().getName());
             assertEquals("LITERAL", expected.getParsedValue());
-            assertThat(expected.getMessage(), containsString("invalid"));
+            assertThat(expected.getMessage(), containsString("block size"));
+            assertThat(expected.getMessage(), containsString("LITERAL"));
         }
     }
 
@@ -225,7 +226,7 @@ public class CLIUsageTest {
         }
         catch (ArgumentMissingException expected) {
             assertEquals("block size", expected.getUnsatisfiedOption().getName());
-            assertThat(expected.getMessage(), containsString("expects"));
+            assertThat(expected.getMessage(), containsString("block size"));
         }
     }
 
@@ -237,10 +238,10 @@ public class CLIUsageTest {
 
     public static class CaptureLocale implements Option.Stub {
 
-        public Locale localeOption = Locale.ENGLISH;
+        public Locale locale = Locale.ENGLISH;
 
         public void call(Option option) {
-            localeOption = (Locale) option.getValue();
+            locale = (Locale) option.getValue();
         }
 
     }

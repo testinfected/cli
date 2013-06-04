@@ -100,11 +100,11 @@ public class CLI
         return commandLine.getOperands();
     }
 
-    public String getParameter(int index) {
-        return commandLine.getParameter(index);
+    public String getOperand(int index) {
+        return commandLine.getOperand(index);
     }
 
-    public String[] getParameters() {
+    public String[] getOperands() {
         return commandLine.getOperands();
     }
 
@@ -121,7 +121,7 @@ public class CLI
     }
 
     public Object getOption(String name) {
-        return commandLine.getSingleOptionValue(name);
+        return commandLine.getOptionValue(name);
     }
 
     public void writeUsageTo(Appendable appendable) throws IOException {

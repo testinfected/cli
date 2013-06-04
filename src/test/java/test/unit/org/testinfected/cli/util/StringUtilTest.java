@@ -19,7 +19,7 @@
 
 package test.unit.org.testinfected.cli.util;
 
-import org.testinfected.cli.util.StringUtil;
+import org.testinfected.cli.util.Strings;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -28,27 +28,27 @@ import static org.junit.Assert.assertTrue;
 public class StringUtilTest {
     @Test public void
     recognizesEmptyStrings() {
-        assertTrue(StringUtil.isEmpty(""));
-        assertFalse(StringUtil.isEmpty("obviously not"));
+        assertTrue(Strings.empty(""));
+        assertFalse(Strings.empty("obviously not"));
     }
 
     @Test public void
     considersNullAsEmpty() {
-        assertTrue(StringUtil.isEmpty(null));
+        assertTrue(Strings.empty(null));
     }
 
     @Test public void recognizesBlankStrings() {
-        assertTrue(StringUtil.isBlank("  "));
-        assertFalse(StringUtil.isBlank("obviously not"));
+        assertTrue(Strings.blank("  "));
+        assertFalse(Strings.blank("obviously not"));
     }
 
     @Test public void
     doesNotConfuseBlankAndEmpty() {
-        assertFalse(StringUtil.isEmpty("  "));
+        assertFalse(Strings.empty("  "));
     }
 
     @Test public void
     considersNullAsBlankString() {
-        assertTrue(StringUtil.isBlank(null));
+        assertTrue(Strings.blank(null));
     }
 }

@@ -20,6 +20,7 @@
 package org.testinfected.cli.option;
 
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.ArgsDescription;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
@@ -141,6 +142,10 @@ public class Option {
 
     public boolean hasBothForms() {
         return hasShortForm() && hasLongForm();
+    }
+
+    public void describeTo(ArgsDescription description) {
+        description.formatOption(this);
     }
 
     public interface Stub {

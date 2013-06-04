@@ -19,17 +19,17 @@
 
 package org.testinfected.cli.util;
 
-public final class StringUtil
+public final class Strings
 {
     private static final String EMPTY_STRING = "";
 
-    private StringUtil() {}
+    private Strings() {}
 
-    public static boolean isEmpty(String s) {
+    public static boolean empty(String s) {
         return s == null || s.equals(EMPTY_STRING);
     }
 
-    public static boolean isBlank(String s) {
-        return s == null || isEmpty(s.trim());
+    public static boolean blank(String s) {
+        return s == null || empty(s.trim());
     }
 }

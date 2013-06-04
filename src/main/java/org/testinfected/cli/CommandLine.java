@@ -20,8 +20,7 @@ public class CommandLine
 
     private String banner = "";
 
-    public CommandLine() {
-    }
+    public CommandLine() {}
 
     public void setBanner(String banner) {
         this.banner = banner;
@@ -39,7 +38,7 @@ public class CommandLine
         return operands.toArray(new String[operands.size()]);
     }
 
-    public String getParameter(int index) {
+    public String getOperand(int index) {
         return operands.get(index);
     }
 
@@ -56,7 +55,7 @@ public class CommandLine
         return opts;
     }
 
-    public Object getSingleOptionValue(String name) {
+    public Object getOptionValue(String name) {
         return getOptionValues().get(name);
     }
 
@@ -75,7 +74,7 @@ public class CommandLine
     public void formatHelp(ArgsDescription description) {
         description.setBanner(banner);
         for (Option option : options) {
-            description.formatOption(option);
+            option.describeTo(description);
         }
     }
 
