@@ -22,7 +22,9 @@ package org.testinfected.cli.args;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.option.Option;
 
+import java.util.List;
+
 public interface ArgsParser
 {
-    String[] parse(Iterable<Option> options, String... args) throws ParsingException;
+    List<String> parse(Iterable<Option> options, String... args) throws ParsingException;
 }

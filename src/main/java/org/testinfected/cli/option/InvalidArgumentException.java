@@ -32,8 +32,8 @@ public class InvalidArgumentException extends ParsingException
         this.value = value;
     }
 
-    public Option getUnsatisfiedOption() {
-        return option;
+    public String getUnsatisfiedOption() {
+        return option.getName();
     }
 
     public Object getParsedValue() {

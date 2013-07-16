@@ -52,11 +52,15 @@ public class Option {
     }
 
     public void consume(Iterator<String> arguments) throws ParsingException {
-        if (requiresArgument() && outOf(arguments)) throw new ArgumentMissingException(this);
-        value = requiresArgument() ? convert(arguments.next()) : SWITCH_ON;
+        if (requiresArgument() && noMore(arguments)) throw new ArgumentMissingException(this);
+        value = requiresArgument() ? convert(nextOf(arguments)) : SWITCH_ON;
     }
 
-    private boolean outOf(Iterator<String> arguments) {
+    private String nextOf(Iterator<String> arguments) {
+        return arguments.next();
+    }
+
+    private boolean noMore(Iterator<String> arguments) {
         return !arguments.hasNext();
     }
 

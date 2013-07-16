@@ -19,31 +19,35 @@
 
 package test.unit.org.testinfected.cli.args.gnu;
 
+import org.junit.Test;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.args.gnu.GnuParser;
 import org.testinfected.cli.option.Option;
 import org.testinfected.cli.option.OptionBuilder;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.testinfected.cli.option.OptionBuilder.optionNamed;
-import static org.junit.Assert.*;
 
 public class GnuParserTest
 {
     GnuParser parser = new GnuParser();
     Collection<Option> options = new ArrayList<Option>();
 
-    String[] actualParameters;
+    List<String> positionalArguments;
 
     @Test public void
     doesNotConsumeAnyArgumentIfNoOptionIsDefined() throws ParsingException {
         parse("1", "2", "3");
-        assertEquals("[1, 2, 3]", parameterString());
+        assertEquals(Arrays.asList("1", "2", "3"), positionalArguments);
     }
 
     @Test public void
@@ -73,11 +77,11 @@ public class GnuParserTest
     }
 
     @Test public void
-    consumesOptionsAndReturnsExtraParameters() throws ParsingException {
+    consumesOptionsAndReturnsRemainingArguments() throws ParsingException {
         define(optionNamed("raw").withLongForm("raw"));
 
         parse("--raw", "input", "output");
-        assertEquals("[input, output]", parameterString());
+        assertEquals(Arrays.asList("input", "output"), positionalArguments);
     }
 
     @Test public void
@@ -90,7 +94,7 @@ public class GnuParserTest
         assertNotNull(human.getValue());
         assertNotNull(blockSize.getValue());
         assertNotNull(debug.getValue());
-        assertEquals("[input, output]", parameterString());
+        assertEquals(Arrays.asList("input", "output"), positionalArguments);
     }
 
     @Test public void
@@ -112,10 +116,6 @@ public class GnuParserTest
 
     private void parse(String... input)
             throws ParsingException {
-        actualParameters = parser.parse(options, input);
-    }
-
-    private String parameterString() {
-        return Arrays.toString(actualParameters);
+        positionalArguments = parser.parse(options, input);
     }
 }

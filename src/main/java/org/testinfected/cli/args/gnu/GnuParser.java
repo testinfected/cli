@@ -25,8 +25,8 @@ import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.option.Option;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,8 +40,8 @@ public class GnuParser implements ArgsParser
     private static final Pattern LONG_OPTION_PATTERN = Pattern.compile("--(.+)");
     private static final Pattern SHORT_OPTION_PATTERN = Pattern.compile("-(.+)");
 
-    public String[] parse(Iterable<Option> options, String... args) throws ParsingException {
-        Collection<String> parameters = new ArrayList<String>();
+    public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {
+        List<String> parameters = new ArrayList<String>();
 
         for (Iterator<String> tokens = asList(args).iterator(); tokens.hasNext(); ) {
             String currentToken = tokens.next();
@@ -65,7 +65,7 @@ public class GnuParser implements ArgsParser
             parameters.add(currentToken);
         }
 
-        return parameters.toArray(new String[parameters.size()]);
+        return parameters;
     }
 
     private Option findOption(Iterable<Option> candidates, Matcher matcher) {

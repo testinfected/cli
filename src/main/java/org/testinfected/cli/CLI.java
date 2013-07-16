@@ -86,30 +86,33 @@ public class CLI
         defineOption(builder.make());
     }
 
+    public void define(OperandBuilder builder) {
+        defineOperand(builder.make());
+    }
+
     public OptionBuilder option(String name, String... schema) {
         OptionBuilder builder = OptionBuilder.option(argsFormat.defineOption(name, schema));
         return builder.using(typeCoercers);
+    }
+
+    public OperandBuilder operand(String name) {
+        return OperandBuilder.operandNamed(name);
     }
 
     private void defineOption(Option option) {
         commandLine.addOption(option);
     }
 
+    private void defineOperand(Operand operand) {
+        commandLine.addOperand(operand);
+    }
+
     public String[] parse(String... args) throws ParsingException {
-        commandLine.parse(argsFormat, args);
-        return commandLine.getOperands();
+        return commandLine.parse(argsFormat, args);
     }
 
-    public String getOperand(int index) {
-        return commandLine.getOperand(index);
-    }
-
-    public String[] getOperands() {
-        return commandLine.getOperands();
-    }
-
-    public int getOperandCount() {
-        return commandLine.getOperandCount();
+    public String getOperand(String name) {
+        return commandLine.getOperandValue(name);
     }
 
     public boolean hasOption(String name) {
@@ -118,6 +121,10 @@ public class CLI
 
     public Map<String, ?> getOptions() {
         return commandLine.getOptionValues();
+    }
+
+    public int getOptionCount() {
+        return getOptions().size();
     }
 
     public Object getOption(String name) {

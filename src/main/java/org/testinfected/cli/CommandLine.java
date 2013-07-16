@@ -7,16 +7,16 @@ import org.testinfected.cli.option.Option;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.addAll;
 import static java.util.Collections.unmodifiableCollection;
 
 public class CommandLine
 {
-    private final List<String> operands = new ArrayList<String>();
     private final Collection<Option> options = new ArrayList<Option>();
+    private final List<Operand> operands = new ArrayList<Operand>();
 
     private String banner = "";
 
@@ -30,16 +30,15 @@ public class CommandLine
         options.add(option);
     }
 
-    public int getOperandCount() {
-        return operands.size();
+    public void addOperand(Operand operand) {
+        operands.add(operand);
     }
 
-    public String[] getOperands() {
-        return operands.toArray(new String[operands.size()]);
-    }
-
-    public String getOperand(int index) {
-        return operands.get(index);
+    public String getOperandValue(String name) {
+        for (Operand operand : operands) {
+            if (operand.getName().equals(name)) return operand.getValue();
+        }
+        return null;
     }
 
     public boolean hasOptionValue(String name) {
@@ -51,7 +50,6 @@ public class CommandLine
         for (Option opt : options) {
             if (opt.wasGiven()) opts.put(opt.getName(), opt.getValue());
         }
-
         return opts;
     }
 
@@ -60,15 +58,28 @@ public class CommandLine
     }
 
     public String[] parse(ArgsParser parser, String... args) throws ParsingException {
-        parseArgs(parser, args);
+        String[] extraArguments = parseArgs(parser, args);
         callStubs();
-        return getOperands();
+        return extraArguments;
     }
 
-    private void parseArgs(ArgsParser parser, String... args)
+    private String[] parseArgs(ArgsParser parser, String... args)
             throws ParsingException {
-        String[] argsOperands = parser.parse(unmodifiableCollection(options), args);
-        addAll(operands, argsOperands);
+        return consumeOperands(parser.parse(unmodifiableCollection(options), args));
+    }
+
+    private String[] consumeOperands(List<String> positionalArguments) throws MissingOperandException {
+        Iterator<String> args = positionalArguments.iterator();
+        for (Operand operand : operands) {
+            operand.consume(args);
+        }
+        return leftOver(args);
+    }
+
+    private String[] leftOver(Iterator<String> args) {
+        List<String> leftOver = new ArrayList<String>();
+        while (args.hasNext()) leftOver.add(args.next());
+        return leftOver.toArray(new String[leftOver.size()]);
     }
 
     public void formatHelp(ArgsDescription description) {

@@ -29,8 +29,8 @@ public class ArgumentMissingException extends ParsingException
         this.option = option;
     }
 
-    public Option getUnsatisfiedOption() {
-        return option;
+    public String getUnsatisfiedOption() {
+        return option.getName();
     }
 
     public String getMessage() {

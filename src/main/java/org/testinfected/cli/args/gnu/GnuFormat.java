@@ -8,6 +8,7 @@ import org.testinfected.cli.args.ArgsParser;
 import org.testinfected.cli.option.Option;
 
 import java.io.IOException;
+import java.util.List;
 
 public class GnuFormat implements ArgsFormat
 {
@@ -21,7 +22,7 @@ public class GnuFormat implements ArgsFormat
         return builder.defineOption(name, schema);
     }
 
-    public String[] parse(Iterable<Option> options, String... args) throws ParsingException {
+    public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {
         return parser.parse(options, args);
     }
 

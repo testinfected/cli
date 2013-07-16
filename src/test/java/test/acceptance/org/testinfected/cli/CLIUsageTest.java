@@ -19,8 +19,10 @@
 
 package test.acceptance.org.testinfected.cli;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testinfected.cli.CLI;
+import org.testinfected.cli.MissingOperandException;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.coercion.TypeCoercer;
@@ -44,7 +46,32 @@ public class CLIUsageTest {
     CLI cli;
 
     @Test public void
-    usingSimpleSwitches() throws ParsingException {
+    usingPositionalArguments() throws Exception {
+        cli = new CLI() {{
+            define(operand("input"));
+            define(operand("output"));
+        }};
+        cli.parse("input", "output");
+
+        assertEquals("input", cli.getOperand("input"));
+        assertEquals("output", cli.getOperand("output"));
+    }
+
+    @Test public void
+    retrievingExtraArguments() throws ParsingException {
+        cli = new CLI() {{
+            define(operand("input"));
+        }};
+        String[] args = cli.parse("input", "output", "encoding");
+        assertEquals("[output, encoding]", Arrays.toString(args));
+    }
+
+    @Ignore("pending")
+    @Test public void
+    specifyingTheTypeOfAPositionalArgument() {}
+
+    @Test public void
+    usingSimpleOptionSwitches() throws ParsingException {
         cli = new CLI() {{
             define(option("debug").withShortForm("x").withDescription("Turns debugging on"));
         }};
@@ -70,34 +97,6 @@ public class CLIUsageTest {
         }};
         cli.parse("--debug");
         assertTrue(cli.hasOption("debug"));
-    }
-
-    @Test public void
-    usingCommandLineOperands() throws Exception {
-        cli = new CLI() {{
-            define(option("debug").withLongForm("debug"));
-        }};
-        cli.parse("--debug", "input", "output");
-
-        assertEquals(2, cli.getOperandCount());
-        assertEquals("input", cli.getOperand(0));
-        assertEquals("output", cli.getOperand(1));
-    }
-
-    @Test public void
-    aMoreComplexExampleThatUsesAMixOfDifferentOptions() throws Exception {
-        cli = new CLI() {{
-            define(option("human").withShortForm("h").withDescription("Human readable format"));
-            define(option("block size").withLongForm("block-size").withRequiredArg("SIZE"));
-            define(option("debug").withShortForm("x"));
-        }};
-
-        cli.parse("-h", "--block-size", "1024", "-x", "input", "output");
-        assertEquals(3, cli.getOptions().size());
-        assertTrue(cli.hasOption("human"));
-        assertEquals("1024", cli.getOption("block size"));
-        assertTrue(cli.hasOption("debug"));
-        assertEquals("[input, output]", Arrays.toString(cli.getOperands()));
     }
 
     @Test public void
@@ -137,6 +136,26 @@ public class CLIUsageTest {
         cli.parse("-f", "/path/to/file", "-c", "java.lang.String");
         assertEquals(new File("/path/to/file"), cli.getOption("file"));
         assertEquals(String.class, cli.getOption("class"));
+    }
+
+    @Test public void
+    aMoreComplexExampleThatUsesAMixOfDifferentArguments() throws Exception {
+        cli = new CLI() {{
+            define(option("human").withShortForm("h").withDescription("Human readable format"));
+            define(option("block size").withLongForm("block-size").withRequiredArg("SIZE").ofType(int.class));
+            define(option("debug").withShortForm("x"));
+            define(operand("input"));
+            define(operand("output"));
+        }};
+
+        String[] args = cli.parse("-h", "--block-size", "1024", "-x", "input", "output", "extra", "more extra");
+        assertEquals(3, cli.getOptionCount());
+        assertTrue(cli.hasOption("human"));
+        assertEquals(1024, cli.getOption("block size"));
+        assertTrue(cli.hasOption("debug"));
+        assertEquals("input", cli.getOperand("input"));
+        assertEquals("output", cli.getOperand("output"));
+        assertEquals("[extra, more extra]", Arrays.toString(args));
     }
 
     @Test public void
@@ -192,12 +211,11 @@ public class CLIUsageTest {
         cli = new CLI();
         try {
             cli.parse("-whatever");
-            fail();
+            fail("Expected exception " + UnrecognizedOptionException.class.getName());
         }
         catch (UnrecognizedOptionException expected) {
             assertEquals("-whatever", expected.getTrigger());
             assertThat(expected.getMessage(), containsString("whatever"));
-
         }
     }
 
@@ -208,10 +226,10 @@ public class CLIUsageTest {
         }};
         try {
             cli.parse("-b", "LITERAL");
-            fail();
+            fail("Expected exception " + InvalidArgumentException.class.getName());
         }
         catch (InvalidArgumentException expected) {
-            assertEquals("block size", expected.getUnsatisfiedOption().getName());
+            assertEquals("block size", expected.getUnsatisfiedOption());
             assertEquals("LITERAL", expected.getParsedValue());
             assertThat(expected.getMessage(), containsString("block size"));
             assertThat(expected.getMessage(), containsString("LITERAL"));
@@ -225,11 +243,27 @@ public class CLIUsageTest {
         }};
         try {
             cli.parse("-b");
-            fail();
+            fail("Expected exception " + ArgumentMissingException.class.getName());
         }
         catch (ArgumentMissingException expected) {
-            assertEquals("block size", expected.getUnsatisfiedOption().getName());
+            assertEquals("block size", expected.getUnsatisfiedOption());
             assertThat(expected.getMessage(), containsString("block size"));
+        }
+    }
+
+    @Test public void
+    omittingARequiredPositionalArgument() throws Exception {
+        cli = new CLI() {{
+            define(operand("input"));
+            define(operand("output"));
+        }};
+        try {
+            cli.parse("input");
+            fail("Expected exception " + MissingOperandException.class.getName());
+        }
+        catch (MissingOperandException expected) {
+            assertEquals("output", expected.getMissingOperand());
+            assertThat(expected.getMessage(), containsString("output"));
         }
     }
 
@@ -240,7 +274,6 @@ public class CLIUsageTest {
     }
 
     public static class CaptureLocale implements Option.Stub {
-
         public Locale locale = Locale.ENGLISH;
 
         public void call(Option option) {
@@ -249,11 +282,9 @@ public class CLIUsageTest {
     }
 
     public static class BigDecimalCoercer implements TypeCoercer<BigDecimal> {
-
         public BigDecimal convert(String value) throws Exception {
             return new BigDecimal(value);
         }
-
     }
 }
 
