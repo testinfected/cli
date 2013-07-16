@@ -20,7 +20,6 @@
 package org.testinfected.cli.args;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.args.Option;
 
 import java.util.List;
 

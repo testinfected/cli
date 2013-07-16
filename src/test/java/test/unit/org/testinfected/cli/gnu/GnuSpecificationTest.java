@@ -1,15 +1,15 @@
 package test.unit.org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.gnu.GnuBuilder;
+import org.testinfected.cli.gnu.GnuSpecification;
 import org.testinfected.cli.args.Option;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class GnuBuilderTest
+public class GnuSpecificationTest
 {
-    GnuBuilder builder = new GnuBuilder();
+    GnuSpecification builder = new GnuSpecification();
 
     @Test public void
     dashIsPrefixForShortOption() {

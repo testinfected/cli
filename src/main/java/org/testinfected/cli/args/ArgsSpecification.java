@@ -1,8 +1,6 @@
 package org.testinfected.cli.args;
 
-import org.testinfected.cli.args.Option;
-
-public interface ArgsBuilder
+public interface ArgsSpecification
 {
     Option defineOption(String name, String... schema);
 }

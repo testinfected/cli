@@ -1,7 +1,7 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.args.ArgsBuilder;
+import org.testinfected.cli.args.ArgsSpecification;
 import org.testinfected.cli.args.ArgsDescription;
 import org.testinfected.cli.args.ArgsFormat;
 import org.testinfected.cli.args.ArgsParser;
@@ -13,13 +13,13 @@ import java.util.List;
 public class GnuFormat implements ArgsFormat
 {
     private final ArgsParser parser = new GnuParser();
-    private final ArgsBuilder builder = new GnuBuilder();
+    private final ArgsSpecification specification = new GnuSpecification();
     private final ArgsDescription description = new GnuDescription();
 
     public GnuFormat() {}
 
     public Option defineOption(String name, String... schema) {
-        return builder.defineOption(name, schema);
+        return specification.defineOption(name, schema);
     }
 
     public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {

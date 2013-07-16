@@ -1,5 +1,5 @@
 package org.testinfected.cli.args;
 
-public interface ArgsFormat extends ArgsParser, ArgsBuilder, ArgsDescription
+public interface ArgsFormat extends ArgsParser, ArgsSpecification, ArgsDescription
 {
 }
