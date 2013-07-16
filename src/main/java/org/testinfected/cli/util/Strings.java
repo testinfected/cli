@@ -21,15 +21,13 @@ package org.testinfected.cli.util;
 
 public final class Strings
 {
-    private static final String EMPTY_STRING = "";
-
     private Strings() {}
 
     public static boolean empty(String s) {
-        return s == null || s.equals(EMPTY_STRING);
+        return s == null || s.isEmpty();
     }
 
     public static boolean blank(String s) {
-        return s == null || empty(s.trim());
+        return s == null || s.trim().isEmpty();
     }
 }

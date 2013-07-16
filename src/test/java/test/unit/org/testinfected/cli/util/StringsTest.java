@@ -25,7 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class StringUtilTest {
+public class StringsTest {
     @Test public void
     recognizesEmptyStrings() {
         assertTrue(Strings.empty(""));
@@ -37,7 +37,8 @@ public class StringUtilTest {
         assertTrue(Strings.empty(null));
     }
 
-    @Test public void recognizesBlankStrings() {
+    @Test public void
+    recognizesBlankStrings() {
         assertTrue(Strings.blank("  "));
         assertFalse(Strings.blank("obviously not"));
     }

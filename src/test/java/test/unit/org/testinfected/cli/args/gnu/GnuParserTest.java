@@ -58,7 +58,7 @@ public class GnuParserTest
 
     @Test public void
     optionsCanDeclareParameters() throws ParsingException {
-        Option blockSize = define(optionNamed("block size").withShortForm("b").wantsArgument("SIZE"));
+        Option blockSize = define(optionNamed("block size").withShortForm("b").withRequiredArg("SIZE"));
 
         parse("-b", "1024");
         assertEquals("1024", blockSize.getValue());
@@ -66,7 +66,7 @@ public class GnuParserTest
 
     @Test public void
     detectsOptionsByTheirLongForm() throws ParsingException {
-        Option blockSize = define(optionNamed("block size").withLongForm("block-size").wantsArgument("SIZE"));
+        Option blockSize = define(optionNamed("block size").withLongForm("block-size").withRequiredArg("SIZE"));
 
         parse("--block-size", "1024");
         assertEquals("1024", blockSize.getValue());
@@ -83,7 +83,7 @@ public class GnuParserTest
     @Test public void
     supportsMultipleOptionsAndParameters() throws ParsingException {
         Option human = define(optionNamed("human").withShortForm("h").withDescription("Human readable format"));
-        Option blockSize = define(optionNamed("block size").withLongForm("block-size").wantsArgument("SIZE"));
+        Option blockSize = define(optionNamed("block size").withLongForm("block-size").withRequiredArg("SIZE"));
         Option debug = define(optionNamed("debug").withShortForm("x"));
 
         parse("-h", "--block-size", "1024", "-x", "input", "output");

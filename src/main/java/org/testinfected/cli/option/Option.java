@@ -52,8 +52,8 @@ public class Option {
     }
 
     public void consume(Iterator<String> arguments) throws ParsingException {
-        if (takesArgument() && outOf(arguments)) throw new ArgumentMissingException(this);
-        value = takesArgument() ? convert(arguments.next()) : SWITCH_ON;
+        if (requiresArgument() && outOf(arguments)) throw new ArgumentMissingException(this);
+        value = requiresArgument() ? convert(arguments.next()) : SWITCH_ON;
     }
 
     private boolean outOf(Iterator<String> arguments) {
@@ -112,7 +112,7 @@ public class Option {
         return argumentPattern;
     }
 
-    public boolean takesArgument() {
+    public boolean requiresArgument() {
         return argumentPattern != null;
     }
 

@@ -29,7 +29,7 @@ public class GnuDescriptionTest
     helpMessageIncludesBannerAndDescriptionsOfOptions() throws ParsingException, IOException {
         description.setBanner("My cool program v1.0");
         description.formatOption(optionNamed("raw").withLongForm("raw").withDescription("Specifies raw ouput format").make());
-        description.formatOption(optionNamed("block size").withShortForm("b").withLongForm("block-size").wantsArgument("SIZE").withDescription("Specifies block size").make());
+        description.formatOption(optionNamed("block size").withShortForm("b").withLongForm("block-size").withRequiredArg("SIZE").withDescription("Specifies block size").make());
         description.formatOption(optionNamed("debug").withShortForm("x").withDescription("Turn debugging on").make());
 
         assertEquals(

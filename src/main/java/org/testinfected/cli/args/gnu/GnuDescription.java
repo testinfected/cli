@@ -73,7 +73,7 @@ public class GnuDescription implements ArgsDescription {
     }
 
     private String descriptionOfSwitchAndArgument(Option option) {
-        return option.takesArgument() ?
+        return option.requiresArgument() ?
                 describeSwitch(option) + " " + option.getArgumentPattern() :
                 describeSwitch(option);
     }

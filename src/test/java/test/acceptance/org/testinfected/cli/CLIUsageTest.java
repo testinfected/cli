@@ -19,6 +19,7 @@
 
 package test.acceptance.org.testinfected.cli;
 
+import org.junit.Test;
 import org.testinfected.cli.CLI;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.UnrecognizedOptionException;
@@ -26,7 +27,6 @@ import org.testinfected.cli.coercion.TypeCoercer;
 import org.testinfected.cli.option.ArgumentMissingException;
 import org.testinfected.cli.option.InvalidArgumentException;
 import org.testinfected.cli.option.Option;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,10 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class CLIUsageTest {
     CLI cli;
@@ -52,7 +55,7 @@ public class CLIUsageTest {
     @Test public void
     definingAnOptionThatExpectsAnArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block size").withShortForm("b").wantsArgument("SIZE"));
+            define(option("block size").withShortForm("b").withRequiredArg("SIZE"));
         }};
         cli.parse("-b", "1024");
 
@@ -85,7 +88,7 @@ public class CLIUsageTest {
     aMoreComplexExampleThatUsesAMixOfDifferentOptions() throws Exception {
         cli = new CLI() {{
             define(option("human").withShortForm("h").withDescription("Human readable format"));
-            define(option("block size").withLongForm("block-size").wantsArgument("SIZE"));
+            define(option("block size").withLongForm("block-size").withRequiredArg("SIZE"));
             define(option("debug").withShortForm("x"));
         }};
 
@@ -100,7 +103,7 @@ public class CLIUsageTest {
     @Test public void
     specifyingTheTypeOfAnOptionArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block size").withShortForm("b").wantsArgument("SIZE").asType(int.class));
+            define(option("block size").withShortForm("b").withRequiredArg("SIZE").ofType(int.class));
         }};
         cli.parse("-b", "1024");
         assertEquals(1024, cli.getOption("block size"));
@@ -109,7 +112,7 @@ public class CLIUsageTest {
     @Test public void
     specifyingADefaultValueForAnOption() throws Exception {
         cli = new CLI() {{
-            define(option("block size").withShortForm("b").wantsArgument("SIZE").asType(int.class).defaultingTo(1024));
+            define(option("block size").withShortForm("b").withRequiredArg("SIZE").ofType(int.class).defaultingTo(1024));
         }};
         cli.parse();
         assertEquals(1024, cli.getOption("block size"));
@@ -128,8 +131,8 @@ public class CLIUsageTest {
     @Test public void
     usingBuiltInCoercers() throws Exception {
         cli = new CLI() {{
-            define(option("file").withShortForm("f").wantsArgument("PATH").asType(File.class));
-            define(option("class").withShortForm("c").wantsArgument("CLASS NAME").asType(Class.class));
+            define(option("file").withShortForm("f").withRequiredArg("PATH").ofType(File.class));
+            define(option("class").withShortForm("c").withRequiredArg("CLASS NAME").ofType(Class.class));
         }};
         cli.parse("-f", "/path/to/file", "-c", "java.lang.String");
         assertEquals(new File("/path/to/file"), cli.getOption("file"));
@@ -140,7 +143,7 @@ public class CLIUsageTest {
     usingACustomOptionType() throws Exception {
         cli = new CLI() {{
             coerceType(BigDecimal.class).using(new BigDecimalCoercer());
-            define(option("size", "--size VALUE").asType(BigDecimal.class));
+            define(option("size", "--size VALUE").ofType(BigDecimal.class));
         }};
         cli.parse("--size", "1000.00");
         assertEquals(new BigDecimal("1000.00"), cli.getOption("size"));
@@ -150,7 +153,7 @@ public class CLIUsageTest {
     executingACallbackWhenAnOptionIsDetected() throws Exception {
         final CaptureLocale captureLocale = new CaptureLocale();
         cli = new CLI() {{
-            define(option("locale", "-l LOCALE").asType(Locale.class).whenPresent(captureLocale));
+            define(option("locale", "-l LOCALE").ofType(Locale.class).whenPresent(captureLocale));
         }};
 
         cli.parse("-l", "FR");
@@ -163,7 +166,7 @@ public class CLIUsageTest {
             withBanner("program [options] param");
 
             define(option("raw").withLongForm("raw").withDescription("Specifies raw output format"));
-            define(option("block size").withShortForm("b").withLongForm("block-size").wantsArgument("SIZE").withDescription("Specifies block size"));
+            define(option("block size").withShortForm("b").withLongForm("block-size").withRequiredArg("SIZE").withDescription("Specifies block size"));
             define(option("debug").withShortForm("x").withDescription("Turn debugging on"));
         }};
         assertEquals(
@@ -201,7 +204,7 @@ public class CLIUsageTest {
     @Test public void
     passingAnInvalidArgumentToAnOption() throws Exception {
         cli = new CLI() {{
-            define(option("block size", "-b SIZE").asType(int.class));
+            define(option("block size", "-b SIZE").ofType(int.class));
         }};
         try {
             cli.parse("-b", "LITERAL");
@@ -218,7 +221,7 @@ public class CLIUsageTest {
     @Test public void
     omittingARequiredOptionArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block size", "-b SIZE").asType(int.class));
+            define(option("block size", "-b SIZE").ofType(int.class));
         }};
         try {
             cli.parse("-b");
@@ -243,7 +246,6 @@ public class CLIUsageTest {
         public void call(Option option) {
             locale = (Locale) option.getValue();
         }
-
     }
 
     public static class BigDecimalCoercer implements TypeCoercer<BigDecimal> {

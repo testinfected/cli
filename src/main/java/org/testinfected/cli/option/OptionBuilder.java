@@ -42,7 +42,7 @@ public class OptionBuilder
         this.option = underConstruction;
     }
 
-    public OptionBuilder wantsArgument(String value) {
+    public OptionBuilder withRequiredArg(String value) {
         option.setArgumentPattern(value);
         return this;
     }
@@ -67,7 +67,7 @@ public class OptionBuilder
         return this;
     }
 
-    public OptionBuilder asType(Class type) {
+    public OptionBuilder ofType(Class type) {
         return coerceWith(coercerFor(type));
     }
 
