@@ -1,11 +1,11 @@
-package org.testinfected.cli.args.gnu;
+package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.ArgsBuilder;
 import org.testinfected.cli.args.ArgsDescription;
 import org.testinfected.cli.args.ArgsFormat;
 import org.testinfected.cli.args.ArgsParser;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.Option;
 
 import java.io.IOException;
 import java.util.List;

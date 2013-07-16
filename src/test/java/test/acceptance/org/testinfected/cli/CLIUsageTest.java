@@ -22,13 +22,13 @@ package test.acceptance.org.testinfected.cli;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.testinfected.cli.CLI;
-import org.testinfected.cli.MissingOperandException;
+import org.testinfected.cli.args.MissingOperandException;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.coercion.TypeCoercer;
-import org.testinfected.cli.option.ArgumentMissingException;
-import org.testinfected.cli.option.InvalidArgumentException;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.ArgumentMissingException;
+import org.testinfected.cli.args.InvalidArgumentException;
+import org.testinfected.cli.args.Option;
 
 import java.io.File;
 import java.io.IOException;

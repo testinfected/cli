@@ -22,9 +22,9 @@ package test.unit.org.testinfected.cli.args.gnu;
 import org.junit.Test;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.UnrecognizedOptionException;
-import org.testinfected.cli.args.gnu.GnuParser;
-import org.testinfected.cli.option.Option;
-import org.testinfected.cli.option.OptionBuilder;
+import org.testinfected.cli.gnu.GnuParser;
+import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.OptionBuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-import static org.testinfected.cli.option.OptionBuilder.optionNamed;
+import static org.testinfected.cli.args.OptionBuilder.optionNamed;
 
 public class GnuParserTest
 {

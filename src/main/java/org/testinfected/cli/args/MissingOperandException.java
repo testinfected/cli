@@ -1,4 +1,6 @@
-package org.testinfected.cli;
+package org.testinfected.cli.args;
+
+import org.testinfected.cli.ParsingException;
 
 public class MissingOperandException extends ParsingException {
     private Operand operand;

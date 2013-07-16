@@ -1,8 +1,8 @@
 package test.unit.org.testinfected.cli.args.gnu;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.args.gnu.GnuBuilder;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.gnu.GnuBuilder;
+import org.testinfected.cli.args.Option;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

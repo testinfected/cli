@@ -1,7 +1,7 @@
-package org.testinfected.cli.args.gnu;
+package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.args.ArgsBuilder;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.Option;
 import org.testinfected.cli.util.Strings;
 
 import java.util.regex.Matcher;

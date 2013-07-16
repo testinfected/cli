@@ -2,12 +2,12 @@ package test.unit.org.testinfected.cli.args.gnu;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.ArgsDescription;
-import org.testinfected.cli.args.gnu.GnuDescription;
+import org.testinfected.cli.gnu.GnuDescription;
 import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.testinfected.cli.option.OptionBuilder.optionNamed;
+import static org.testinfected.cli.args.OptionBuilder.optionNamed;
 import static org.junit.Assert.assertEquals;
 
 public class GnuDescriptionTest

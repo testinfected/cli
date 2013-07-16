@@ -20,15 +20,18 @@
 package org.testinfected.cli;
 
 import org.testinfected.cli.args.ArgsFormat;
-import org.testinfected.cli.args.gnu.GnuFormat;
+import org.testinfected.cli.args.CommandLine;
+import org.testinfected.cli.args.Operand;
+import org.testinfected.cli.args.OperandBuilder;
+import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.OptionBuilder;
 import org.testinfected.cli.coercion.ClassCoercer;
 import org.testinfected.cli.coercion.FileCoercer;
 import org.testinfected.cli.coercion.IntegerCoercer;
 import org.testinfected.cli.coercion.LocaleCoercer;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
-import org.testinfected.cli.option.Option;
-import org.testinfected.cli.option.OptionBuilder;
+import org.testinfected.cli.gnu.GnuFormat;
 
 import java.io.File;
 import java.io.IOException;

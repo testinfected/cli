@@ -1,6 +1,6 @@
 package org.testinfected.cli.args;
 
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.Option;
 
 import java.io.IOException;
 

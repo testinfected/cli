@@ -17,10 +17,10 @@
  * or see the FSF site: http://www.fsf.org.
  */
 
-package org.testinfected.cli.option;
+package org.testinfected.cli.args;
 
-import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.ArgsDescription;
+import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 

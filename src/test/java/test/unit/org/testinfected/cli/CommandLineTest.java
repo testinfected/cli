@@ -6,10 +6,10 @@ import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testinfected.cli.CommandLine;
-import org.testinfected.cli.MissingOperandException;
-import org.testinfected.cli.args.gnu.GnuParser;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.CommandLine;
+import org.testinfected.cli.args.MissingOperandException;
+import org.testinfected.cli.gnu.GnuParser;
+import org.testinfected.cli.args.Option;
 
 import java.util.Arrays;
 
@@ -18,8 +18,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.testinfected.cli.OperandBuilder.operandNamed;
-import static org.testinfected.cli.option.OptionBuilder.optionNamed;
+import static org.testinfected.cli.args.OperandBuilder.operandNamed;
+import static org.testinfected.cli.args.OptionBuilder.optionNamed;
 
 @RunWith(JMock.class)
 public class CommandLineTest {

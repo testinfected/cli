@@ -2,8 +2,8 @@ package test.unit.org.testinfected.cli.option;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.IntegerCoercer;
-import org.testinfected.cli.option.ArgumentMissingException;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.ArgumentMissingException;
+import org.testinfected.cli.args.Option;
 import org.junit.Test;
 
 import java.util.Arrays;

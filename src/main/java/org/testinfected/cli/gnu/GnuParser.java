@@ -17,12 +17,12 @@
  * or see the FSF site: http://www.fsf.org.
  */
 
-package org.testinfected.cli.args.gnu;
+package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.ArgsParser;
 import org.testinfected.cli.args.UnrecognizedOptionException;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.args.Option;
 
 import java.util.ArrayList;
 import java.util.Iterator;

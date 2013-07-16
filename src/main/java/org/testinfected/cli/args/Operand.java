@@ -1,4 +1,4 @@
-package org.testinfected.cli;
+package org.testinfected.cli.args;
 
 import java.util.Iterator;
 

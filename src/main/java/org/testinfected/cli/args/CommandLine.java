@@ -1,8 +1,8 @@
-package org.testinfected.cli;
+package org.testinfected.cli.args;
 
 import org.testinfected.cli.args.ArgsDescription;
 import org.testinfected.cli.args.ArgsParser;
-import org.testinfected.cli.option.Option;
+import org.testinfected.cli.ParsingException;
 
 import java.util.ArrayList;
 import java.util.Collection;
