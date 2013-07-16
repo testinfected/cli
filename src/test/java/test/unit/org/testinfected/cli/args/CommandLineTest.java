@@ -1,4 +1,4 @@
-package test.unit.org.testinfected.cli;
+package test.unit.org.testinfected.cli.args;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;

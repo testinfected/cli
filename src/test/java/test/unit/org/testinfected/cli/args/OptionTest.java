@@ -1,4 +1,4 @@
-package test.unit.org.testinfected.cli.option;
+package test.unit.org.testinfected.cli.args;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.IntegerCoercer;

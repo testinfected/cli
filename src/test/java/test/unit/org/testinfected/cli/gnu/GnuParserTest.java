@@ -17,7 +17,7 @@
  * or see the FSF site: http://www.fsf.org.
  */
 
-package test.unit.org.testinfected.cli.args.gnu;
+package test.unit.org.testinfected.cli.gnu;
 
 import org.junit.Test;
 import org.testinfected.cli.ParsingException;

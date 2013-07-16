@@ -1,4 +1,4 @@
-package test.unit.org.testinfected.cli.args.gnu;
+package test.unit.org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.gnu.GnuBuilder;
