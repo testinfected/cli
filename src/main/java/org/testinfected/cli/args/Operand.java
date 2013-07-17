@@ -1,16 +1,27 @@
 package org.testinfected.cli.args;
 
+import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.coercion.StringCoercer;
+import org.testinfected.cli.coercion.TypeCoercer;
+
 import java.util.Iterator;
 
 public class Operand {
 
     private final String name;
+    private final TypeCoercer typeCoercer;
+
     private String displayName;
-    private String value;
     private String description;
+    private Object value;
 
     public Operand(String name) {
+        this(name, new StringCoercer());
+    }
+
+    public Operand(String name, TypeCoercer type) {
         this.name = name;
+        this.typeCoercer = type;
     }
 
     public String getName() {
@@ -25,7 +36,7 @@ public class Operand {
         return displayName != null ? displayName : name.toUpperCase();
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
@@ -45,9 +56,9 @@ public class Operand {
         help.displayOperand(this);
     }
 
-    public void consume(Iterator<String> arguments) throws MissingOperandException {
+    public void consume(Iterator<String> arguments) throws ParsingException {
         if (noMore(arguments)) throw new MissingOperandException(this);
-        value = nextOf(arguments);
+        value = convert(nextOf(arguments));
     }
 
     private String nextOf(Iterator<String> arguments) {
@@ -56,5 +67,13 @@ public class Operand {
 
     private boolean noMore(Iterator<String> arguments) {
         return !arguments.hasNext();
+    }
+
+    private Object convert(String value) throws InvalidArgumentException {
+        try {
+            return typeCoercer.convert(value);
+        } catch (Exception e) {
+            throw new InvalidArgumentException(name, value, e);
+        }
     }
 }

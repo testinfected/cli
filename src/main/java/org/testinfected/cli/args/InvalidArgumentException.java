@@ -23,24 +23,24 @@ import org.testinfected.cli.ParsingException;
 
 public class InvalidArgumentException extends ParsingException
 {
-    private final Option option;
+    private final String name;
     private final Object value;
 
-    public InvalidArgumentException(Option option, Object value, Exception cause) {
+    public InvalidArgumentException(String argument, Object value, Exception cause) {
         super(cause);
-        this.option = option;
+        this.name = argument;
         this.value = value;
     }
 
-    public String getUnsatisfiedOption() {
-        return option.getName();
+    public String getUnsatisfiedArgument() {
+        return name;
     }
 
-    public Object getParsedValue() {
+    public Object getOffendingValue() {
         return value;
     }
 
     public String getMessage() {
-        return String.format("invalid %s `%s'", option.getName(), value);
+        return String.format("invalid %s `%s'", name, value);
     }
 }

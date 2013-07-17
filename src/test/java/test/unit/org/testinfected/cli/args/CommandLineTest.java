@@ -18,7 +18,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.testinfected.cli.args.OperandBuilder.operandNamed;
+import static org.testinfected.cli.args.OperandBuilder.operand;
 import static org.testinfected.cli.args.OptionBuilder.optionNamed;
 
 @RunWith(JMock.class)
@@ -33,8 +33,8 @@ public class CommandLineTest {
 
     @Test public void
     operandValuesAreAccessibleByName() throws Exception {
-        cl.addOperand(operandNamed("input").make());
-        cl.addOperand(operandNamed("output").make());
+        cl.addOperand(operand("input").make());
+        cl.addOperand(operand("output").make());
 
         cl.parse(new GnuParser(), "input", "output");
 
@@ -44,8 +44,8 @@ public class CommandLineTest {
 
     @Test public void
     complainsWhenRequiredOperandsAreNotProvided() throws Exception {
-        cl.addOperand(operandNamed("input").make());
-        cl.addOperand(operandNamed("output").make());
+        cl.addOperand(operand("input").make());
+        cl.addOperand(operand("output").make());
 
         try {
             cl.parse(new GnuParser(), "input");
@@ -57,7 +57,7 @@ public class CommandLineTest {
 
     @Test public void
     returnsLeftOverArguments() throws Exception {
-        cl.addOperand(operandNamed("input").make());
+        cl.addOperand(operand("input").make());
 
         String[] extra = cl.parse(new GnuParser(), "input", "output");
         assertEquals("[output]", Arrays.toString(extra));

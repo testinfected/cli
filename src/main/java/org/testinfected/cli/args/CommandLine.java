@@ -47,7 +47,7 @@ public class CommandLine
         operands.add(operand);
     }
 
-    public String getOperandValue(String name) {
+    public Object getOperandValue(String name) {
         for (Operand operand : operands) {
             if (operand.getName().equals(name)) return operand.getValue();
         }
@@ -81,7 +81,7 @@ public class CommandLine
         return consumeOperands(parser.parse(unmodifiableCollection(options), args));
     }
 
-    private String[] consumeOperands(List<String> positionalArguments) throws MissingOperandException {
+    private String[] consumeOperands(List<String> positionalArguments) throws ParsingException {
         Iterator<String> args = positionalArguments.iterator();
         for (Operand operand : operands) {
             operand.consume(args);

@@ -19,7 +19,6 @@
 
 package test.acceptance.org.testinfected.cli;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testinfected.cli.CLI;
 import org.testinfected.cli.ParsingException;
@@ -68,9 +67,15 @@ public class CLIUsageTest {
         assertEquals("[output, encoding]", Arrays.toString(args));
     }
 
-    @Ignore("pending")
     @Test public void
-    specifyingTheTypeOfAPositionalArgument() {}
+    specifyingTheTypeOfAPositionalArgument() throws ParsingException {
+        cli = new CLI() {{
+            define(operand("input").ofType(File.class));
+        }};
+        cli.parse("/path/to/input");
+
+        assertEquals(new File("/path/to/input"), cli.getOperand("input"));
+    }
 
     @Test public void
     usingSimpleOptionSwitches() throws ParsingException {
@@ -132,12 +137,12 @@ public class CLIUsageTest {
     @Test public void
     usingBuiltInCoercers() throws Exception {
         cli = new CLI() {{
-            define(option("file").withShortForm("f").withRequiredArg("PATH").ofType(File.class));
             define(option("class").withShortForm("c").withRequiredArg("CLASSNAME").ofType(Class.class));
+            define(operand("file").ofType(File.class));
         }};
-        cli.parse("-f", "/path/to/file", "-c", "java.lang.String");
-        assertEquals(new File("/path/to/file"), cli.getOption("file"));
+        cli.parse("-c", "java.lang.String", "/path/to/file");
         assertEquals(String.class, cli.getOption("class"));
+        assertEquals(new File("/path/to/file"), cli.getOperand("file"));
     }
 
     @Test public void
@@ -213,12 +218,16 @@ public class CLIUsageTest {
                 help(cli));
     }
 
-    // What would be more appropriate than an IllegalArgumentException?
-    @Test(expected = IllegalArgumentException.class)
-    public void aShortOrLongFormMustBeSuppliedForOptionToBeValid() {
-        cli = new CLI() {{
-            define(option("missing a form"));            
-        }};
+    @Test public void
+    aShortOrLongFormMustBeSuppliedForOptionToBeValid() {
+        try {
+            new CLI() {{
+                define(option("noform"));
+                fail("Expected exception " + IllegalArgumentException.class.getName());
+            }};
+        } catch (IllegalArgumentException expected) {
+            assertThat(expected.getMessage(), containsString("'noform'"));
+        }
     }
 
     @Test public void
@@ -244,8 +253,8 @@ public class CLIUsageTest {
             fail("Expected exception " + InvalidArgumentException.class.getName());
         }
         catch (InvalidArgumentException expected) {
-            assertEquals("block", expected.getUnsatisfiedOption());
-            assertEquals("LITERAL", expected.getParsedValue());
+            assertEquals("block", expected.getUnsatisfiedArgument());
+            assertEquals("LITERAL", expected.getOffendingValue());
             assertThat(expected.getMessage(), containsString("block"));
             assertThat(expected.getMessage(), containsString("LITERAL"));
         }
@@ -279,6 +288,23 @@ public class CLIUsageTest {
         catch (MissingOperandException expected) {
             assertEquals("output", expected.getMissingOperand());
             assertThat(expected.getMessage(), containsString("output"));
+        }
+    }
+
+    @Test public void
+    usingAnInvalidPositionalArgument() throws Exception {
+        cli = new CLI() {{
+            define(operand("size").ofType(int.class));
+        }};
+        try {
+            cli.parse("LITERAL");
+            fail("Expected exception " + InvalidArgumentException.class.getName());
+        }
+        catch (InvalidArgumentException expected) {
+            assertEquals("size", expected.getUnsatisfiedArgument());
+            assertEquals("LITERAL", expected.getOffendingValue());
+            assertThat(expected.getMessage(), containsString("size"));
+            assertThat(expected.getMessage(), containsString("LITERAL"));
         }
     }
 

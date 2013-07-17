@@ -8,7 +8,7 @@ import org.testinfected.cli.gnu.GnuHelp;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static org.testinfected.cli.args.OperandBuilder.operandNamed;
+import static org.testinfected.cli.args.OperandBuilder.operand;
 import static org.testinfected.cli.args.OptionBuilder.optionNamed;
 
 public class GnuHelpTest
@@ -23,15 +23,15 @@ public class GnuHelpTest
 
     @Test public void
     describesPositionalArguments() throws IOException {
-        help.displayOperand(operandNamed("input").as("IN").help("The source file").make());
-        help.displayOperand(operandNamed("output").as("OUT").help("The destination file").make());
+        help.displayOperand(operand("input").as("IN").help("The source file").make());
+        help.displayOperand(operand("output").as("OUT").help("The destination file").make());
         assertHelp(
                 "Usage: IN OUT",
                 "",
                 "Arguments:",
                 "IN                   The source file",
                 "OUT                  The destination file"
-                );
+        );
     }
 
     @Test public void

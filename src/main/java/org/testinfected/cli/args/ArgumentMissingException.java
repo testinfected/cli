@@ -34,6 +34,6 @@ public class ArgumentMissingException extends ParsingException
     }
 
     public String getMessage() {
-        return String.format("option %s expects an argument", option.getName());
+        return String.format("option %s expects argument %s", option.getName(), option.getArgumentPattern());
     }
 }

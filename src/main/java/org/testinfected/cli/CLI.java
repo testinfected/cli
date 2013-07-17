@@ -19,8 +19,8 @@
 
 package org.testinfected.cli;
 
-import org.testinfected.cli.args.Format;
 import org.testinfected.cli.args.CommandLine;
+import org.testinfected.cli.args.Format;
 import org.testinfected.cli.args.Operand;
 import org.testinfected.cli.args.OperandBuilder;
 import org.testinfected.cli.args.Option;
@@ -106,20 +106,19 @@ public class CLI
     }
 
     public OptionBuilder option(String name, String... schema) {
-        OptionBuilder builder = OptionBuilder.option(format.defineOption(name, schema));
-        return builder.using(typeCoercers);
+        return OptionBuilder.option(format.defineOption(name, schema)).using(typeCoercers);
     }
 
     public OperandBuilder operand(String name) {
-        return OperandBuilder.operandNamed(name);
+        return OperandBuilder.operand(name).using(typeCoercers);
     }
 
     public OperandBuilder operand(String name, String displayName) {
-        return OperandBuilder.operandNamed(name).as(displayName);
+        return operand(name).as(displayName);
     }
 
     public OperandBuilder operand(String name, String displayName, String help) {
-        return OperandBuilder.operandNamed(name).as(displayName).help(help);
+        return operand(name, displayName).help(help);
     }
 
     private void defineOption(Option option) {
@@ -134,7 +133,7 @@ public class CLI
         return commandLine.parse(format, args);
     }
 
-    public String getOperand(String name) {
+    public Object getOperand(String name) {
         return commandLine.getOperandValue(name);
     }
 

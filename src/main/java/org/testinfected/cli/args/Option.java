@@ -28,7 +28,8 @@ import java.util.Iterator;
 public class Option {
     private static final Boolean SWITCH_ON = Boolean.TRUE;
 
-    private String name;
+    private final String name;
+
     private String shortForm;
     private String longForm;
     private String argumentPattern;
@@ -42,7 +43,7 @@ public class Option {
     }
 
     public Option validate() {
-        if (!isValid()) throw new IllegalArgumentException("Either short form or long form is required");
+        if (!isValid()) throw new IllegalArgumentException("Either short form or long form is required for option '" + name + "'");
         return this;
     }
 
@@ -166,7 +167,7 @@ public class Option {
         try {
             return typeCoercer.convert(value);
         } catch (Exception e) {
-            throw new InvalidArgumentException(this, value, e);
+            throw new InvalidArgumentException(name, value, e);
         }
     }
 }
