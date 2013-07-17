@@ -7,6 +7,7 @@ public class Operand {
     private final String name;
     private String displayName;
     private String value;
+    private String description;
 
     public Operand(String name) {
         this.name = name;
@@ -26,6 +27,18 @@ public class Operand {
 
     public String getValue() {
         return value;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean hasDescription() {
+        return description != null;
     }
 
     public void describeTo(Help help) {

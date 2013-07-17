@@ -22,10 +22,16 @@ public class GnuHelpTest
     }
 
     @Test public void
-    usageDescribesPositionalParameters() throws IOException {
-        help.displayOperand(operandNamed("input").as("IN").make());
-        help.displayOperand(operandNamed("output").as("OUT").make());
-        assertHelp("Usage: IN OUT");
+    describesPositionalArguments() throws IOException {
+        help.displayOperand(operandNamed("input").as("IN").help("The source file").make());
+        help.displayOperand(operandNamed("output").as("OUT").help("The destination file").make());
+        assertHelp(
+                "Usage: IN OUT",
+                "",
+                "Arguments:",
+                "IN                   The source file",
+                "OUT                  The destination file"
+                );
     }
 
     @Test public void

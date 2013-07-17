@@ -16,6 +16,7 @@ public class GnuHelp implements Help {
     private final List<Operand> operands = new ArrayList<Operand>();
 
     private final int columnWidth;
+
     private String program;
     private String versionNumber;
     private String description;
@@ -58,32 +59,51 @@ public class GnuHelp implements Help {
         formatProgram(usage);
         formatDescription(usage);
         formatUsage(usage);
+        formatOperands(usage);
         formatOptions(usage);
         formatEpilog(usage);
     }
 
-    private void formatProgram(Formatter usage) {
-        if (program != null)  usage.format("%s%s%n%n", program, version());
+    private void formatProgram(Formatter help) {
+        if (program != null)  help.format("%s%s%n%n", program, version());
     }
 
     private String version() {
         return versionNumber != null ? " version " + versionNumber : "";
     }
 
-    private void formatDescription(Formatter usage) throws IOException {
-        if (description != null) usage.format("%s%n%n", description);
+    private void formatDescription(Formatter help) throws IOException {
+        if (description != null) help.format("%s%n%n", description);
     }
 
-    private void formatUsage(Formatter usage) {
-        usage.format("Usage:");
-        if (program != null) usage.format(" %s", program);
+    private void formatUsage(Formatter help) {
+        help.format("Usage:");
+        if (program != null) help.format(" %s", program);
         for (Option option : options) {
-            usage.format(" [%s%s]", shortestFormOf(option), argumentIfAny(option));
+            help.format(" [%s%s]", shortestFormOf(option), argumentIfAny(option));
         }
         for (Operand operand : operands) {
-            usage.format(" %s", operand.getDisplayName());
+            help.format(" %s", operand.getDisplayName());
         }
-        usage.format("%n");
+        help.format("%n");
+    }
+
+    private void formatOperands(Formatter help) {
+        if (operands.isEmpty()) return;
+        help.format("%nArguments:%n");
+        for (Operand operand : operands) {
+            help.format("%s%n", descriptionOf(operand));
+        }
+    }
+
+    private String descriptionOf(Operand operand) {
+        final Formatter line = new Formatter();
+        line.format(firstColumnLayout(), operand.getDisplayName());
+        if (operand.hasDescription()) {
+            if (shouldWrap(line)) wrap(line);
+            line.format(secondColumnLayout(), operand.getDescription());
+        }
+        return line.toString();
     }
 
     private String shortestFormOf(Option option) {
@@ -94,25 +114,25 @@ public class GnuHelp implements Help {
         return option.requiresArgument() ? " " + option.getArgumentPattern() : "";
     }
 
-    private void formatOptions(Formatter usage) throws IOException {
+    private void formatOptions(Formatter help) throws IOException {
         if (options.isEmpty()) return;
-        usage.format("%nOptions:%n");
+        help.format("%nOptions:%n");
         for (Option option : options) {
-            usage.format("%s%n", descriptionOf(option));
+            help.format("%s%n", descriptionOf(option));
         }
     }
 
-    private CharSequence descriptionOf(Option option) {
+    private String descriptionOf(Option option) {
         final Formatter line = new Formatter();
-        line.format(optionColumnLayout(), allFormsOf(option) + argumentIfAny(option));
+        line.format(firstColumnLayout(), allFormsOf(option) + argumentIfAny(option));
         if (option.hasDescription()) {
             if (shouldWrap(line)) wrap(line);
-            line.format(infoColumnLayout(), option.getDescription());
+            line.format(secondColumnLayout(), option.getDescription());
         }
         return line.toString();
     }
 
-    private String optionColumnLayout() {
+    private String firstColumnLayout() {
         return "%-" + columnWidth + "s";
     }
 
@@ -139,14 +159,14 @@ public class GnuHelp implements Help {
     }
 
     private void wrap(Formatter line) {
-        line.format("%n" + optionColumnLayout(), "");
+        line.format("%n" + firstColumnLayout(), "");
     }
 
-    private String infoColumnLayout() {
+    private String secondColumnLayout() {
         return " %s";
     }
 
-    private void formatEpilog(Formatter usage) {
-        if (epilog != null) usage.format("%n%s%n", epilog);
+    private void formatEpilog(Formatter help) {
+        if (epilog != null) help.format("%n%s%n", epilog);
     }
 }

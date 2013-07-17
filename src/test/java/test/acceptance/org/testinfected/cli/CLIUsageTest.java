@@ -50,8 +50,8 @@ public class CLIUsageTest {
     @Test public void
     usingPositionalArguments() throws Exception {
         cli = new CLI() {{
-            define(operand("input"));
-            define(operand("output"));
+            define(operand("input").help("The input file"));
+            define(operand("output").help("The output file"));
         }};
         cli.parse("input", "output");
 
@@ -84,12 +84,12 @@ public class CLIUsageTest {
     @Test public void
     definingAnOptionThatExpectsAnArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block size").withShortForm("b").withRequiredArg("SIZE"));
+            define(option("block").withShortForm("b").withRequiredArg("SIZE"));
         }};
         cli.parse("-b", "1024");
 
-        assertTrue(cli.hasOption("block size"));
-        assertEquals("1024", cli.getOption("block size"));
+        assertTrue(cli.hasOption("block"));
+        assertEquals("1024", cli.getOption("block"));
     }
 
     @Test public void
@@ -104,36 +104,36 @@ public class CLIUsageTest {
     @Test public void
     specifyingTheTypeOfAnOptionArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block size").withShortForm("b").withRequiredArg("SIZE").ofType(int.class));
+            define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class));
         }};
         cli.parse("-b", "1024");
-        assertEquals(1024, cli.getOption("block size"));
+        assertEquals(1024, cli.getOption("block"));
     }
 
     @Test public void
     specifyingADefaultValueForAnOption() throws Exception {
         cli = new CLI() {{
-            define(option("block size").withShortForm("b").withRequiredArg("SIZE").ofType(int.class).defaultingTo(1024));
+            define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class).defaultingTo(1024));
         }};
         cli.parse();
-        assertEquals(1024, cli.getOption("block size"));
+        assertEquals(1024, cli.getOption("block"));
     }
 
     @Test public void
     specifyingAnOptionInLiteralForm() throws Exception {
         cli = new CLI() {{
-            define(option("block size", "-b", "--block-size SIZE", "Specifies block size"));
+            define(option("block", "-b", "--block-size SIZE", "Specifies block size"));
         }};
         cli.parse("--block-size", "1024");
-        assertTrue(cli.hasOption("block size"));
-        assertEquals("1024", cli.getOption("block size"));
+        assertTrue(cli.hasOption("block"));
+        assertEquals("1024", cli.getOption("block"));
     }
 
     @Test public void
     usingBuiltInCoercers() throws Exception {
         cli = new CLI() {{
             define(option("file").withShortForm("f").withRequiredArg("PATH").ofType(File.class));
-            define(option("class").withShortForm("c").withRequiredArg("CLASS NAME").ofType(Class.class));
+            define(option("class").withShortForm("c").withRequiredArg("CLASSNAME").ofType(Class.class));
         }};
         cli.parse("-f", "/path/to/file", "-c", "java.lang.String");
         assertEquals(new File("/path/to/file"), cli.getOption("file"));
@@ -144,16 +144,16 @@ public class CLIUsageTest {
     aMoreComplexExampleThatUsesAMixOfDifferentArguments() throws Exception {
         cli = new CLI() {{
             define(option("human").withShortForm("h").withDescription("Human readable format"));
-            define(option("block size").withLongForm("block-size").withRequiredArg("SIZE").ofType(int.class));
+            define(option("block").withLongForm("block-size").withRequiredArg("SIZE").ofType(int.class));
             define(option("debug").withShortForm("x"));
-            define(operand("input"));
-            define(operand("output"));
+            define(operand("input").as("INFILE").help("The input file"));
+            define(operand("output", "OUTFILE", "The output file"));
         }};
 
         String[] args = cli.parse("-h", "--block-size", "1024", "-x", "input", "output", "extra", "more extra");
         assertEquals(3, cli.getOptionCount());
         assertTrue(cli.hasOption("human"));
-        assertEquals(1024, cli.getOption("block size"));
+        assertEquals(1024, cli.getOption("block"));
         assertTrue(cli.hasOption("debug"));
         assertEquals("input", cli.getOperand("input"));
         assertEquals("output", cli.getOperand("output"));
@@ -184,13 +184,14 @@ public class CLIUsageTest {
     @Test public void
     displayingHelp() throws Exception {
         cli = new CLI() {{
-            name("program"); version("1.0"); description("Does some cool things."); ending("use --help to show this help message");
-
-            define(option("raw").withLongForm("raw").withDescription("Specifies raw output format"));
-            define(option("block size").withShortForm("b").withLongForm("block-size").withRequiredArg("SIZE").withDescription("Specifies block size"));
-            define(option("debug").withShortForm("x").withDescription("Turn debugging on"));
-            define(operand("input"));
-            define(operand("out").as("OUTPUT"));
+            name("program"); version("1.0");
+            description("Does some cool things.");
+            define(option("raw", "--raw", "Specifies raw output format"));
+            define(option("block", "-b", "--block-size SIZE", "Specifies block size"));
+            define(option("debug", "-x", "Turn debugging on"));
+            define(operand("in", "INPUT", "The source file"));
+            define(operand("out", "OUTPUT", "The destination file"));
+            ending("use --help to show this help message");
         }};
         assertEquals(
                 "program version 1.0" + NL +
@@ -198,6 +199,10 @@ public class CLIUsageTest {
                 "Does some cool things." + NL +
                 NL +
                 "Usage: program [--raw] [-b SIZE] [-x] INPUT OUTPUT" + NL +
+                NL +
+                "Arguments:" + NL +
+                "INPUT                          The source file" + NL +
+                "OUTPUT                         The destination file" + NL +
                 NL +
                 "Options:" + NL +
                 "    --raw                      Specifies raw output format" + NL +
@@ -232,16 +237,16 @@ public class CLIUsageTest {
     @Test public void
     passingAnInvalidArgumentToAnOption() throws Exception {
         cli = new CLI() {{
-            define(option("block size", "-b SIZE").ofType(int.class));
+            define(option("block", "-b SIZE").ofType(int.class));
         }};
         try {
             cli.parse("-b", "LITERAL");
             fail("Expected exception " + InvalidArgumentException.class.getName());
         }
         catch (InvalidArgumentException expected) {
-            assertEquals("block size", expected.getUnsatisfiedOption());
+            assertEquals("block", expected.getUnsatisfiedOption());
             assertEquals("LITERAL", expected.getParsedValue());
-            assertThat(expected.getMessage(), containsString("block size"));
+            assertThat(expected.getMessage(), containsString("block"));
             assertThat(expected.getMessage(), containsString("LITERAL"));
         }
     }
@@ -249,15 +254,15 @@ public class CLIUsageTest {
     @Test public void
     omittingARequiredOptionArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block size", "-b SIZE").ofType(int.class));
+            define(option("block", "-b SIZE").ofType(int.class));
         }};
         try {
             cli.parse("-b");
             fail("Expected exception " + ArgumentMissingException.class.getName());
         }
         catch (ArgumentMissingException expected) {
-            assertEquals("block size", expected.getUnsatisfiedOption());
-            assertThat(expected.getMessage(), containsString("block size"));
+            assertEquals("block", expected.getUnsatisfiedOption());
+            assertThat(expected.getMessage(), containsString("block"));
         }
     }
 

@@ -114,6 +114,14 @@ public class CLI
         return OperandBuilder.operandNamed(name);
     }
 
+    public OperandBuilder operand(String name, String displayName) {
+        return OperandBuilder.operandNamed(name).as(displayName);
+    }
+
+    public OperandBuilder operand(String name, String displayName, String help) {
+        return OperandBuilder.operandNamed(name).as(displayName).help(help);
+    }
+
     private void defineOption(Option option) {
         commandLine.addOption(option);
     }
