@@ -21,10 +21,8 @@ package org.testinfected.cli;
 
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.Format;
-import org.testinfected.cli.args.Operand;
-import org.testinfected.cli.args.OperandBuilder;
-import org.testinfected.cli.args.Option;
-import org.testinfected.cli.args.OptionBuilder;
+import org.testinfected.cli.args.OperandSpec;
+import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.coercion.ClassCoercer;
 import org.testinfected.cli.coercion.FileCoercer;
 import org.testinfected.cli.coercion.IntegerCoercer;
@@ -97,35 +95,35 @@ public class CLI
         commandLine.setEnding(epilog);
     }
 
-    public void define(OptionBuilder builder) {
-        defineOption(builder.make());
+    public void define(OptionSpec builder) {
+        defineArgument(builder);
     }
 
-    public void define(OperandBuilder builder) {
-        defineOperand(builder.make());
+    public void define(OperandSpec builder) {
+        defineOperand(builder);
     }
 
-    public OptionBuilder option(String name, String... schema) {
-        return OptionBuilder.option(format.defineOption(name, schema)).using(typeCoercers);
+    public OptionSpec option(String name, String... definition) {
+        return format.defineOption(name, definition).using(typeCoercers);
     }
 
-    public OperandBuilder operand(String name) {
-        return OperandBuilder.operand(name).using(typeCoercers);
+    public OperandSpec operand(String name) {
+        return OperandSpec.operand(name).using(typeCoercers);
     }
 
-    public OperandBuilder operand(String name, String displayName) {
+    public OperandSpec operand(String name, String displayName) {
         return operand(name).as(displayName);
     }
 
-    public OperandBuilder operand(String name, String displayName, String help) {
+    public OperandSpec operand(String name, String displayName, String help) {
         return operand(name, displayName).help(help);
     }
 
-    private void defineOption(Option option) {
+    private void defineArgument(OptionSpec option) {
         commandLine.addOption(option);
     }
 
-    private void defineOperand(Operand operand) {
+    private void defineOperand(OperandSpec operand) {
         commandLine.addOperand(operand);
     }
 

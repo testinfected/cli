@@ -32,44 +32,23 @@ public class Option {
 
     private String shortForm;
     private String longForm;
-    private String argumentPattern;
+    private String argument;
     private String description;
     private Object value;
-    private TypeCoercer typeCoercer = new StringCoercer();
-    private Stub stub = Stub.NOTHING;
+    private TypeCoercer typeCoercer;
+    private Action action = Action.NOTHING;
 
     public Option(String name) {
+        this(name, new StringCoercer());
+    }
+
+    public Option(String name, TypeCoercer type) {
         this.name = name;
-    }
-
-    public Option validate() {
-        if (!isValid()) throw new IllegalArgumentException("Either short form or long form is required for option '" + name + "'");
-        return this;
-    }
-
-    public boolean isValid() {
-        return hasShortForm() || hasLongForm();
-    }
-
-    public void consume(Iterator<String> arguments) throws ParsingException {
-        if (requiresArgument() && noMore(arguments)) throw new ArgumentMissingException(this);
-        value = requiresArgument() ? convert(nextOf(arguments)) : SWITCH_ON;
-    }
-
-    private String nextOf(Iterator<String> arguments) {
-        return arguments.next();
-    }
-
-    private boolean noMore(Iterator<String> arguments) {
-        return !arguments.hasNext();
+        this.typeCoercer = type;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean matches(String identifier) {
-        return identifier.equals(shortForm) || identifier.equals(longForm);
     }
 
     public void setShortForm(String form) {
@@ -108,16 +87,16 @@ public class Option {
         return description != null;
     }
 
-    public void setArgumentPattern(String arg) {
-        this.argumentPattern = arg;
+    public void setArgument(String arg) {
+        this.argument = arg;
     }
 
-    public String getArgumentPattern() {
-        return argumentPattern;
+    public String getArgument() {
+        return argument;
     }
 
-    public boolean requiresArgument() {
-        return argumentPattern != null;
+    public boolean takesArgument() {
+        return argument != null;
     }
 
     public Object getValue() {
@@ -128,39 +107,33 @@ public class Option {
         this.value = value;
     }
 
-    public void setCoercer(TypeCoercer typeCoercer) {
-        this.typeCoercer = typeCoercer;
-    }
-
-    public void setStub(Stub stub) {
-        this.stub = stub;
-    }
-
     public boolean isDetected() {
         return value != null;
     }
 
-    public void call() {
-        stub.call(this);
+    public void setAction(Action action) {
+        this.action = action;
     }
 
-    public boolean hasBothForms() {
-        return hasShortForm() && hasLongForm();
+    public boolean matches(String identifier) {
+        return identifier.equals(shortForm) || identifier.equals(longForm);
+    }
+
+    public void call() {
+        action.call(this);
     }
 
     public void describeTo(Help help) {
         help.displayOption(this);
     }
 
-    public interface Stub {
-        public static final Stub NOTHING = new NoOp();
+    public void consume(Iterator<String> arguments) throws ParsingException {
+        if (takesArgument() && noMore(arguments)) throw new ArgumentMissingException(this);
+        value = takesArgument() ? convert(arguments.next()) : SWITCH_ON;
+    }
 
-        public static class NoOp implements Stub {
-            public void call(Option option) {
-            }
-        }
-
-        void call(Option option);
+    private boolean noMore(Iterator<String> arguments) {
+        return !arguments.hasNext();
     }
 
     private Object convert(String value) throws InvalidArgumentException {
@@ -169,6 +142,17 @@ public class Option {
         } catch (Exception e) {
             throw new InvalidArgumentException(name, value, e);
         }
+    }
+
+    public interface Action {
+        public static final Action NOTHING = new NoOp();
+
+        public static class NoOp implements Action {
+            public void call(Option option) {
+            }
+        }
+
+        void call(Option option);
     }
 }
 

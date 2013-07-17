@@ -1,7 +1,7 @@
 package org.testinfected.cli.gnu;
 
+import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.Syntax;
-import org.testinfected.cli.args.Option;
 import org.testinfected.cli.util.Strings;
 
 import java.util.regex.Matcher;
@@ -9,91 +9,80 @@ import java.util.regex.Pattern;
 
 public class GnuSyntax implements Syntax
 {
-    private static final Pattern LONG_FORM_PATTERN = Pattern.compile("--([^\\s]+)(?:\\s(.+))?");
-    private static final Pattern SHORT_FORM_PATTERN = Pattern.compile("-([^\\s]+)(?:\\s+(.+))?");
-    private static final int IDENTIFIER_POSITION = 1;
-    private static final int ARGUMENT_PATTERN_POSITION = 2;
+    private static final Pattern LONG_FORM = Pattern.compile("--([^\\s]+)(?:\\s(.+))?");
+    private static final Pattern SHORT_FORM = Pattern.compile("-([^\\s]+)(?:\\s+(.+))?");
 
-    public Option defineOption(String name, String... schema) {
-        Option option = new Option(name);
+    private static final int IDENTIFIER = 1;
+    private static final int ARGUMENT = 2;
 
-        SchemaValidator schemaValidator = new SchemaValidator(name);
-        for (String schemaElement : schema) {
-            Matcher longFormMatcher = LONG_FORM_PATTERN.matcher(schemaElement);
-            if (longFormMatcher.matches()) {
-                String longForm = getOptionIdentifier(longFormMatcher);
-                option.setLongForm(schemaValidator.validateLongForm(longForm));
+    public OptionSpec defineOption(String name, String... definition) {
+        OptionSpec option = OptionSpec.option(name);
 
-                String argumentPattern = getArgumentPattern(longFormMatcher);
-                option.setArgumentPattern(schemaValidator.validateArgumentPattern(argumentPattern));
-
+        Schema schema = new Schema(option);
+        for (String token : definition) {
+            Matcher longForm = LONG_FORM.matcher(token);
+            if (detected(longForm)) {
+                option.withLongForm(schema.validateLongForm(identifier(longForm)));
+                option.takingArgument(schema.validateArgument(argument(longForm)));
                 continue;
             }
 
-            Matcher shortFormMatcher = SHORT_FORM_PATTERN.matcher(schemaElement);
-            if (shortFormMatcher.matches()) {
-                String shortForm = getOptionIdentifier(shortFormMatcher);
-                option.setShortForm(schemaValidator.validateShortForm(shortForm));
-
-                String argumentPattern = getArgumentPattern(shortFormMatcher);
-                option.setArgumentPattern(schemaValidator.validateArgumentPattern(argumentPattern));
-
+            Matcher shortForm = SHORT_FORM.matcher(token);
+            if (detected(shortForm)) {
+                option.withShortForm(schema.validateShortForm(identifier(shortForm)));
+                option.takingArgument(schema.validateArgument(argument(shortForm)));
                 continue;
             }
 
-            option.setDescription(schemaValidator.validateDescription(schemaElement));
+            option.describedAs(schema.validateDescription(token));
         }
+
         return option;
     }
 
-    private String getArgumentPattern(Matcher matcher) {
-        return matcher.group(ARGUMENT_PATTERN_POSITION);
+    private boolean detected(Matcher longForm) {
+        return longForm.matches();
     }
 
-    private String getOptionIdentifier(Matcher matcher) {
-        return matcher.group(IDENTIFIER_POSITION);
+    private String identifier(Matcher matcher) {
+        return matcher.group(IDENTIFIER);
     }
 
-    private static class SchemaValidator
+    private String argument(Matcher matcher) {
+        return matcher.group(ARGUMENT);
+    }
+
+    private static class Schema
     {
-        private final String option;
+        private final OptionSpec option;
 
-        private boolean shortFormHasBeenGiven;
-        private boolean longFormHasBeenGiven;
-        private boolean argumentPatternHasBeenGiven;
-        private boolean descriptionHasBeenGiven;
-
-        public SchemaValidator(String option) {
+        public Schema(OptionSpec option) {
             this.option = option;
         }
 
         public String validateShortForm(String shortForm) {
-            if (shortFormHasBeenGiven) throw new IllegalArgumentException("Short form given twice for option " + quote(option));
-            this.shortFormHasBeenGiven = true;
+            if (option.shortForm != null) throw new IllegalArgumentException("Short form given twice for option " + quote(option));
             return shortForm;
         }
 
         public String validateLongForm(String longForm) {
-            if (longFormHasBeenGiven) throw new IllegalArgumentException("Long form given twice for option " + quote(option));
-            this.longFormHasBeenGiven = true;
+            if (option.longForm != null) throw new IllegalArgumentException("Long form given twice for option " + quote(option));
             return longForm;
         }
 
-        public String validateArgumentPattern(String argumentPattern) {
-            if (Strings.blank(argumentPattern)) return null;
-            if (argumentPatternHasBeenGiven) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
-            this.argumentPatternHasBeenGiven = true;
-            return argumentPattern;
+        public String validateArgument(String argument) {
+            if (Strings.blank(argument)) return null;
+            if (option.argument != null) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
+            return argument;
         }
 
         public String validateDescription(String description) {
-            if (descriptionHasBeenGiven) throw new IllegalArgumentException("Description given twice for option " + quote(option));
-            descriptionHasBeenGiven = true;
+            if (option.description != null) throw new IllegalArgumentException("Description given twice for option " + quote(option));
             return description;
         }
 
-        private String quote(String text) {
-            return "'" + text + "'";
+        private String quote(OptionSpec option) {
+            return "'" + option.name + "'";
         }
     }
 }

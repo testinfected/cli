@@ -1,12 +1,13 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Format;
+import org.testinfected.cli.args.Help;
 import org.testinfected.cli.args.Operand;
+import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.Syntax;
-import org.testinfected.cli.args.Help;
-import org.testinfected.cli.args.Format;
-import org.testinfected.cli.args.Option;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,8 +20,8 @@ public class GnuFormat implements Format
 
     public GnuFormat() {}
 
-    public Option defineOption(String name, String... schema) {
-        return syntax.defineOption(name, schema);
+    public OptionSpec defineOption(String name, String... definition) {
+        return syntax.defineOption(name, definition);
     }
 
     public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {

@@ -8,8 +8,8 @@ import org.testinfected.cli.gnu.GnuHelp;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static org.testinfected.cli.args.OperandBuilder.operand;
-import static org.testinfected.cli.args.OptionBuilder.optionNamed;
+import static org.testinfected.cli.args.OperandSpec.operand;
+import static org.testinfected.cli.args.OptionSpec.option;
 
 public class GnuHelpTest
 {
@@ -68,9 +68,9 @@ public class GnuHelpTest
 
     @Test public void
     includesDescriptionsOfOptions() throws ParsingException, IOException {
-        help.displayOption(optionNamed("raw").withLongForm("raw").withDescription("Specifies raw output format").make());
-        help.displayOption(optionNamed("block size").withShortForm("b").withLongForm("block-size").withRequiredArg("SIZE").withDescription("Specifies block size").make());
-        help.displayOption(optionNamed("debug").withShortForm("x").withDescription("Turn debugging on").make());
+        help.displayOption(option("raw").withLongForm("raw").describedAs("Specifies raw output format").make());
+        help.displayOption(option("block size").withShortForm("b").withLongForm("block-size").takingArgument("SIZE").describedAs("Specifies block size").make());
+        help.displayOption(option("debug").withShortForm("x").describedAs("Turn debugging on").make());
 
         assertHelp(
                 "Usage: [--raw] [-b SIZE] [-x]",
@@ -85,7 +85,7 @@ public class GnuHelpTest
     @Test public void
     endsWithEpilog() throws ParsingException, IOException {
         help.displayEnding("use \"program --help\" to get help");
-        help.displayOption(optionNamed("debug").withShortForm("x").withDescription("Turn debugging on").make());
+        help.displayOption(option("debug").withShortForm("x").describedAs("Turn debugging on").make());
         assertHelp(
                 "Usage: [-x]",
                 "",

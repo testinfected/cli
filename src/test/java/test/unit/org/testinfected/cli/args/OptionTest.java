@@ -20,18 +20,6 @@ public class OptionTest
     }
 
     @Test public void
-    optionRequiresShortOrLongOptToBeValid() {
-        Option option = new Option("option");
-        assertFalse(option.isValid());
-        option.setShortForm("b");
-        assertTrue(option.isValid());
-        option.setShortForm(null);
-        assertFalse(option.isValid());
-        option.setLongForm("block-size");
-        assertTrue(option.isValid());
-    }
-
-    @Test public void
     optionWithoutArgumentIsConsideredBoolean() throws ParsingException {
         Option option = new Option("option");
         option.consume(arguments());
@@ -41,7 +29,7 @@ public class OptionTest
     @Test public void
     optionCanRequireAnArgument() throws ParsingException {
         Option option = new Option("option");
-        option.setArgumentPattern("ARG");
+        option.setArgument("ARG");
 
         try {
             option.consume(arguments());
@@ -56,9 +44,8 @@ public class OptionTest
 
     @Test public void
     optionTypeCanBeEnforced() throws ParsingException {
-        Option option = new Option("block size");
-        option.setArgumentPattern("SIZE");
-        option.setCoercer(new IntegerCoercer());
+        Option option = new Option("block size", new IntegerCoercer());
+        option.setArgument("SIZE");
 
         option.consume(arguments("1024"));
         assertEquals(1024, option.getValue());

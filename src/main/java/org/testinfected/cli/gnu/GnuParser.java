@@ -37,35 +37,39 @@ import static java.util.Arrays.asList;
  */
 public class GnuParser implements Parser
 {
-    private static final Pattern LONG_OPTION_PATTERN = Pattern.compile("--(.+)");
-    private static final Pattern SHORT_OPTION_PATTERN = Pattern.compile("-(.+)");
+    private static final Pattern LONG_OPTION = Pattern.compile("--(.+)");
+    private static final Pattern SHORT_OPTION = Pattern.compile("-(.+)");
 
     public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {
-        List<String> parameters = new ArrayList<String>();
+        List<String> arguments = new ArrayList<String>();
 
         for (Iterator<String> tokens = asList(args).iterator(); tokens.hasNext(); ) {
             String currentToken = tokens.next();
 
-            Matcher longFormMatcher = LONG_OPTION_PATTERN.matcher(currentToken);
-            if (longFormMatcher.matches()) {
-                Option option = findOption(options, longFormMatcher);
+            Matcher longForm = LONG_OPTION.matcher(currentToken);
+            if (detected(longForm)) {
+                Option option = findOption(options, longForm);
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
                 option.consume(tokens);
                 continue;
             }
 
-            Matcher shortFormMatcher = SHORT_OPTION_PATTERN.matcher(currentToken);
-            if (shortFormMatcher.matches()) {
-                Option option = findOption(options, shortFormMatcher);
+            Matcher shortForm = SHORT_OPTION.matcher(currentToken);
+            if (detected(shortForm)) {
+                Option option = findOption(options, shortForm);
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
                 option.consume(tokens);
                 continue;
             }
 
-            parameters.add(currentToken);
+            arguments.add(currentToken);
         }
 
-        return parameters;
+        return arguments;
+    }
+
+    private boolean detected(Matcher form) {
+        return form.matches();
     }
 
     private Option findOption(Iterable<Option> candidates, Matcher matcher) {

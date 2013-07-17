@@ -39,12 +39,12 @@ public class CommandLine
         this.ending = epilog;
     }
 
-    public void addOption(Option option) {
-        options.add(option);
+    public void addOption(OptionSpec option) {
+        options.add(option.make());
     }
 
-    public void addOperand(Operand operand) {
-        operands.add(operand);
+    public void addOperand(OperandSpec operand) {
+        operands.add(operand.make());
     }
 
     public boolean hasArgumentValue(String name) {
@@ -69,7 +69,7 @@ public class CommandLine
 
     public String[] parse(Parser parser, String... args) throws ParsingException {
         String[] extraArguments = parseArgs(parser, args);
-        callStubs();
+        callActions();
         return extraArguments;
     }
 
@@ -105,7 +105,7 @@ public class CommandLine
         }
     }
 
-    private void callStubs() {
+    private void callActions() {
         for (Option option : options) {
             if (option.isDetected()) option.call();
         }

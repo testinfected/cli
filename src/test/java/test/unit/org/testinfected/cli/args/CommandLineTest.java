@@ -18,8 +18,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.testinfected.cli.args.OperandBuilder.operand;
-import static org.testinfected.cli.args.OptionBuilder.optionNamed;
+import static org.testinfected.cli.args.OperandSpec.operand;
+import static org.testinfected.cli.args.OptionSpec.option;
 
 @RunWith(JMock.class)
 public class CommandLineTest {
@@ -34,8 +34,8 @@ public class CommandLineTest {
 
     @Test public void
     operandValuesAreAccessibleByName() throws Exception {
-        cl.addOperand(operand("input").make());
-        cl.addOperand(operand("output").make());
+        cl.addOperand(operand("input"));
+        cl.addOperand(operand("output"));
 
         cl.parse(new GnuParser(), "input", "output");
 
@@ -45,8 +45,8 @@ public class CommandLineTest {
 
     @Test public void
     complainsWhenRequiredOperandsAreNotProvided() throws Exception {
-        cl.addOperand(operand("input").make());
-        cl.addOperand(operand("output").make());
+        cl.addOperand(operand("input"));
+        cl.addOperand(operand("output"));
 
         try {
             cl.parse(new GnuParser(), "input");
@@ -58,7 +58,7 @@ public class CommandLineTest {
 
     @Test public void
     returnsLeftOverArguments() throws Exception {
-        cl.addOperand(operand("input").make());
+        cl.addOperand(operand("input"));
 
         String[] extra = cl.parse(new GnuParser(), "input", "output");
         assertEquals("[output]", Arrays.toString(extra));
@@ -66,7 +66,7 @@ public class CommandLineTest {
 
     @Test public void
     optionsHaveNoValueUnlessDetected() throws Exception {
-        cl.addOption(optionNamed("debug").withShortForm("d").make());
+        cl.addOption(option("debug").withShortForm("d"));
         assertFalse(cl.hasArgumentValue("debug"));
         assertNull(cl.getArgumentValue("debug"));
 
@@ -76,18 +76,16 @@ public class CommandLineTest {
     }
 
     @Test public void
-    stubGetsCalledWhenOptionIsDetected() throws Exception {
-        final Option.Stub turnDebugOn = context.mock(Option.Stub.class, "turn debug on");
-        final Option debug = optionNamed("debug").withShortForm("d").whenPresent(turnDebugOn).make();
-        cl.addOption(debug);
+    triggersActionOnDetectedOptions() throws Exception {
+        final Option.Action turnDebugOn = context.mock(Option.Action.class, "turn debug on");
+        cl.addOption(option("debug").withShortForm("d").whenPresent(turnDebugOn));
 
-        final Option.Stub setLocale = context.mock(Option.Stub.class, "set locale");
-        final Option locale = optionNamed("locale").withShortForm("l").whenPresent(setLocale).make();
-        cl.addOption(locale);
+        final Option.Action setLocale = context.mock(Option.Action.class, "set locale");
+        cl.addOption(option("locale").withShortForm("l").whenPresent(setLocale));
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
-            one(setLocale).call(with(equal(locale)));
+            one(setLocale).call(with(any(Option.class)));
         }});
 
         cl.parse(new GnuParser(), "-l");

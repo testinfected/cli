@@ -111,7 +111,7 @@ public class GnuHelp implements Help {
     }
 
     private String argumentIfAny(Option option) {
-        return option.requiresArgument() ? " " + option.getArgumentPattern() : "";
+        return option.takesArgument() ? " " + option.getArgument() : "";
     }
 
     private void formatOptions(Formatter help) throws IOException {
@@ -137,7 +137,7 @@ public class GnuHelp implements Help {
     }
 
     private String allFormsOf(Option option) {
-        if (option.hasBothForms()) return shortFormOf(option) + ", " + longFormOf(option);
+        if (option.hasShortForm() && option.hasLongForm()) return shortFormOf(option) + ", " + longFormOf(option);
         if (option.hasShortForm()) return shortFormOf(option);
         return noShortForm() + longFormOf(option);
     }

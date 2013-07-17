@@ -81,7 +81,7 @@ public class CLIUsageTest {
     @Test public void
     usingSimpleOptionSwitches() throws ParsingException {
         cli = new CLI() {{
-            define(option("debug").withShortForm("x").withDescription("Turns debugging on"));
+            define(option("debug").withShortForm("x").describedAs("Turns debugging on"));
         }};
         cli.parse("-x");
         assertTrue(cli.has("debug"));
@@ -90,7 +90,7 @@ public class CLIUsageTest {
     @Test public void
     definingAnOptionThatExpectsAnArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block").withShortForm("b").withRequiredArg("SIZE"));
+            define(option("block").withShortForm("b").takingArgument("SIZE"));
         }};
         cli.parse("-b", "1024");
 
@@ -110,7 +110,7 @@ public class CLIUsageTest {
     @Test public void
     specifyingTheTypeOfAnOptionArgument() throws Exception {
         cli = new CLI() {{
-            define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class));
+            define(option("block").withShortForm("b").takingArgument("SIZE").ofType(int.class));
         }};
         cli.parse("-b", "1024");
         int blockSize = cli.<Integer>get("block");
@@ -120,7 +120,7 @@ public class CLIUsageTest {
     @Test public void
     specifyingADefaultValueForAnOption() throws Exception {
         cli = new CLI() {{
-            define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class).defaultingTo(1024));
+            define(option("block").withShortForm("b").takingArgument("SIZE").ofType(int.class).defaultingTo(1024));
         }};
         cli.parse();
         assertEquals(1024, cli.get("block"));
@@ -139,7 +139,7 @@ public class CLIUsageTest {
     @Test public void
     usingBuiltInCoercers() throws Exception {
         cli = new CLI() {{
-            define(option("class").withShortForm("c").withRequiredArg("CLASSNAME").ofType(Class.class));
+            define(option("class").withShortForm("c").takingArgument("CLASSNAME").ofType(Class.class));
             define(operand("file").ofType(File.class));
         }};
         cli.parse("-c", "java.lang.String", "/path/to/file");
@@ -150,8 +150,8 @@ public class CLIUsageTest {
     @Test public void
     aMoreComplexExampleThatUsesAMixOfDifferentArguments() throws Exception {
         cli = new CLI() {{
-            define(option("human").withShortForm("h").withDescription("Human readable format"));
-            define(option("block").withLongForm("block-size").withRequiredArg("SIZE").ofType(int.class));
+            define(option("human").withShortForm("h").describedAs("Human readable format"));
+            define(option("block").withLongForm("block-size").takingArgument("SIZE").ofType(int.class));
             define(option("debug").withShortForm("x"));
             define(operand("input").as("INFILE").help("The input file"));
             define(operand("output", "OUTFILE", "The output file"));
@@ -316,7 +316,7 @@ public class CLIUsageTest {
         return output.toString();
     }
 
-    public static class CaptureLocale implements Option.Stub {
+    public static class CaptureLocale implements Option.Action {
         public Locale locale = Locale.ENGLISH;
 
         public void call(Option option) {

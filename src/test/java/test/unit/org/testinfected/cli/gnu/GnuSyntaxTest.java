@@ -1,9 +1,9 @@
 package test.unit.org.testinfected.cli.gnu;
 
-import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.gnu.GnuSyntax;
-import org.testinfected.cli.args.Option;
 import org.junit.Test;
+import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Option;
+import org.testinfected.cli.gnu.GnuSyntax;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,13 +26,13 @@ public class GnuSyntaxTest
     @Test public void
     shortOptionAcceptsAnArgumentPattern() {
         Option option = define("-b SIZE");
-        assertEquals("SIZE", option.getArgumentPattern());
+        assertEquals("SIZE", option.getArgument());
     }
 
     @Test public void
     longOptionAcceptsAnArgumentPattern() {
         Option option = define("--block-size SIZE");
-        assertEquals("SIZE", option.getArgumentPattern());
+        assertEquals("SIZE", option.getArgument());
     }
 
     @Test public void
@@ -47,10 +47,10 @@ public class GnuSyntaxTest
         assertEquals("Specifies block size", option.getDescription());
         assertEquals("b", option.getShortForm());
         assertEquals("block-size", option.getLongForm());
-        assertEquals("SIZE", option.getArgumentPattern());
+        assertEquals("SIZE", option.getArgument());
     }
 
     private Option define(String... options) {
-        return syntax.defineOption("option", options);
+        return syntax.defineOption("option", options).make();
     }
 }
