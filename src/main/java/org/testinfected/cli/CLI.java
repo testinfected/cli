@@ -133,7 +133,7 @@ public class CLI
         return commandLine.parse(format, args);
     }
 
-    public Object getOperand(String name) {
+    public <T> T getOperand(String name) {
         return commandLine.getOperandValue(name);
     }
 
@@ -149,7 +149,7 @@ public class CLI
         return getOptions().size();
     }
 
-    public Object getOption(String name) {
+    public <T> T getOption(String name) {
         return commandLine.getOptionValue(name);
     }
 

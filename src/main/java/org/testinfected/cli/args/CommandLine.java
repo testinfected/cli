@@ -47,9 +47,10 @@ public class CommandLine
         operands.add(operand);
     }
 
-    public Object getOperandValue(String name) {
+    @SuppressWarnings("unchecked")
+    public <T> T getOperandValue(String name) {
         for (Operand operand : operands) {
-            if (operand.getName().equals(name)) return operand.getValue();
+            if (operand.getName().equals(name)) return (T) operand.getValue();
         }
         return null;
     }
@@ -66,8 +67,9 @@ public class CommandLine
         return opts;
     }
 
-    public Object getOptionValue(String name) {
-        return getOptionValues().get(name);
+    @SuppressWarnings("unchecked")
+    public <T> T getOptionValue(String name) {
+        return (T) getOptionValues().get(name);
     }
 
     public String[] parse(Parser parser, String... args) throws ParsingException {

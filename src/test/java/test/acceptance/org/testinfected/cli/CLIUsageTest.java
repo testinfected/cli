@@ -74,7 +74,8 @@ public class CLIUsageTest {
         }};
         cli.parse("/path/to/input");
 
-        assertEquals(new File("/path/to/input"), cli.getOperand("input"));
+        File inputFile = cli.getOperand("input");
+        assertEquals("/path/to/input", inputFile.getAbsolutePath());
     }
 
     @Test public void
@@ -112,7 +113,8 @@ public class CLIUsageTest {
             define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class));
         }};
         cli.parse("-b", "1024");
-        assertEquals(1024, cli.getOption("block"));
+        int blockSize = cli.<Integer>getOption("block");
+        assertEquals(1024, blockSize);
     }
 
     @Test public void
