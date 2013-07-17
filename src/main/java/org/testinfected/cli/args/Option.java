@@ -136,7 +136,7 @@ public class Option {
         this.stub = stub;
     }
 
-    public boolean wasGiven() {
+    public boolean isDetected() {
         return value != null;
     }
 

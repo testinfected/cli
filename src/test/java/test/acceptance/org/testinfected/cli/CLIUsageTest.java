@@ -54,8 +54,8 @@ public class CLIUsageTest {
         }};
         cli.parse("input", "output");
 
-        assertEquals("input", cli.getOperand("input"));
-        assertEquals("output", cli.getOperand("output"));
+        assertEquals("input", cli.get("input"));
+        assertEquals("output", cli.get("output"));
     }
 
     @Test public void
@@ -74,7 +74,7 @@ public class CLIUsageTest {
         }};
         cli.parse("/path/to/input");
 
-        File inputFile = cli.getOperand("input");
+        File inputFile = cli.get("input");
         assertEquals("/path/to/input", inputFile.getAbsolutePath());
     }
 
@@ -84,7 +84,7 @@ public class CLIUsageTest {
             define(option("debug").withShortForm("x").withDescription("Turns debugging on"));
         }};
         cli.parse("-x");
-        assertTrue(cli.hasOption("debug"));
+        assertTrue(cli.has("debug"));
     }
 
     @Test public void
@@ -94,8 +94,8 @@ public class CLIUsageTest {
         }};
         cli.parse("-b", "1024");
 
-        assertTrue(cli.hasOption("block"));
-        assertEquals("1024", cli.getOption("block"));
+        assertTrue(cli.has("block"));
+        assertEquals("1024", cli.get("block"));
     }
 
     @Test public void
@@ -104,7 +104,7 @@ public class CLIUsageTest {
             define(option("debug").withShortForm("x").withLongForm("debug"));
         }};
         cli.parse("--debug");
-        assertTrue(cli.hasOption("debug"));
+        assertTrue(cli.has("debug"));
     }
 
     @Test public void
@@ -113,7 +113,7 @@ public class CLIUsageTest {
             define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class));
         }};
         cli.parse("-b", "1024");
-        int blockSize = cli.<Integer>getOption("block");
+        int blockSize = cli.<Integer>get("block");
         assertEquals(1024, blockSize);
     }
 
@@ -123,7 +123,7 @@ public class CLIUsageTest {
             define(option("block").withShortForm("b").withRequiredArg("SIZE").ofType(int.class).defaultingTo(1024));
         }};
         cli.parse();
-        assertEquals(1024, cli.getOption("block"));
+        assertEquals(1024, cli.get("block"));
     }
 
     @Test public void
@@ -132,8 +132,8 @@ public class CLIUsageTest {
             define(option("block", "-b", "--block-size SIZE", "Specifies block size"));
         }};
         cli.parse("--block-size", "1024");
-        assertTrue(cli.hasOption("block"));
-        assertEquals("1024", cli.getOption("block"));
+        assertTrue(cli.has("block"));
+        assertEquals("1024", cli.get("block"));
     }
 
     @Test public void
@@ -143,8 +143,8 @@ public class CLIUsageTest {
             define(operand("file").ofType(File.class));
         }};
         cli.parse("-c", "java.lang.String", "/path/to/file");
-        assertEquals(String.class, cli.getOption("class"));
-        assertEquals(new File("/path/to/file"), cli.getOperand("file"));
+        assertEquals(String.class, cli.get("class"));
+        assertEquals(new File("/path/to/file"), cli.get("file"));
     }
 
     @Test public void
@@ -158,12 +158,12 @@ public class CLIUsageTest {
         }};
 
         String[] args = cli.parse("-h", "--block-size", "1024", "-x", "input", "output", "extra", "more extra");
-        assertEquals(3, cli.getOptionCount());
-        assertTrue(cli.hasOption("human"));
-        assertEquals(1024, cli.getOption("block"));
-        assertTrue(cli.hasOption("debug"));
-        assertEquals("input", cli.getOperand("input"));
-        assertEquals("output", cli.getOperand("output"));
+        assertEquals(5, cli.argumentCount());
+        assertTrue(cli.has("human"));
+        assertEquals(1024, cli.get("block"));
+        assertTrue(cli.has("debug"));
+        assertEquals("input", cli.get("input"));
+        assertEquals("output", cli.get("output"));
         assertEquals("[extra, more extra]", Arrays.toString(args));
     }
 
@@ -174,7 +174,7 @@ public class CLIUsageTest {
             define(option("size", "--size VALUE").ofType(BigDecimal.class));
         }};
         cli.parse("--size", "1000.00");
-        assertEquals(new BigDecimal("1000.00"), cli.getOption("size"));
+        assertEquals(new BigDecimal("1000.00"), cli.get("size"));
     }
 
     @Test public void

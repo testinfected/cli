@@ -133,24 +133,20 @@ public class CLI
         return commandLine.parse(format, args);
     }
 
-    public <T> T getOperand(String name) {
-        return commandLine.getOperandValue(name);
+    public boolean has(String name) {
+        return commandLine.hasArgumentValue(name);
     }
 
-    public boolean hasOption(String name) {
-        return commandLine.hasOptionValue(name);
+    public <T> T get(String name) {
+        return commandLine.getArgumentValue(name);
     }
 
-    public Map<String, ?> getOptions() {
-        return commandLine.getOptionValues();
+    public Map<String, ?> arguments() {
+        return commandLine.getAllArgumentValues();
     }
 
-    public int getOptionCount() {
-        return getOptions().size();
-    }
-
-    public <T> T getOption(String name) {
-        return commandLine.getOptionValue(name);
+    public int argumentCount() {
+        return arguments().size();
     }
 
     public void printHelp(Appendable appendable) throws IOException {

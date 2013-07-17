@@ -27,8 +27,9 @@ public class CommandLineTest {
     CommandLine cl = new CommandLine();
 
     @Test public void
-    hasInitiallyNoOperand() {
-        assertNull(cl.getOperandValue("input"));
+    hasInitiallyNoArguments() {
+        assertEquals(0, cl.getAllArgumentValues().size());
+        assertNull(cl.getArgumentValue("input"));
     }
 
     @Test public void
@@ -38,8 +39,8 @@ public class CommandLineTest {
 
         cl.parse(new GnuParser(), "input", "output");
 
-        assertEquals("input", cl.getOperandValue("input"));
-        assertEquals("output", cl.getOperandValue("output"));
+        assertEquals("input", cl.getArgumentValue("input"));
+        assertEquals("output", cl.getArgumentValue("output"));
     }
 
     @Test public void
@@ -64,18 +65,18 @@ public class CommandLineTest {
     }
 
     @Test public void
-    optionsHaveNoValueUnlessGiven() throws Exception {
+    optionsHaveNoValueUnlessDetected() throws Exception {
         cl.addOption(optionNamed("debug").withShortForm("d").make());
-        assertFalse(cl.hasOptionValue("debug"));
-        assertNull(cl.getOptionValue("debug"));
+        assertFalse(cl.hasArgumentValue("debug"));
+        assertNull(cl.getArgumentValue("debug"));
 
         cl.parse(new GnuParser(), "-d");
-        assertTrue(cl.hasOptionValue("debug"));
-        assertEquals(Boolean.TRUE, cl.getOptionValue("debug"));
+        assertTrue(cl.hasArgumentValue("debug"));
+        assertEquals(Boolean.TRUE, cl.getArgumentValue("debug"));
     }
 
     @Test public void
-    stubGetsCalledWhenOptionIsGiven() throws Exception {
+    stubGetsCalledWhenOptionIsDetected() throws Exception {
         final Option.Stub turnDebugOn = context.mock(Option.Stub.class, "turn debug on");
         final Option debug = optionNamed("debug").withShortForm("d").whenPresent(turnDebugOn).make();
         cl.addOption(debug);

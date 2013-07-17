@@ -47,29 +47,24 @@ public class CommandLine
         operands.add(operand);
     }
 
+    public boolean hasArgumentValue(String name) {
+        return getAllArgumentValues().get(name) != null;
+    }
+
     @SuppressWarnings("unchecked")
-    public <T> T getOperandValue(String name) {
+    public <T> T getArgumentValue(String name) {
+        return (T) getAllArgumentValues().get(name);
+    }
+
+    public Map<String, ?> getAllArgumentValues() {
+        Map<String, Object> arguments = new HashMap<String, Object>();
+        for (Option option : options) {
+            arguments.put(option.getName(), option.getValue());
+        }
         for (Operand operand : operands) {
-            if (operand.getName().equals(name)) return (T) operand.getValue();
+            arguments.put(operand.getName(), operand.getValue());
         }
-        return null;
-    }
-
-    public boolean hasOptionValue(String name) {
-        return getOptionValues().containsKey(name);
-    }
-
-    public Map<String, ?> getOptionValues() {
-        Map<String, Object> opts = new HashMap<String, Object>();
-        for (Option opt : options) {
-            if (opt.wasGiven()) opts.put(opt.getName(), opt.getValue());
-        }
-        return opts;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getOptionValue(String name) {
-        return (T) getOptionValues().get(name);
+        return arguments;
     }
 
     public String[] parse(Parser parser, String... args) throws ParsingException {
@@ -112,7 +107,7 @@ public class CommandLine
 
     private void callStubs() {
         for (Option option : options) {
-            if (option.wasGiven()) option.call();
+            if (option.isDetected()) option.call();
         }
     }
 }
