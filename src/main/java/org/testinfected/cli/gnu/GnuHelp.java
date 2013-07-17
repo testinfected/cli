@@ -1,6 +1,7 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.args.Help;
+import org.testinfected.cli.args.Operand;
 import org.testinfected.cli.args.Option;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ public class GnuHelp implements Help {
     private static final int MEDIUM_WIDTH = 30;
 
     private final List<Option> options = new ArrayList<Option>();
+    private final List<Operand> operands = new ArrayList<Operand>();
 
     private final int columnWidth;
     private String program;
@@ -47,6 +49,10 @@ public class GnuHelp implements Help {
         options.add(option);
     }
 
+    public void displayOperand(Operand operand) {
+        operands.add(operand);
+    }
+
     public void appendTo(Appendable output) throws IOException {
         final Formatter usage = new Formatter(output);
         formatProgram(usage);
@@ -73,6 +79,9 @@ public class GnuHelp implements Help {
         if (program != null) usage.format(" %s", program);
         for (Option option : options) {
             usage.format(" [%s%s]", shortestFormOf(option), argumentIfAny(option));
+        }
+        for (Operand operand : operands) {
+            usage.format(" %s", operand.getDisplayName());
         }
         usage.format("%n");
     }

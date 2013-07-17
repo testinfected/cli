@@ -1,6 +1,7 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Operand;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.Syntax;
 import org.testinfected.cli.args.Help;
@@ -44,6 +45,10 @@ public class GnuFormat implements Format
 
     public void displayOption(Option option) {
         help.displayOption(option);
+    }
+
+    public void displayOperand(Operand operand) {
+        help.displayOperand(operand);
     }
 
     public void appendTo(Appendable appendable) throws IOException {

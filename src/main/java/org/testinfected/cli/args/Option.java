@@ -152,7 +152,6 @@ public class Option {
     }
 
     public interface Stub {
-
         public static final Stub NOTHING = new NoOp();
 
         public static class NoOp implements Stub {

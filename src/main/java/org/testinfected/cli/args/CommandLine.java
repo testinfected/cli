@@ -95,13 +95,16 @@ public class CommandLine
         return leftOver.toArray(new String[leftOver.size()]);
     }
 
-    public void formatHelp(Help help) {
+    public void printHelp(Help help) {
         help.displayProgram(program);
         help.displayVersion(version);
         help.displayDescription(description);
         help.displayEnding(ending);
         for (Option option : options) {
             option.describeTo(help);
+        }
+        for (Operand operand : operands) {
+            operand.describeTo(help);
         }
     }
 

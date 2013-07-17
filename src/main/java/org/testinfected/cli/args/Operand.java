@@ -3,7 +3,9 @@ package org.testinfected.cli.args;
 import java.util.Iterator;
 
 public class Operand {
+
     private final String name;
+    private String displayName;
     private String value;
 
     public Operand(String name) {
@@ -14,8 +16,20 @@ public class Operand {
         return name;
     }
 
+    public void setDisplayName(String name) {
+        this.displayName = name;
+    }
+
+    public String getDisplayName() {
+        return displayName != null ? displayName : name.toUpperCase();
+    }
+
     public String getValue() {
         return value;
+    }
+
+    public void describeTo(Help help) {
+        help.displayOperand(this);
     }
 
     public void consume(Iterator<String> arguments) throws MissingOperandException {

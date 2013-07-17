@@ -147,7 +147,7 @@ public class CLI
     }
 
     public void printHelp(Appendable appendable) throws IOException {
-        commandLine.formatHelp(format);
+        commandLine.printHelp(format);
         format.appendTo(appendable);
     }
 }

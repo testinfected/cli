@@ -8,6 +8,7 @@ import org.testinfected.cli.gnu.GnuHelp;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.testinfected.cli.args.OperandBuilder.operandNamed;
 import static org.testinfected.cli.args.OptionBuilder.optionNamed;
 
 public class GnuHelpTest
@@ -21,7 +22,14 @@ public class GnuHelpTest
     }
 
     @Test public void
-    displaysProgramNameIfSpecified() throws IOException {
+    usageDescribesPositionalParameters() throws IOException {
+        help.displayOperand(operandNamed("input").as("IN").make());
+        help.displayOperand(operandNamed("output").as("OUT").make());
+        assertHelp("Usage: IN OUT");
+    }
+
+    @Test public void
+    startsWithProgramNameIfSpecified() throws IOException {
         help.displayProgram("program");
         assertHelp(
                 "program",
@@ -30,7 +38,7 @@ public class GnuHelpTest
     }
 
     @Test public void
-    includesVersionInProgramDescriptionGiven() throws IOException {
+    displaysVersionAlongProgramNameWhenGiven() throws IOException {
         help.displayProgram("program");
         help.displayVersion("1.0");
         assertHelp(
@@ -41,7 +49,7 @@ public class GnuHelpTest
 
 
     @Test public void
-    includesDescriptionAfterProgramNameIfGiven() throws IOException {
+    descriptionFollowsProgramNameWhenGiven() throws IOException {
         help.displayProgram("program");
         help.displayDescription("My cool program.");
         assertHelp(

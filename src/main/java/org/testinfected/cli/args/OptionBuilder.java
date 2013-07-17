@@ -42,8 +42,8 @@ public class OptionBuilder
         this.option = underConstruction;
     }
 
-    public OptionBuilder withRequiredArg(String value) {
-        option.setArgumentPattern(value);
+    public OptionBuilder withRequiredArg(String name) {
+        option.setArgumentPattern(name);
         return this;
     }
 

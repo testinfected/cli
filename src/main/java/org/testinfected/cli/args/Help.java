@@ -15,4 +15,6 @@ public interface Help
     void displayOption(Option option);
 
     void appendTo(Appendable output) throws IOException;
+
+    void displayOperand(Operand operand);
 }

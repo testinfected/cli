@@ -189,13 +189,15 @@ public class CLIUsageTest {
             define(option("raw").withLongForm("raw").withDescription("Specifies raw output format"));
             define(option("block size").withShortForm("b").withLongForm("block-size").withRequiredArg("SIZE").withDescription("Specifies block size"));
             define(option("debug").withShortForm("x").withDescription("Turn debugging on"));
+            define(operand("input"));
+            define(operand("out").as("OUTPUT"));
         }};
         assertEquals(
                 "program version 1.0" + NL +
                 NL +
                 "Does some cool things." + NL +
                 NL +
-                "Usage: program [--raw] [-b SIZE] [-x]" + NL +
+                "Usage: program [--raw] [-b SIZE] [-x] INPUT OUTPUT" + NL +
                 NL +
                 "Options:" + NL +
                 "    --raw                      Specifies raw output format" + NL +
