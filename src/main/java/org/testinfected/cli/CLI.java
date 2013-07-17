@@ -19,7 +19,7 @@
 
 package org.testinfected.cli;
 
-import org.testinfected.cli.args.ArgsFormat;
+import org.testinfected.cli.args.Format;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.Operand;
 import org.testinfected.cli.args.OperandBuilder;
@@ -42,9 +42,9 @@ import java.util.Map;
 public class CLI
 {
     private final Map<Class<?>, TypeCoercer<?>> typeCoercers = new HashMap<Class<?>, TypeCoercer<?>>();
-    private final ArgsFormat argsFormat;
+    private final Format format;
 
-    private final CommandLine commandLine = new CommandLine();
+    private final CommandLine commandLine;
 
     {
         coerceType(String.class).using(new StringCoercer());
@@ -59,8 +59,9 @@ public class CLI
         this(new GnuFormat());
     }
 
-    public CLI(ArgsFormat argsFormat) {
-        this.argsFormat = argsFormat;
+    public CLI(Format format) {
+        this.format = format;
+        this.commandLine = new CommandLine();
     }
 
     public <T> CoercerDefinition<T> coerceType(Class<T> type) {
@@ -69,7 +70,6 @@ public class CLI
 
     public class CoercerDefinition<T>
     {
-
         private Class<T> type;
 
         public CoercerDefinition(Class<T> type) {
@@ -81,8 +81,20 @@ public class CLI
         }
     }
 
-    public void withBanner(String banner) {
-        commandLine.setBanner(banner);
+    public void name(String program) {
+        commandLine.setProgram(program);
+    }
+
+    public void version(String number) {
+        commandLine.setVersion(number);
+    }
+
+    public void description(String desc) {
+        commandLine.setDescription(desc);
+    }
+
+    public void ending(String epilog) {
+        commandLine.setEnding(epilog);
     }
 
     public void define(OptionBuilder builder) {
@@ -94,7 +106,7 @@ public class CLI
     }
 
     public OptionBuilder option(String name, String... schema) {
-        OptionBuilder builder = OptionBuilder.option(argsFormat.defineOption(name, schema));
+        OptionBuilder builder = OptionBuilder.option(format.defineOption(name, schema));
         return builder.using(typeCoercers);
     }
 
@@ -111,7 +123,7 @@ public class CLI
     }
 
     public String[] parse(String... args) throws ParsingException {
-        return commandLine.parse(argsFormat, args);
+        return commandLine.parse(format, args);
     }
 
     public String getOperand(String name) {
@@ -134,8 +146,8 @@ public class CLI
         return commandLine.getOptionValue(name);
     }
 
-    public void writeUsageTo(Appendable appendable) throws IOException {
-        commandLine.formatHelp(argsFormat);
-        argsFormat.appendTo(appendable);
+    public void printHelp(Appendable appendable) throws IOException {
+        commandLine.formatHelp(format);
+        format.appendTo(appendable);
     }
 }

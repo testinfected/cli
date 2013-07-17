@@ -22,13 +22,13 @@ package test.acceptance.org.testinfected.cli;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.testinfected.cli.CLI;
-import org.testinfected.cli.args.MissingOperandException;
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.args.UnrecognizedOptionException;
-import org.testinfected.cli.coercion.TypeCoercer;
 import org.testinfected.cli.args.ArgumentMissingException;
 import org.testinfected.cli.args.InvalidArgumentException;
+import org.testinfected.cli.args.MissingOperandException;
 import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.UnrecognizedOptionException;
+import org.testinfected.cli.coercion.TypeCoercer;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +43,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class CLIUsageTest {
+    String NL = System.getProperty("line.separator");
+
     CLI cli;
 
     @Test public void
@@ -182,20 +184,26 @@ public class CLIUsageTest {
     @Test public void
     displayingHelp() throws Exception {
         cli = new CLI() {{
-            withBanner("program [options] param");
+            name("program"); version("1.0"); description("Does some cool things."); ending("use --help to show this help message");
 
             define(option("raw").withLongForm("raw").withDescription("Specifies raw output format"));
             define(option("block size").withShortForm("b").withLongForm("block-size").withRequiredArg("SIZE").withDescription("Specifies block size"));
             define(option("debug").withShortForm("x").withDescription("Turn debugging on"));
         }};
         assertEquals(
-                "Usage: program [options] param\n" +
-                        "\n" +
-                        "Options:\n" +
-                        "    --raw                      Specifies raw output format\n" +
-                        "-b, --block-size SIZE          Specifies block size\n" +
-                        "-x                             Turn debugging on",
-                usage(cli));
+                "program version 1.0" + NL +
+                NL +
+                "Does some cool things." + NL +
+                NL +
+                "Usage: program [--raw] [-b SIZE] [-x]" + NL +
+                NL +
+                "Options:" + NL +
+                "    --raw                      Specifies raw output format" + NL +
+                "-b, --block-size SIZE          Specifies block size" + NL +
+                "-x                             Turn debugging on" + NL +
+                NL +
+                "use --help to show this help message" + NL,
+                help(cli));
     }
 
     // What would be more appropriate than an IllegalArgumentException?
@@ -267,10 +275,10 @@ public class CLIUsageTest {
         }
     }
 
-    private String usage(CLI cli) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        cli.writeUsageTo(sb);
-        return sb.toString();
+    private String help(CLI cli) throws IOException {
+        StringBuilder output = new StringBuilder();
+        cli.printHelp(output);
+        return output.toString();
     }
 
     public static class CaptureLocale implements Option.Stub {

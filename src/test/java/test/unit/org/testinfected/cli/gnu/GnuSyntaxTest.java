@@ -1,15 +1,15 @@
 package test.unit.org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.gnu.GnuSpecification;
+import org.testinfected.cli.gnu.GnuSyntax;
 import org.testinfected.cli.args.Option;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class GnuSpecificationTest
+public class GnuSyntaxTest
 {
-    GnuSpecification builder = new GnuSpecification();
+    GnuSyntax syntax = new GnuSyntax();
 
     @Test public void
     dashIsPrefixForShortOption() {
@@ -51,6 +51,6 @@ public class GnuSpecificationTest
     }
 
     private Option define(String... options) {
-        return builder.defineOption("option", options);
+        return syntax.defineOption("option", options);
     }
 }

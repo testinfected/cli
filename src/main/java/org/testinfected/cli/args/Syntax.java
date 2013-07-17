@@ -1,6 +1,6 @@
 package org.testinfected.cli.args;
 
-public interface ArgsSpecification
+public interface Syntax
 {
     Option defineOption(String name, String... schema);
 }

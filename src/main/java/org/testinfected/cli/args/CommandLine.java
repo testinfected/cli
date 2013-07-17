@@ -1,7 +1,5 @@
 package org.testinfected.cli.args;
 
-import org.testinfected.cli.args.ArgsDescription;
-import org.testinfected.cli.args.ArgsParser;
 import org.testinfected.cli.ParsingException;
 
 import java.util.ArrayList;
@@ -18,12 +16,27 @@ public class CommandLine
     private final Collection<Option> options = new ArrayList<Option>();
     private final List<Operand> operands = new ArrayList<Operand>();
 
-    private String banner = "";
+    private String program;
+    private String description;
+    private String version;
+    private String ending;
 
     public CommandLine() {}
 
-    public void setBanner(String banner) {
-        this.banner = banner;
+    public void setProgram(String name) {
+        this.program = name;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setDescription(String text) {
+        this.description = text;
+    }
+
+    public void setEnding(String epilog) {
+        this.ending = epilog;
     }
 
     public void addOption(Option option) {
@@ -57,13 +70,13 @@ public class CommandLine
         return getOptionValues().get(name);
     }
 
-    public String[] parse(ArgsParser parser, String... args) throws ParsingException {
+    public String[] parse(Parser parser, String... args) throws ParsingException {
         String[] extraArguments = parseArgs(parser, args);
         callStubs();
         return extraArguments;
     }
 
-    private String[] parseArgs(ArgsParser parser, String... args)
+    private String[] parseArgs(Parser parser, String... args)
             throws ParsingException {
         return consumeOperands(parser.parse(unmodifiableCollection(options), args));
     }
@@ -82,10 +95,13 @@ public class CommandLine
         return leftOver.toArray(new String[leftOver.size()]);
     }
 
-    public void formatHelp(ArgsDescription description) {
-        description.setBanner(banner);
+    public void formatHelp(Help help) {
+        help.displayProgram(program);
+        help.displayVersion(version);
+        help.displayDescription(description);
+        help.displayEnding(ending);
         for (Option option : options) {
-            option.describeTo(description);
+            option.describeTo(help);
         }
     }
 

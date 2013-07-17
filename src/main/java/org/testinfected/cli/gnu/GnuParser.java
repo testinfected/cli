@@ -20,7 +20,7 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.args.ArgsParser;
+import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.args.Option;
 
@@ -35,7 +35,7 @@ import static java.util.Arrays.asList;
 /**
  * Not quite GNU compliant yet
  */
-public class GnuParser implements ArgsParser
+public class GnuParser implements Parser
 {
     private static final Pattern LONG_OPTION_PATTERN = Pattern.compile("--(.+)");
     private static final Pattern SHORT_OPTION_PATTERN = Pattern.compile("-(.+)");

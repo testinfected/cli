@@ -1,13 +1,13 @@
 package org.testinfected.cli.gnu;
 
-import org.testinfected.cli.args.ArgsSpecification;
+import org.testinfected.cli.args.Syntax;
 import org.testinfected.cli.args.Option;
 import org.testinfected.cli.util.Strings;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GnuSpecification implements ArgsSpecification
+public class GnuSyntax implements Syntax
 {
     private static final Pattern LONG_FORM_PATTERN = Pattern.compile("--([^\\s]+)(?:\\s(.+))?");
     private static final Pattern SHORT_FORM_PATTERN = Pattern.compile("-([^\\s]+)(?:\\s+(.+))?");

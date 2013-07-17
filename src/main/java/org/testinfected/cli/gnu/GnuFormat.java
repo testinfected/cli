@@ -1,40 +1,52 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
-import org.testinfected.cli.args.ArgsSpecification;
-import org.testinfected.cli.args.ArgsDescription;
-import org.testinfected.cli.args.ArgsFormat;
-import org.testinfected.cli.args.ArgsParser;
+import org.testinfected.cli.args.Parser;
+import org.testinfected.cli.args.Syntax;
+import org.testinfected.cli.args.Help;
+import org.testinfected.cli.args.Format;
 import org.testinfected.cli.args.Option;
 
 import java.io.IOException;
 import java.util.List;
 
-public class GnuFormat implements ArgsFormat
+public class GnuFormat implements Format
 {
-    private final ArgsParser parser = new GnuParser();
-    private final ArgsSpecification specification = new GnuSpecification();
-    private final ArgsDescription description = new GnuDescription();
+    private final Parser parser = new GnuParser();
+    private final Syntax syntax = new GnuSyntax();
+    private final Help help = new GnuHelp();
 
     public GnuFormat() {}
 
     public Option defineOption(String name, String... schema) {
-        return specification.defineOption(name, schema);
+        return syntax.defineOption(name, schema);
     }
 
     public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {
         return parser.parse(options, args);
     }
 
-    public void setBanner(String banner) {
-        description.setBanner(banner);
+    public void displayProgram(String name) {
+        help.displayProgram(name);
     }
 
-    public void formatOption(Option option) {
-        description.formatOption(option);
+    public void displayVersion(String number) {
+        help.displayVersion(number);
+    }
+
+    public void displayDescription(String description) {
+        help.displayDescription(description);
+    }
+
+    public void displayEnding(String epilog) {
+        help.displayEnding(epilog);
+    }
+
+    public void displayOption(Option option) {
+        help.displayOption(option);
     }
 
     public void appendTo(Appendable appendable) throws IOException {
-        description.appendTo(appendable);
+        help.appendTo(appendable);
     }
 }
