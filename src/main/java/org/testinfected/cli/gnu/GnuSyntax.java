@@ -17,7 +17,7 @@ public class GnuSyntax implements Syntax
     public Option defineOption(String name, String... schema) {
         Option option = new Option(name);
 
-        SchemaValidator schemaValidator = new SchemaValidator();
+        SchemaValidator schemaValidator = new SchemaValidator(name);
         for (String schemaElement : schema) {
             Matcher longFormMatcher = LONG_FORM_PATTERN.matcher(schemaElement);
             if (longFormMatcher.matches()) {
@@ -56,34 +56,44 @@ public class GnuSyntax implements Syntax
 
     private static class SchemaValidator
     {
+        private final String option;
+
         private boolean shortFormHasBeenGiven;
         private boolean longFormHasBeenGiven;
         private boolean argumentPatternHasBeenGiven;
         private boolean descriptionHasBeenGiven;
 
+        public SchemaValidator(String option) {
+            this.option = option;
+        }
+
         public String validateShortForm(String shortForm) {
-            if (shortFormHasBeenGiven) throw new IllegalArgumentException("Short form given twice");
+            if (shortFormHasBeenGiven) throw new IllegalArgumentException("Short form given twice for option " + quote(option));
             this.shortFormHasBeenGiven = true;
             return shortForm;
         }
 
         public String validateLongForm(String longForm) {
-            if (longFormHasBeenGiven) throw new IllegalArgumentException("Long form given twice");
+            if (longFormHasBeenGiven) throw new IllegalArgumentException("Long form given twice for option " + quote(option));
             this.longFormHasBeenGiven = true;
             return longForm;
         }
 
         public String validateArgumentPattern(String argumentPattern) {
             if (Strings.blank(argumentPattern)) return null;
-            if (argumentPatternHasBeenGiven) throw new IllegalArgumentException("Argument pattern given twice");
+            if (argumentPatternHasBeenGiven) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
             this.argumentPatternHasBeenGiven = true;
             return argumentPattern;
         }
 
         public String validateDescription(String description) {
-            if (descriptionHasBeenGiven) throw new IllegalArgumentException("Description given twice");
+            if (descriptionHasBeenGiven) throw new IllegalArgumentException("Description given twice for option " + quote(option));
             descriptionHasBeenGiven = true;
             return description;
+        }
+
+        private String quote(String text) {
+            return "'" + text + "'";
         }
     }
 }
