@@ -23,8 +23,8 @@ public class GnuHelpTest
 
     @Test public void
     describesPositionalArguments() throws IOException {
-        help.printOperand(operand("input").as("IN").help("The source file").make());
-        help.printOperand(operand("output").as("OUT").help("The destination file").make());
+        help.printOperand(operand("input").as("IN").describedAs("The source file").make());
+        help.printOperand(operand("output").as("OUT").describedAs("The destination file").make());
         assertHelp(
                 "Usage: IN OUT",
                 "",

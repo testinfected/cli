@@ -28,7 +28,7 @@ public class OperandSpec {
         return this;
     }
 
-    public OperandSpec help(String message) {
+    public OperandSpec describedAs(String message) {
         this.description = message;
         return this;
     }

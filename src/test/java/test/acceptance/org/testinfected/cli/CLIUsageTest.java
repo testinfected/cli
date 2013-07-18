@@ -49,8 +49,8 @@ public class CLIUsageTest {
     @Test public void
     usingPositionalArguments() throws Exception {
         cli = new CLI() {{
-            define(operand("input").help("The input file"));
-            define(operand("output").help("The output file"));
+            define(operand("input").describedAs("The input file"));
+            define(operand("output").describedAs("The output file"));
         }};
         cli.parse("input", "output");
 
@@ -153,7 +153,7 @@ public class CLIUsageTest {
             define(option("human").withShortForm("h").describedAs("Human readable format"));
             define(option("block").withLongForm("block-size").takingArgument("SIZE").ofType(int.class));
             define(option("debug").withShortForm("x"));
-            define(operand("input").as("INFILE").help("The input file"));
+            define(operand("input").as("INFILE").describedAs("The input file"));
             define(operand("output", "OUTFILE", "The output file"));
         }};
 

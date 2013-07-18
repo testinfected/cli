@@ -100,12 +100,12 @@ public class CLI
         commandLine.setEnding(epilog);
     }
 
-    public void define(OptionSpec builder) {
-        commandLine.addOption(builder.make());
+    public void define(OptionSpec spec) {
+        commandLine.addOption(spec.make());
     }
 
-    public void define(OperandSpec builder) {
-        commandLine.addOperand(builder.make());
+    public void define(OperandSpec spec) {
+        commandLine.addOperand(spec.make());
     }
 
     public OptionSpec option(String name, String... definition) {
@@ -121,7 +121,7 @@ public class CLI
     }
 
     public OperandSpec operand(String name, String displayName, String help) {
-        return operand(name, displayName).help(help);
+        return operand(name, displayName).describedAs(help);
     }
 
     public String[] parse(String... args) throws ParsingException {
