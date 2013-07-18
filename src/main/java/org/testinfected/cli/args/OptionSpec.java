@@ -29,14 +29,14 @@ public class OptionSpec
 {
     private final Map<Class, TypeCoercer<?>> coercers = new HashMap<Class, TypeCoercer<?>>();
 
-    public final String name;
-    public String argument;
-    public String shortForm;
-    public String longForm;
-    public String description;
-    public Object defaultValue;
-    public TypeCoercer type = new StringCoercer();
-    public Option.Action action = Option.Action.NOTHING;
+    private final String name;
+    private String argument;
+    private String shortForm;
+    private String longForm;
+    private String description;
+    private Object defaultValue;
+    private TypeCoercer type = new StringCoercer();
+    private Option.Action action = Option.Action.NOTHING;
 
     public static OptionSpec option(String name) {
         return new OptionSpec(name);
@@ -108,5 +108,25 @@ public class OptionSpec
             throw new IllegalArgumentException("Don't know how to coerce type " + type.getName());
 
         return coercers.get(type);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean hasShortForm() {
+        return shortForm != null;
+    }
+
+    public boolean hasArgument() {
+        return argument != null;
+    }
+
+    public boolean hasLongForm() {
+        return longForm != null;
+    }
+
+    public boolean hasDescription() {
+        return description != null;
     }
 }

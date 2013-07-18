@@ -61,28 +61,28 @@ public class GnuSyntax implements Syntax
         }
 
         public String validateShortForm(String shortForm) {
-            if (option.shortForm != null) throw new IllegalArgumentException("Short form given twice for option " + quote(option));
+            if (option.hasShortForm()) throw new IllegalArgumentException("Short form given twice for option " + quote(option));
             return shortForm;
         }
 
         public String validateLongForm(String longForm) {
-            if (option.longForm != null) throw new IllegalArgumentException("Long form given twice for option " + quote(option));
+            if (option.hasLongForm()) throw new IllegalArgumentException("Long form given twice for option " + quote(option));
             return longForm;
         }
 
         public String validateArgument(String argument) {
             if (Strings.blank(argument)) return null;
-            if (option.argument != null) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
+            if (option.hasArgument()) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
             return argument;
         }
 
         public String validateDescription(String description) {
-            if (option.description != null) throw new IllegalArgumentException("Description given twice for option " + quote(option));
+            if (option.hasDescription()) throw new IllegalArgumentException("Description given twice for option " + quote(option));
             return description;
         }
 
         private String quote(OptionSpec option) {
-            return "'" + option.name + "'";
+            return "'" + option.getName() + "'";
         }
     }
 }
