@@ -21,17 +21,17 @@ package test.unit.org.testinfected.cli.gnu;
 
 import org.junit.Test;
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.Option;
 import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.gnu.GnuParser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import static java.lang.Boolean.TRUE;
+import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -42,45 +42,47 @@ public class GnuParserTest
     GnuParser parser = new GnuParser();
 
     Collection<Option> options = new ArrayList<Option>();
-    List<String> operands = new ArrayList<String>();
+    Collection<String> nonOptions = new ArrayList<String>();
+    Args detected = new Args();
 
     @Test public void
-    doesNotConsumeAnyArgumentIfNoOptionIsDefined() throws ParsingException {
+    detectsNothingWithoutDefinedOption() throws ParsingException {
         parse("1", "2", "3");
-        assertEquals(Arrays.asList("1", "2", "3"), operands);
+        assertEquals(0, detected.size());
+        assertEquals(asList("1", "2", "3"), nonOptions);
     }
 
     @Test public void
-    detectsOptionsByTheirShortForm() throws ParsingException {
+    detectsDefinedOptionsByTheirShortForm() throws ParsingException {
         Option debug = define(option("debug").withShortForm("x"));
         Option verbose = define(option("verbose").withShortForm("v"));
 
         parse("-x");
-        assertEquals(true, debug.getValue());
-        assertNull(verbose.getValue());
+        assertEquals(true, debug.getValue(detected));
+        assertNull(verbose.getValue(detected));
     }
 
     @Test public void
-    detectsOptionsByTheirLongForm() throws ParsingException {
+    detectsDefinedOptionsByTheirLongForm() throws ParsingException {
         Option raw = define(option("raw").withLongForm("raw"));
 
         parse("--raw");
-        assertEquals(TRUE, raw.getValue());
+        assertEquals(TRUE, raw.getValue(detected));
     }
 
     @Test public void
-    detectsOptionsParameters() throws ParsingException {
+    detectsDefinedOptionsParameters() throws ParsingException {
         Option blockSize = define(option("block").withShortForm("b").withLongForm("block-size").takingArgument("SIZE"));
         parse("-b", "1024");
-        assertEquals("1024", blockSize.getValue());
+        assertEquals("1024", blockSize.getValue(detected));
     }
 
     @Test public void
-    consumesOptionsAndReturnsRemainingArguments() throws ParsingException {
+    returnNonOptionArguments() throws ParsingException {
         define(option("raw").withLongForm("raw"));
 
         parse("--raw", "input", "output");
-        assertEquals(Arrays.asList("input", "output"), operands);
+        assertEquals(asList("input", "output"), nonOptions);
     }
 
     @Test public void
@@ -90,14 +92,14 @@ public class GnuParserTest
         Option debug = define(option("debug").withShortForm("x"));
 
         parse("-h", "--block-size", "1024", "-x", "input", "output");
-        assertEquals(TRUE, human.getValue());
-        assertEquals("1024", blockSize.getValue());
-        assertEquals(TRUE, debug.getValue());
-        assertEquals(Arrays.asList("input", "output"), operands);
+        assertEquals(TRUE, human.getValue(detected));
+        assertEquals("1024", blockSize.getValue(detected));
+        assertEquals(TRUE, debug.getValue(detected));
+        assertEquals(asList("input", "output"), nonOptions);
     }
 
     @Test public void
-    complainsOfInvalidOptions() throws ParsingException {
+    complainsOfUnrecognizedOptions() throws ParsingException {
         try {
             parse("-x");
             fail();
@@ -115,6 +117,6 @@ public class GnuParserTest
 
     private void parse(String... input)
             throws ParsingException {
-        operands.addAll(parser.parse(options, input));
+        nonOptions.addAll(parser.parse(detected, options, input));
     }
 }

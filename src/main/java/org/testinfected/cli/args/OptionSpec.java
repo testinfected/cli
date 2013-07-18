@@ -96,7 +96,7 @@ public class OptionSpec
         Option option = new Option(name, type);
         option.setShortForm(shortForm);
         option.setLongForm(longForm);
-        option.setValue(defaultValue);
+        option.setDefaultValue(defaultValue);
         option.setDescription(description);
         option.setArgument(argument);
         option.setAction(action);

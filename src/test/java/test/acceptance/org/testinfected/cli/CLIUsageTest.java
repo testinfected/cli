@@ -22,6 +22,7 @@ package test.acceptance.org.testinfected.cli;
 import org.junit.Test;
 import org.testinfected.cli.CLI;
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.ArgumentMissingException;
 import org.testinfected.cli.args.InvalidArgumentException;
 import org.testinfected.cli.args.MissingOperandException;
@@ -319,8 +320,8 @@ public class CLIUsageTest {
     public static class CaptureLocale implements Option.Action {
         public Locale locale = Locale.ENGLISH;
 
-        public void call(Option option) {
-            locale = (Locale) option.getValue();
+        public void call(Args detected, Option option) {
+            locale = option.getValue(detected);
         }
     }
 

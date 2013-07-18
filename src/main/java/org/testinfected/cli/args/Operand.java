@@ -13,7 +13,6 @@ public class Operand {
 
     private String displayName;
     private String description;
-    private Object value;
 
     public Operand(String name) {
         this(name, new StringCoercer());
@@ -36,10 +35,6 @@ public class Operand {
         return displayName != null ? displayName : name.toUpperCase();
     }
 
-    public Object getValue() {
-        return value;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -56,9 +51,9 @@ public class Operand {
         help.printOperand(this);
     }
 
-    public void consume(Iterator<String> arguments) throws ParsingException {
+    public void consume(Args detected, Iterator<String> arguments) throws ParsingException {
         if (noMore(arguments)) throw new MissingOperandException(this);
-        value = convert(nextOf(arguments));
+        detected.put(name, convert(nextOf(arguments)));
     }
 
     private String nextOf(Iterator<String> arguments) {

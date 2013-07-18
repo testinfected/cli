@@ -6,6 +6,8 @@ import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.MissingOperandException;
 import org.testinfected.cli.args.OperandSpec;
@@ -13,8 +15,8 @@ import org.testinfected.cli.args.Option;
 import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.gnu.GnuParser;
 
-import java.util.Arrays;
-
+import static java.lang.Boolean.TRUE;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -29,53 +31,21 @@ public class CommandLineTest {
     CommandLine cl = new CommandLine(new GnuParser());
 
     @Test public void
-    hasInitiallyNoArguments() {
-        assertEquals(0, cl.getAllArgumentValues().size());
-        assertNull(cl.getArgumentValue("input"));
+    detectsInitiallyNoArgument() throws ParsingException {
+        Args args = cl.parseArguments();
+        assertEquals(0, args.size());
     }
 
     @Test public void
-    parsesAndReturnsDetectedOperands() throws Exception {
-        add(operand("input"));
-        add(operand("output"));
-
-        cl.parse("input", "output");
-
-        assertEquals("input", cl.getArgumentValue("input"));
-        assertEquals("output", cl.getArgumentValue("output"));
-    }
-
-    @Test public void
-    complainsWhenRequiredOperandsAreMissing() throws Exception {
-        add(operand("input"));
-        add(operand("output"));
-
-        try {
-            cl.parse("input");
-            fail("Expected exception " + MissingOperandException.class.getName());
-        } catch (MissingOperandException expected) {
-            assertEquals("output", expected.getMissingOperand());
-        }
-    }
-
-    @Test public void
-    returnsLeftOverArguments() throws Exception {
-        add(operand("input"));
-
-        String[] extra = cl.parse("input", "output");
-        assertEquals("[output]", Arrays.toString(extra));
-    }
-
-    @Test public void
-    parsesAndReturnsDetectedOptions() throws Exception {
-        add(option("debug").withShortForm("d"));
+    detectsSpecifiedOptionsWhenPresent() throws ParsingException {
+        add(option("debug").withShortForm("x"));
         add(option("verbose").withShortForm("v"));
 
-        cl.parse("-d");
-        assertTrue(cl.hasArgumentValue("debug"));
-        assertEquals(Boolean.TRUE, cl.getArgumentValue("debug"));
-        assertFalse(cl.hasArgumentValue("verbose"));
-        assertNull(cl.getArgumentValue("verbose"));
+        Args args = cl.parseArguments("-x");
+        assertTrue(args.has("debug"));
+        assertEquals(TRUE, args.get("debug"));
+        assertFalse(args.has("verbose"));
+        assertNull(args.get("verbose"));
     }
 
     @Test public void
@@ -88,10 +58,51 @@ public class CommandLineTest {
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
-            one(setLocale).call(with(any(Option.class)));
+            one(setLocale).call(with(any(Args.class)), with(any(Option.class)));
         }});
 
-        cl.parse("-l");
+        cl.parseArguments("-l");
+    }
+
+    @Test public void
+    detectsSpecifiedOperandsWhenPresent() throws Exception {
+        add(operand("input"));
+        add(operand("output"));
+
+        Args args = cl.parseArguments("input", "output");
+
+        assertEquals("input", args.get("input"));
+        assertEquals("output", args.get("output"));
+    }
+
+    @Test public void
+    detectsBothOptionsAndOperands() throws Exception {
+        add(option("verbose").withShortForm("v"));
+        add(operand("input"));
+
+        Args args = cl.parseArguments("-v", "input");
+        assertEquals(2, args.size());
+    }
+
+    @Test public void
+    complainsWhenRequiredOperandsAreMissing() throws Exception {
+        add(operand("input"));
+        add(operand("output"));
+
+        try {
+            cl.parseArguments("input");
+            fail("Expected exception " + MissingOperandException.class.getName());
+        } catch (MissingOperandException expected) {
+            assertEquals("output", expected.getMissingOperand());
+        }
+    }
+
+    @Test public void
+    returnsLeftOverArguments() throws Exception {
+        add(operand("input"));
+
+        Args args = cl.parseArguments("input", "output");
+        assertEquals(asList("output"), asList(args.more()));
     }
 
     private void add(OperandSpec operand) {

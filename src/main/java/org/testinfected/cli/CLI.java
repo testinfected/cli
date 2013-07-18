@@ -19,6 +19,7 @@
 
 package org.testinfected.cli;
 
+import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.Help;
 import org.testinfected.cli.args.OperandSpec;
@@ -47,6 +48,7 @@ public class CLI
     private final Syntax syntax;
     private final Help help;
     private final Map<Class<?>, TypeCoercer<?>> typeCoercers = new HashMap<Class<?>, TypeCoercer<?>>();
+    private final Args detected = new Args();
 
     {
         coerceType(String.class).using(new StringCoercer());
@@ -125,19 +127,20 @@ public class CLI
     }
 
     public String[] parse(String... args) throws ParsingException {
-        return commandLine.parse(args);
+        detected.add(commandLine.parseArguments(args));
+        return detected.more();
     }
 
     public boolean has(String name) {
-        return commandLine.hasArgumentValue(name);
+        return detected.has(name);
     }
 
     public <T> T get(String name) {
-        return commandLine.getArgumentValue(name);
+        return detected.get(name);
     }
 
     public Map<String, ?> arguments() {
-        return commandLine.getAllArgumentValues();
+        return detected.values();
     }
 
     public int argumentCount() {

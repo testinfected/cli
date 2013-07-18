@@ -25,5 +25,5 @@ import java.util.List;
 
 public interface Parser
 {
-    List<String> parse(Iterable<Option> options, String... args) throws ParsingException;
+    List<String> parse(Args detected, Iterable<Option> options, String... args) throws ParsingException;
 }

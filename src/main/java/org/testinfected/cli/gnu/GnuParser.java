@@ -20,6 +20,7 @@
 package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.args.Option;
@@ -41,7 +42,7 @@ public class GnuParser implements Parser
     private static final Pattern SHORT_OPTION = Pattern.compile("-(.+)");
     private static final int IDENTIFIER = 1;
 
-    public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {
+    public List<String> parse(Args detected, Iterable<Option> options, String... args) throws ParsingException {
         List<String> arguments = new ArrayList<String>();
 
         for (Iterator<String> tokens = asList(args).iterator(); tokens.hasNext(); ) {
@@ -51,7 +52,7 @@ public class GnuParser implements Parser
             if (detected(longForm)) {
                 Option option = findOption(options, longForm);
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
-                option.consume(tokens);
+                option.handleArguments(detected, tokens);
                 continue;
             }
 
@@ -59,7 +60,7 @@ public class GnuParser implements Parser
             if (detected(shortForm)) {
                 Option option = findOption(options, shortForm);
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
-                option.consume(tokens);
+                option.handleArguments(detected, tokens);
                 continue;
             }
 

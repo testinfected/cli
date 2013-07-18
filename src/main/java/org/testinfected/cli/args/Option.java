@@ -34,7 +34,7 @@ public class Option {
     private String longForm;
     private String argument;
     private String description;
-    private Object value;
+    private Object defaultValue;
     private TypeCoercer typeCoercer;
     private Action action = Action.NOTHING;
 
@@ -99,16 +99,16 @@ public class Option {
         return argument != null;
     }
 
-    public Object getValue() {
-        return value;
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public Object getDefaultValue() {
+        return defaultValue;
     }
 
-    public boolean isDetected() {
-        return value != null;
+    public boolean hasDefaultValue() {
+        return defaultValue != null;
     }
 
     public void setAction(Action action) {
@@ -119,17 +119,26 @@ public class Option {
         return identifier.equals(shortForm) || identifier.equals(longForm);
     }
 
-    public void call() {
-        action.call(this);
+    public boolean isIn(Args detected) {
+        return detected.has(name);
+    }
+
+    public void call(Args detected) {
+        action.call(detected, this);
+    }
+
+    public <T> T getValue(Args args) {
+        return args.get(name);
+    }
+
+    public void handleArguments(Args detected, Iterator<String> arguments) throws ParsingException {
+        if (takesArgument() && noMore(arguments)) throw new ArgumentMissingException(this);
+        Object value = takesArgument() ? convert(arguments.next()) : SWITCH_ON;
+        detected.put(name, value);
     }
 
     public void printTo(Help help) {
         help.printOption(this);
-    }
-
-    public void consume(Iterator<String> arguments) throws ParsingException {
-        if (takesArgument() && noMore(arguments)) throw new ArgumentMissingException(this);
-        value = takesArgument() ? convert(arguments.next()) : SWITCH_ON;
     }
 
     private boolean noMore(Iterator<String> arguments) {
@@ -148,11 +157,11 @@ public class Option {
         public static final Action NOTHING = new NoOp();
 
         public static class NoOp implements Action {
-            public void call(Option option) {
+            public void call(Args detected, Option option) {
             }
         }
 
-        void call(Option option);
+        void call(Args detected, Option option);
     }
 }
 

@@ -4,10 +4,8 @@ import org.testinfected.cli.ParsingException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.unmodifiableCollection;
 
@@ -50,48 +48,38 @@ public class CommandLine
         operands.add(operand);
     }
 
-    public boolean hasArgumentValue(String name) {
-        return getAllArgumentValues().get(name) != null;
-    }
+    public Args parseArguments(String... args) throws ParsingException {
+        Args detected =  new Args();
+        addDefaultOptions(detected);
+        List<String> nonOptionArguments = parseOptions(detected, args);
+        List<String> more = parseOperands(detected, nonOptionArguments);
+        detected.addAll(more);
 
-    @SuppressWarnings("unchecked")
-    public <T> T getArgumentValue(String name) {
-        return (T) getAllArgumentValues().get(name);
-    }
-
-    public Map<String, ?> getAllArgumentValues() {
-        Map<String, Object> arguments = new HashMap<String, Object>();
         for (Option option : options) {
-            arguments.put(option.getName(), option.getValue());
+            if (option.isIn(detected)) option.call(detected);
         }
+
+        return detected;
+    }
+
+    private void addDefaultOptions(Args detected) {
+        for (Option option : options) {
+            if (option.hasDefaultValue()) detected.put(option.getName(), option.getDefaultValue());
+        }
+    }
+
+    private List<String> parseOperands(Args detected, List<String> arguments) throws ParsingException {
+        List<String> more = new ArrayList<String>();
+        Iterator<String> args = arguments.iterator();
         for (Operand operand : operands) {
-            arguments.put(operand.getName(), operand.getValue());
+            operand.consume(detected, args);
         }
-        return arguments;
+        while (args.hasNext()) more.add(args.next());
+        return more;
     }
 
-    public String[] parse(String... args) throws ParsingException {
-        String[] extraArguments = parseArgs(args);
-        callActions();
-        return extraArguments;
-    }
-
-    private String[] parseArgs(String... args) throws ParsingException {
-        return consumeOperands(parser.parse(unmodifiableCollection(options), args));
-    }
-
-    private String[] consumeOperands(List<String> positionalArguments) throws ParsingException {
-        Iterator<String> args = positionalArguments.iterator();
-        for (Operand operand : operands) {
-            operand.consume(args);
-        }
-        return leftOver(args);
-    }
-
-    private String[] leftOver(Iterator<String> args) {
-        List<String> leftOver = new ArrayList<String>();
-        while (args.hasNext()) leftOver.add(args.next());
-        return leftOver.toArray(new String[leftOver.size()]);
+    private List<String> parseOptions(Args detected, String[] args) throws ParsingException {
+        return parser.parse(detected, unmodifiableCollection(options), args);
     }
 
     public void printTo(Help help) {
@@ -105,11 +93,5 @@ public class CommandLine
             operand.printTo(help);
         }
         help.printEnding(ending);
-    }
-
-    private void callActions() {
-        for (Option option : options) {
-            if (option.isDetected()) option.call();
-        }
     }
 }
