@@ -39,6 +39,7 @@ public class GnuParser implements Parser
 {
     private static final Pattern LONG_OPTION = Pattern.compile("--(.+)");
     private static final Pattern SHORT_OPTION = Pattern.compile("-(.+)");
+    private static final int IDENTIFIER = 1;
 
     public List<String> parse(Iterable<Option> options, String... args) throws ParsingException {
         List<String> arguments = new ArrayList<String>();
@@ -76,11 +77,10 @@ public class GnuParser implements Parser
         for (Option candidate : candidates) {
             if (candidate.matches(identifier(matcher))) return candidate;
         }
-
         return null;
     }
 
     private String identifier(Matcher matcher) {
-        return matcher.group(1);
+        return matcher.group(IDENTIFIER);
     }
 }

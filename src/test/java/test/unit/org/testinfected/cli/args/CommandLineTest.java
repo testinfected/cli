@@ -8,8 +8,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.MissingOperandException;
-import org.testinfected.cli.gnu.GnuParser;
+import org.testinfected.cli.args.OperandSpec;
 import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.OptionSpec;
+import org.testinfected.cli.gnu.GnuParser;
 
 import java.util.Arrays;
 
@@ -24,7 +26,7 @@ import static org.testinfected.cli.args.OptionSpec.option;
 @RunWith(JMock.class)
 public class CommandLineTest {
     Mockery context = new JUnit4Mockery();
-    CommandLine cl = new CommandLine();
+    CommandLine cl = new CommandLine(new GnuParser());
 
     @Test public void
     hasInitiallyNoArguments() {
@@ -33,23 +35,23 @@ public class CommandLineTest {
     }
 
     @Test public void
-    operandValuesAreAccessibleByName() throws Exception {
-        cl.addOperand(operand("input"));
-        cl.addOperand(operand("output"));
+    parsesAndReturnsDetectedOperands() throws Exception {
+        add(operand("input"));
+        add(operand("output"));
 
-        cl.parse(new GnuParser(), "input", "output");
+        cl.parse("input", "output");
 
         assertEquals("input", cl.getArgumentValue("input"));
         assertEquals("output", cl.getArgumentValue("output"));
     }
 
     @Test public void
-    complainsWhenRequiredOperandsAreNotProvided() throws Exception {
-        cl.addOperand(operand("input"));
-        cl.addOperand(operand("output"));
+    complainsWhenRequiredOperandsAreMissing() throws Exception {
+        add(operand("input"));
+        add(operand("output"));
 
         try {
-            cl.parse(new GnuParser(), "input");
+            cl.parse("input");
             fail("Expected exception " + MissingOperandException.class.getName());
         } catch (MissingOperandException expected) {
             assertEquals("output", expected.getMissingOperand());
@@ -58,36 +60,45 @@ public class CommandLineTest {
 
     @Test public void
     returnsLeftOverArguments() throws Exception {
-        cl.addOperand(operand("input"));
+        add(operand("input"));
 
-        String[] extra = cl.parse(new GnuParser(), "input", "output");
+        String[] extra = cl.parse("input", "output");
         assertEquals("[output]", Arrays.toString(extra));
     }
 
     @Test public void
-    optionsHaveNoValueUnlessDetected() throws Exception {
-        cl.addOption(option("debug").withShortForm("d"));
-        assertFalse(cl.hasArgumentValue("debug"));
-        assertNull(cl.getArgumentValue("debug"));
+    parsesAndReturnsDetectedOptions() throws Exception {
+        add(option("debug").withShortForm("d"));
+        add(option("verbose").withShortForm("v"));
 
-        cl.parse(new GnuParser(), "-d");
+        cl.parse("-d");
         assertTrue(cl.hasArgumentValue("debug"));
         assertEquals(Boolean.TRUE, cl.getArgumentValue("debug"));
+        assertFalse(cl.hasArgumentValue("verbose"));
+        assertNull(cl.getArgumentValue("verbose"));
     }
 
     @Test public void
-    triggersActionOnDetectedOptions() throws Exception {
+    triggersActionsOnDetectedOptions() throws Exception {
         final Option.Action turnDebugOn = context.mock(Option.Action.class, "turn debug on");
-        cl.addOption(option("debug").withShortForm("d").whenPresent(turnDebugOn));
+        add(option("debug").withShortForm("d").whenPresent(turnDebugOn));
 
         final Option.Action setLocale = context.mock(Option.Action.class, "set locale");
-        cl.addOption(option("locale").withShortForm("l").whenPresent(setLocale));
+        add(option("locale").withShortForm("l").whenPresent(setLocale));
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
             one(setLocale).call(with(any(Option.class)));
         }});
 
-        cl.parse(new GnuParser(), "-l");
+        cl.parse("-l");
+    }
+
+    private void add(OperandSpec operand) {
+        cl.addOperand(operand.make());
+    }
+
+    private void add(OptionSpec option) {
+        cl.addOption(option.make());
     }
 }

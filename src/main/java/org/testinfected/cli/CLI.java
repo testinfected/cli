@@ -20,16 +20,20 @@
 package org.testinfected.cli;
 
 import org.testinfected.cli.args.CommandLine;
-import org.testinfected.cli.args.Format;
+import org.testinfected.cli.args.Help;
 import org.testinfected.cli.args.OperandSpec;
 import org.testinfected.cli.args.OptionSpec;
+import org.testinfected.cli.args.Parser;
+import org.testinfected.cli.args.Syntax;
 import org.testinfected.cli.coercion.ClassCoercer;
 import org.testinfected.cli.coercion.FileCoercer;
 import org.testinfected.cli.coercion.IntegerCoercer;
 import org.testinfected.cli.coercion.LocaleCoercer;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
-import org.testinfected.cli.gnu.GnuFormat;
+import org.testinfected.cli.gnu.GnuHelp;
+import org.testinfected.cli.gnu.GnuParser;
+import org.testinfected.cli.gnu.GnuSyntax;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,10 +43,10 @@ import java.util.Map;
 
 public class CLI
 {
-    private final Map<Class<?>, TypeCoercer<?>> typeCoercers = new HashMap<Class<?>, TypeCoercer<?>>();
-    private final Format format;
-
     private final CommandLine commandLine;
+    private final Syntax syntax;
+    private final Help help;
+    private final Map<Class<?>, TypeCoercer<?>> typeCoercers = new HashMap<Class<?>, TypeCoercer<?>>();
 
     {
         coerceType(String.class).using(new StringCoercer());
@@ -54,12 +58,13 @@ public class CLI
     }
 
     public CLI() {
-        this(new GnuFormat());
+        this(new GnuSyntax(), new GnuParser(), new GnuHelp());
     }
 
-    public CLI(Format format) {
-        this.format = format;
-        this.commandLine = new CommandLine();
+    public CLI(Syntax syntax, Parser parser, Help help) {
+        this.commandLine = new CommandLine(parser);
+        this.syntax = syntax;
+        this.help = help;
     }
 
     public <T> CoercerDefinition<T> coerceType(Class<T> type) {
@@ -96,15 +101,15 @@ public class CLI
     }
 
     public void define(OptionSpec builder) {
-        defineArgument(builder);
+        commandLine.addOption(builder.make());
     }
 
     public void define(OperandSpec builder) {
-        defineOperand(builder);
+        commandLine.addOperand(builder.make());
     }
 
     public OptionSpec option(String name, String... definition) {
-        return format.defineOption(name, definition).using(typeCoercers);
+        return syntax.defineOption(name, definition).using(typeCoercers);
     }
 
     public OperandSpec operand(String name) {
@@ -119,16 +124,8 @@ public class CLI
         return operand(name, displayName).help(help);
     }
 
-    private void defineArgument(OptionSpec option) {
-        commandLine.addOption(option);
-    }
-
-    private void defineOperand(OperandSpec operand) {
-        commandLine.addOperand(operand);
-    }
-
     public String[] parse(String... args) throws ParsingException {
-        return commandLine.parse(format, args);
+        return commandLine.parse(args);
     }
 
     public boolean has(String name) {
@@ -148,7 +145,7 @@ public class CLI
     }
 
     public void printHelp(Appendable appendable) throws IOException {
-        commandLine.printHelp(format);
-        format.appendTo(appendable);
+        commandLine.printTo(help);
+        help.appendTo(appendable);
     }
 }

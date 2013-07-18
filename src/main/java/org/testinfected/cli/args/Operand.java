@@ -52,8 +52,8 @@ public class Operand {
         return description != null;
     }
 
-    public void describeTo(Help help) {
-        help.displayOperand(this);
+    public void printTo(Help help) {
+        help.printOperand(this);
     }
 
     public void consume(Iterator<String> arguments) throws ParsingException {

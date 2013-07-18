@@ -123,8 +123,8 @@ public class Option {
         action.call(this);
     }
 
-    public void describeTo(Help help) {
-        help.displayOption(this);
+    public void printTo(Help help) {
+        help.printOption(this);
     }
 
     public void consume(Iterator<String> arguments) throws ParsingException {

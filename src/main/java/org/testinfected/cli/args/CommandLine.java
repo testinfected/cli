@@ -13,6 +13,7 @@ import static java.util.Collections.unmodifiableCollection;
 
 public class CommandLine
 {
+    private final Parser parser;
     private final Collection<Option> options = new ArrayList<Option>();
     private final List<Operand> operands = new ArrayList<Operand>();
 
@@ -21,7 +22,9 @@ public class CommandLine
     private String version;
     private String ending;
 
-    public CommandLine() {}
+    public CommandLine(Parser parser) {
+        this.parser = parser;
+    }
 
     public void setProgram(String name) {
         this.program = name;
@@ -39,12 +42,12 @@ public class CommandLine
         this.ending = epilog;
     }
 
-    public void addOption(OptionSpec option) {
-        options.add(option.make());
+    public void addOption(Option option) {
+        options.add(option);
     }
 
-    public void addOperand(OperandSpec operand) {
-        operands.add(operand.make());
+    public void addOperand(Operand operand) {
+        operands.add(operand);
     }
 
     public boolean hasArgumentValue(String name) {
@@ -67,14 +70,13 @@ public class CommandLine
         return arguments;
     }
 
-    public String[] parse(Parser parser, String... args) throws ParsingException {
-        String[] extraArguments = parseArgs(parser, args);
+    public String[] parse(String... args) throws ParsingException {
+        String[] extraArguments = parseArgs(args);
         callActions();
         return extraArguments;
     }
 
-    private String[] parseArgs(Parser parser, String... args)
-            throws ParsingException {
+    private String[] parseArgs(String... args) throws ParsingException {
         return consumeOperands(parser.parse(unmodifiableCollection(options), args));
     }
 
@@ -92,17 +94,17 @@ public class CommandLine
         return leftOver.toArray(new String[leftOver.size()]);
     }
 
-    public void printHelp(Help help) {
-        help.displayProgram(program);
-        help.displayVersion(version);
-        help.displayDescription(description);
-        help.displayEnding(ending);
+    public void printTo(Help help) {
+        help.printProgram(program);
+        help.printVersion(version);
+        help.printDescription(description);
         for (Option option : options) {
-            option.describeTo(help);
+            option.printTo(help);
         }
         for (Operand operand : operands) {
-            operand.describeTo(help);
+            operand.printTo(help);
         }
+        help.printEnding(ending);
     }
 
     private void callActions() {
