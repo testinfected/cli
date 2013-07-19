@@ -32,7 +32,7 @@ public class CommandLineTest {
 
     @Test public void
     detectsInitiallyNoArgument() throws ParsingException {
-        Args args = cl.parseArguments();
+        Args args = cl.parse();
         assertEquals(0, args.size());
     }
 
@@ -41,7 +41,7 @@ public class CommandLineTest {
         add(option("debug").withShortForm("x"));
         add(option("verbose").withShortForm("v"));
 
-        Args args = cl.parseArguments("-x");
+        Args args = cl.parse("-x");
         assertTrue(args.has("debug"));
         assertEquals(TRUE, args.get("debug"));
         assertFalse(args.has("verbose"));
@@ -61,7 +61,7 @@ public class CommandLineTest {
             one(setLocale).call(with(any(Args.class)), with(any(Option.class)));
         }});
 
-        cl.parseArguments("-l");
+        cl.parse("-l");
     }
 
     @Test public void
@@ -69,7 +69,7 @@ public class CommandLineTest {
         add(operand("input"));
         add(operand("output"));
 
-        Args args = cl.parseArguments("input", "output");
+        Args args = cl.parse("input", "output");
 
         assertEquals("input", args.get("input"));
         assertEquals("output", args.get("output"));
@@ -80,7 +80,7 @@ public class CommandLineTest {
         add(option("verbose").withShortForm("v"));
         add(operand("input"));
 
-        Args args = cl.parseArguments("-v", "input");
+        Args args = cl.parse("-v", "input");
         assertEquals(2, args.size());
     }
 
@@ -90,7 +90,7 @@ public class CommandLineTest {
         add(operand("output"));
 
         try {
-            cl.parseArguments("input");
+            cl.parse("input");
             fail("Expected exception " + MissingOperandException.class.getName());
         } catch (MissingOperandException expected) {
             assertEquals("output", expected.getMissingOperand());
@@ -98,11 +98,11 @@ public class CommandLineTest {
     }
 
     @Test public void
-    returnsLeftOverArguments() throws Exception {
+    returnsUnprocessedArguments() throws Exception {
         add(operand("input"));
 
-        Args args = cl.parseArguments("input", "output");
-        assertEquals(asList("output"), asList(args.more()));
+        Args args = cl.parse("input", "output");
+        assertEquals(asList("output"), args.others());
     }
 
     private void add(OperandSpec operand) {

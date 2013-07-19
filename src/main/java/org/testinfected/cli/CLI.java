@@ -39,6 +39,7 @@ import org.testinfected.cli.gnu.GnuSyntax;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -48,7 +49,8 @@ public class CLI
     private final Syntax syntax;
     private final Help help;
     private final Map<Class<?>, TypeCoercer<?>> typeCoercers = new HashMap<Class<?>, TypeCoercer<?>>();
-    private final Args detected = new Args();
+
+    private Args detected = new Args();
 
     {
         coerceType(String.class).using(new StringCoercer());
@@ -126,9 +128,9 @@ public class CLI
         return operand(name, displayName).describedAs(help);
     }
 
-    public String[] parse(String... args) throws ParsingException {
-        detected.add(commandLine.parseArguments(args));
-        return detected.more();
+    public List<String> parse(String... args) throws ParsingException {
+        detected = new Args(commandLine.parse(args));
+        return detected.others();
     }
 
     public boolean has(String name) {
@@ -139,12 +141,12 @@ public class CLI
         return detected.get(name);
     }
 
-    public Map<String, ?> arguments() {
+    public Map<String, ?> options() {
         return detected.values();
     }
 
-    public int argumentCount() {
-        return arguments().size();
+    public List<String> others() {
+        return detected.others();
     }
 
     public void printHelp(Appendable appendable) throws IOException {

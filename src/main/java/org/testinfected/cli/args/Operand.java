@@ -4,8 +4,6 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
-import java.util.Iterator;
-
 public class Operand {
 
     private final String name;
@@ -47,21 +45,21 @@ public class Operand {
         return description != null;
     }
 
+    public String getValue(Args detected) {
+        return detected.get(name);
+    }
+
     public void printTo(Help help) {
         help.printOperand(this);
     }
 
-    public void consume(Args detected, Iterator<String> arguments) throws ParsingException {
-        if (noMore(arguments)) throw new MissingOperandException(this);
-        detected.put(name, convert(nextOf(arguments)));
+    public void consume(Args detected, Input args) throws ParsingException {
+        if (args.empty()) throw new MissingOperandException(this);
+        detected.put(name, value(args));
     }
 
-    private String nextOf(Iterator<String> arguments) {
-        return arguments.next();
-    }
-
-    private boolean noMore(Iterator<String> arguments) {
-        return !arguments.hasNext();
+    private Object value(Input args) throws InvalidArgumentException {
+        return convert(args.next());
     }
 
     private Object convert(String value) throws InvalidArgumentException {

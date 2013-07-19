@@ -3,16 +3,12 @@ package org.testinfected.cli.args;
 import org.testinfected.cli.ParsingException;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-
-import static java.util.Collections.unmodifiableCollection;
 
 public class CommandLine
 {
     private final Parser parser;
-    private final Collection<Option> options = new ArrayList<Option>();
+    private final List<Option> options = new ArrayList<Option>();
     private final List<Operand> operands = new ArrayList<Operand>();
 
     private String program;
@@ -48,17 +44,13 @@ public class CommandLine
         operands.add(operand);
     }
 
-    public Args parseArguments(String... args) throws ParsingException {
+    public Args parse(String... args) throws ParsingException {
         Args detected =  new Args();
         addDefaultOptions(detected);
-        List<String> nonOptionArguments = parseOptions(detected, args);
-        List<String> more = parseOperands(detected, nonOptionArguments);
-        detected.addAll(more);
-
-        for (Option option : options) {
-            if (option.isIn(detected)) option.call(detected);
-        }
-
+        List<String> nonOptionArguments = parseOptions(detected, Input.listOf(args));
+        List<String> others = parseOperands(detected, new Input(nonOptionArguments));
+        detected.addOthers(others);
+        callDetectedOptions(detected);
         return detected;
     }
 
@@ -68,18 +60,21 @@ public class CommandLine
         }
     }
 
-    private List<String> parseOperands(Args detected, List<String> arguments) throws ParsingException {
-        List<String> more = new ArrayList<String>();
-        Iterator<String> args = arguments.iterator();
-        for (Operand operand : operands) {
-            operand.consume(detected, args);
-        }
-        while (args.hasNext()) more.add(args.next());
-        return more;
+    private List<String> parseOptions(Args detected, Input args) throws ParsingException {
+        return parser.parse(detected, new Options(options), args);
     }
 
-    private List<String> parseOptions(Args detected, String[] args) throws ParsingException {
-        return parser.parse(detected, unmodifiableCollection(options), args);
+    private List<String> parseOperands(Args detected, Input args) throws ParsingException {
+         for (Operand operand : operands) {
+             operand.consume(detected, args);
+         }
+         return args.remaining();
+     }
+
+    private void callDetectedOptions(Args detected) {
+        for (Option option : options) {
+            if (option.isIn(detected)) option.call(detected);
+        }
     }
 
     public void printTo(Help help) {

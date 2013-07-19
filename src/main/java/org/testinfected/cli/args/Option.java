@@ -23,10 +23,8 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
-import java.util.Iterator;
-
 public class Option {
-    private static final Boolean SWITCH_ON = Boolean.TRUE;
+    private static final Boolean ON = Boolean.TRUE;
 
     private final String name;
 
@@ -131,18 +129,17 @@ public class Option {
         return args.get(name);
     }
 
-    public void handleArguments(Args detected, Iterator<String> arguments) throws ParsingException {
-        if (takesArgument() && noMore(arguments)) throw new ArgumentMissingException(this);
-        Object value = takesArgument() ? convert(arguments.next()) : SWITCH_ON;
-        detected.put(name, value);
+    public void handle(Args detected, Input args) throws ParsingException {
+        if (takesArgument() && args.empty()) throw new ArgumentMissingException(this);
+        detected.put(name, value(args));
+    }
+
+    private Object value(Input args) throws InvalidArgumentException {
+        return takesArgument() ? convert(args.next()) : ON;
     }
 
     public void printTo(Help help) {
         help.printOption(this);
-    }
-
-    private boolean noMore(Iterator<String> arguments) {
-        return !arguments.hasNext();
     }
 
     private Object convert(String value) throws InvalidArgumentException {

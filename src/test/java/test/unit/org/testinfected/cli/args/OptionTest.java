@@ -7,14 +7,12 @@ import org.testinfected.cli.args.ArgumentMissingException;
 import org.testinfected.cli.args.Option;
 import org.testinfected.cli.coercion.IntegerCoercer;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.testinfected.cli.args.Input.listOf;
 
 public class OptionTest
 {
@@ -29,7 +27,7 @@ public class OptionTest
     @Test public void
     optionWithoutArgumentIsConsideredBoolean() throws ParsingException {
         Option option = new Option("option");
-        option.handleArguments(detected, arguments());
+        option.handle(detected, listOf());
         assertEquals(TRUE, option.getValue(detected));
     }
 
@@ -39,13 +37,13 @@ public class OptionTest
         option.setArgument("ARG");
 
         try {
-            option.handleArguments(detected, arguments());
+            option.handle(detected, listOf());
             fail();
         }
         catch (ArgumentMissingException expected) {
         }
 
-        option.handleArguments(detected, arguments("value"));
+        option.handle(detected, listOf("value"));
         assertEquals("value", option.getValue(detected));
     }
 
@@ -54,7 +52,7 @@ public class OptionTest
         Option option = new Option("block size", new IntegerCoercer());
         option.setArgument("SIZE");
 
-        option.handleArguments(detected, arguments("1024"));
+        option.handle(detected, listOf("1024"));
         assertEquals(1024, option.getValue(detected));
     }
 
@@ -65,9 +63,5 @@ public class OptionTest
 
         assertTrue(option.hasDefaultValue());
         assertEquals(1024, option.getDefaultValue());
-    }
-
-    private Iterator<String> arguments(String... args) {
-        return Arrays.asList(args).iterator();
     }
 }

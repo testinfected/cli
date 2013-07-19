@@ -24,6 +24,7 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.Option;
 import org.testinfected.cli.args.OptionSpec;
+import org.testinfected.cli.args.Options;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.gnu.GnuParser;
 
@@ -35,6 +36,7 @@ import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.testinfected.cli.args.Input.listOf;
 import static org.testinfected.cli.args.OptionSpec.option;
 
 public class GnuParserTest
@@ -86,7 +88,7 @@ public class GnuParserTest
     }
 
     @Test public void
-    supportsMultipleOptionsAndParameters() throws ParsingException {
+    supportsMultipleOptionsWithParameters() throws ParsingException {
         Option human = define(option("human").withShortForm("h").describedAs("Human readable format"));
         Option blockSize = define(option("block").withLongForm("block-size").takingArgument("SIZE"));
         Option debug = define(option("debug").withShortForm("x"));
@@ -115,8 +117,8 @@ public class GnuParserTest
         return option;
     }
 
-    private void parse(String... input)
+    private void parse(String... args)
             throws ParsingException {
-        nonOptions.addAll(parser.parse(detected, options, input));
+        nonOptions.addAll(parser.parse(detected, new Options(options), listOf(args)));
     }
 }

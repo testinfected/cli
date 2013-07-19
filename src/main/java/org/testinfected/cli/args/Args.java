@@ -8,41 +8,43 @@ import java.util.Map;
 
 public class Args {
 
-    private final Map<String, Object> values = new HashMap<String, Object>();
-    private final List<String> arguments = new ArrayList<String>();
+    private final Map<String, Object> options = new HashMap<String, Object>();
+    private final List<String> others = new ArrayList<String>();
+
+    public Args() {}
+
+    public Args(Args args) {
+        options.putAll(args.options);
+        others.addAll(args.others);
+    }
 
     public int size() {
-        return values.size();
+        return options.size();
     }
 
     @SuppressWarnings("unchecked")
     public <T> T get(String name) {
-        return (T) values.get(name);
+        return (T) options.get(name);
     }
 
     public Map<String, ?> values() {
-        return new HashMap<String, Object>(values);
+        return options;
     }
 
     public void put(String name, Object value) {
-        values.put(name, value);
+        options.put(name, value);
     }
 
     public boolean has(String name) {
-        return values.containsKey(name);
+        return options.containsKey(name);
     }
 
-    public String[] more() {
-        return arguments.toArray(new String[arguments.size()]);
+    public List<String> others() {
+        return new ArrayList<String>(others);
     }
 
-    public void addAll(Collection<String> args) {
-        arguments.addAll(args);
-    }
-
-    public void add(Args args) {
-        values.putAll(args.values);
-        arguments.addAll(args.arguments);
+    public void addOthers(Collection<String> args) {
+        others.addAll(args);
     }
 }
 

@@ -21,17 +21,16 @@ package org.testinfected.cli.gnu;
 
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.Args;
+import org.testinfected.cli.args.Input;
+import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.Options;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.UnrecognizedOptionException;
-import org.testinfected.cli.args.Option;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.util.Arrays.asList;
 
 /**
  * Not quite GNU compliant yet
@@ -42,43 +41,36 @@ public class GnuParser implements Parser
     private static final Pattern SHORT_OPTION = Pattern.compile("-(.+)");
     private static final int IDENTIFIER = 1;
 
-    public List<String> parse(Args detected, Iterable<Option> options, String... args) throws ParsingException {
-        List<String> arguments = new ArrayList<String>();
+    public List<String> parse(Args detected, Options options, Input args) throws ParsingException {
+        List<String> nonOptions = new ArrayList<String>();
 
-        for (Iterator<String> tokens = asList(args).iterator(); tokens.hasNext(); ) {
-            String currentToken = tokens.next();
+        while (args.hasNext()) {
+            String currentToken = args.next();
 
             Matcher longForm = LONG_OPTION.matcher(currentToken);
             if (detected(longForm)) {
-                Option option = findOption(options, longForm);
+                Option option = options.find(identifier(longForm));
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
-                option.handleArguments(detected, tokens);
+                option.handle(detected, args);
                 continue;
             }
 
             Matcher shortForm = SHORT_OPTION.matcher(currentToken);
             if (detected(shortForm)) {
-                Option option = findOption(options, shortForm);
+                Option option = options.find(identifier(shortForm));
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
-                option.handleArguments(detected, tokens);
+                option.handle(detected, args);
                 continue;
             }
 
-            arguments.add(currentToken);
+            nonOptions.add(currentToken);
         }
 
-        return arguments;
+        return nonOptions;
     }
 
     private boolean detected(Matcher form) {
         return form.matches();
-    }
-
-    private Option findOption(Iterable<Option> candidates, Matcher matcher) {
-        for (Option candidate : candidates) {
-            if (candidate.matches(identifier(matcher))) return candidate;
-        }
-        return null;
     }
 
     private String identifier(Matcher matcher) {

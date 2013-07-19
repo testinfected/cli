@@ -33,9 +33,10 @@ import org.testinfected.cli.coercion.TypeCoercer;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -64,8 +65,8 @@ public class CLIUsageTest {
         cli = new CLI() {{
             define(operand("input"));
         }};
-        String[] args = cli.parse("input", "output", "encoding");
-        assertEquals("[output, encoding]", Arrays.toString(args));
+        List<String> others = cli.parse("input", "output", "encoding");
+        assertEquals(asList("output", "encoding"), others);
     }
 
     @Test public void
@@ -158,14 +159,14 @@ public class CLIUsageTest {
             define(operand("output", "OUTFILE", "The output file"));
         }};
 
-        String[] args = cli.parse("-h", "--block-size", "1024", "-x", "input", "output", "extra", "more extra");
-        assertEquals(5, cli.argumentCount());
+        cli.parse("-h", "--block-size", "1024", "-x", "input", "output", "extra", "more extra");
+        assertEquals(5, cli.options().size());
         assertTrue(cli.has("human"));
         assertEquals(1024, cli.get("block"));
         assertTrue(cli.has("debug"));
         assertEquals("input", cli.get("input"));
         assertEquals("output", cli.get("output"));
-        assertEquals("[extra, more extra]", Arrays.toString(args));
+        assertEquals(asList("extra", "more extra"), cli.others());
     }
 
     @Test public void
