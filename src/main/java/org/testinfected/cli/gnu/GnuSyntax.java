@@ -1,6 +1,6 @@
 package org.testinfected.cli.gnu;
 
-import org.testinfected.cli.args.OptionSpec;
+import org.testinfected.cli.args.Option;
 import org.testinfected.cli.args.Syntax;
 import org.testinfected.cli.util.Strings;
 
@@ -15,8 +15,8 @@ public class GnuSyntax implements Syntax
     private static final int IDENTIFIER = 1;
     private static final int ARGUMENT = 2;
 
-    public OptionSpec defineOption(String name, String... definition) {
-        OptionSpec option = OptionSpec.option(name);
+    public Option defineOption(String name, String... definition) {
+        Option option = Option.named(name);
 
         Schema schema = new Schema(option);
         for (String token : definition) {
@@ -54,9 +54,9 @@ public class GnuSyntax implements Syntax
 
     private static class Schema
     {
-        private final OptionSpec option;
+        private final Option option;
 
-        public Schema(OptionSpec option) {
+        public Schema(Option option) {
             this.option = option;
         }
 
@@ -72,7 +72,7 @@ public class GnuSyntax implements Syntax
 
         public String validateArgument(String argument) {
             if (Strings.blank(argument)) return null;
-            if (option.hasArgument()) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
+            if (option.takesArgument()) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
             return argument;
         }
 
@@ -81,7 +81,7 @@ public class GnuSyntax implements Syntax
             return description;
         }
 
-        private String quote(OptionSpec option) {
+        private String quote(Option option) {
             return "'" + option.getName() + "'";
         }
     }

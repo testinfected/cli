@@ -36,11 +36,11 @@ public class CommandLine
         this.ending = epilog;
     }
 
-    public void addOption(Option option) {
+    public void add(Option option) {
         options.add(option);
     }
 
-    public void addOperand(Operand operand) {
+    public void add(Operand operand) {
         operands.add(operand);
     }
 

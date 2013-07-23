@@ -23,7 +23,12 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Option {
+    private final Map<Class, TypeCoercer<?>> coercers = new HashMap<Class, TypeCoercer<?>>();
+
     private static final Boolean ON = Boolean.TRUE;
 
     private final String name;
@@ -35,6 +40,10 @@ public class Option {
     private Object defaultValue;
     private TypeCoercer typeCoercer;
     private Action action = Action.NOTHING;
+
+    public static Option named(String name) {
+        return new Option(name);
+    }
 
     public Option(String name) {
         this(name, new StringCoercer());
@@ -49,8 +58,9 @@ public class Option {
         return name;
     }
 
-    public void setShortForm(String form) {
-        this.shortForm = form;
+    public Option withShortForm(String shortForm) {
+        this.shortForm = shortForm;
+        return this;
     }
 
     public String getShortForm() {
@@ -61,8 +71,9 @@ public class Option {
         return shortForm != null;
     }
 
-    public void setLongForm(String form) {
-        this.longForm = form;
+    public Option withLongForm(String longForm) {
+        this.longForm = longForm;
+        return this;
     }
 
     public String getLongForm() {
@@ -73,8 +84,9 @@ public class Option {
         return longForm != null;
     }
 
-    public void setDescription(String description) {
+    public Option describedAs(String description) {
         this.description = description;
+        return this;
     }
 
     public String getDescription() {
@@ -85,8 +97,9 @@ public class Option {
         return description != null;
     }
 
-    public void setArgument(String arg) {
-        this.argument = arg;
+    public Option takingArgument(String argument) {
+        this.argument = argument;
+        return this;
     }
 
     public String getArgument() {
@@ -97,8 +110,9 @@ public class Option {
         return argument != null;
     }
 
-    public void setDefaultValue(Object defaultValue) {
-        this.defaultValue = defaultValue;
+    public Option defaultingTo(Object value) {
+        this.defaultValue = value;
+        return this;
     }
 
     public Object getDefaultValue() {
@@ -109,8 +123,34 @@ public class Option {
         return defaultValue != null;
     }
 
-    public void setAction(Action action) {
+    public Option ofType(Class type) {
+        return ofType(coercerFor(type));
+    }
+
+    public Option using(Map<Class<?>, TypeCoercer<?>> coercers) {
+        this.coercers.putAll(coercers);
+        return this;
+    }
+
+    public Option ofType(TypeCoercer type) {
+        this.typeCoercer = type;
+        return this;
+    }
+
+    public Option whenPresent(Option.Action action) {
         this.action = action;
+        return this;
+    }
+
+    public interface Action {
+        public static final Action NOTHING = new NoOp();
+
+        public static class NoOp implements Action {
+            public void call(Args detected, Option option) {
+            }
+        }
+
+        void call(Args detected, Option option);
     }
 
     public boolean matches(String identifier) {
@@ -134,12 +174,12 @@ public class Option {
         detected.put(name, value(args));
     }
 
-    private Object value(Input args) throws InvalidArgumentException {
-        return takesArgument() ? convert(args.next()) : ON;
+    public void printTo(Help help) {
+        help.print(this);
     }
 
-    public void printTo(Help help) {
-        help.printOption(this);
+    private Object value(Input args) throws InvalidArgumentException {
+        return takesArgument() ? convert(args.next()) : ON;
     }
 
     private Object convert(String value) throws InvalidArgumentException {
@@ -150,15 +190,11 @@ public class Option {
         }
     }
 
-    public interface Action {
-        public static final Action NOTHING = new NoOp();
+    private TypeCoercer coercerFor(Class type) {
+        if (!coercers.containsKey(type))
+            throw new IllegalArgumentException("Don't know how to coerce type " + type.getName());
 
-        public static class NoOp implements Action {
-            public void call(Args detected, Option option) {
-            }
-        }
-
-        void call(Args detected, Option option);
+        return coercers.get(type);
     }
 }
 

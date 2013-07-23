@@ -51,6 +51,6 @@ public class GnuSyntaxTest
     }
 
     private Option define(String... options) {
-        return syntax.defineOption("option", options).make();
+        return syntax.defineOption("option", options);
     }
 }

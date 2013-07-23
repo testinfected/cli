@@ -22,8 +22,8 @@ package org.testinfected.cli;
 import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.Help;
-import org.testinfected.cli.args.OperandSpec;
-import org.testinfected.cli.args.OptionSpec;
+import org.testinfected.cli.args.Operand;
+import org.testinfected.cli.args.Option;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.Syntax;
 import org.testinfected.cli.coercion.ClassCoercer;
@@ -104,28 +104,30 @@ public class CLI
         commandLine.setEnding(epilog);
     }
 
-    public void define(OptionSpec spec) {
-        commandLine.addOption(spec.make());
+    public Option option(String name, String... definition) {
+        return define(syntax.defineOption(name, definition).using(typeCoercers));
     }
 
-    public void define(OperandSpec spec) {
-        commandLine.addOperand(spec.make());
+    public Operand operand(String name) {
+        return define(Operand.named(name).using(typeCoercers));
     }
 
-    public OptionSpec option(String name, String... definition) {
-        return syntax.defineOption(name, definition).using(typeCoercers);
-    }
-
-    public OperandSpec operand(String name) {
-        return OperandSpec.operand(name).using(typeCoercers);
-    }
-
-    public OperandSpec operand(String name, String displayName) {
+    public Operand operand(String name, String displayName) {
         return operand(name).as(displayName);
     }
 
-    public OperandSpec operand(String name, String displayName, String help) {
+    public Operand operand(String name, String displayName, String help) {
         return operand(name, displayName).describedAs(help);
+    }
+
+    private Option define(Option option) {
+        commandLine.add(option);
+        return option;
+    }
+
+    private Operand define(Operand option) {
+        commandLine.add(option);
+        return option;
     }
 
     public List<String> parse(String... args) throws ParsingException {

@@ -4,13 +4,22 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Operand {
 
+    private final Map<Class<?>, TypeCoercer<?>> coercers = new HashMap<Class<?>, TypeCoercer<?>>();
+
     private final String name;
-    private final TypeCoercer typeCoercer;
+    private TypeCoercer<?> typeCoercer;
 
     private String displayName;
     private String description;
+
+    public static Operand named(String name) {
+        return new Operand(name);
+    }
 
     public Operand(String name) {
         this(name, new StringCoercer());
@@ -25,16 +34,18 @@ public class Operand {
         return name;
     }
 
-    public void setDisplayName(String name) {
-        this.displayName = name;
+    public Operand as(String argument) {
+        this.displayName = argument;
+        return this;
     }
 
     public String getDisplayName() {
         return displayName != null ? displayName : name.toUpperCase();
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public Operand describedAs(String message) {
+        this.description = message;
+        return this;
     }
 
     public String getDescription() {
@@ -45,12 +56,33 @@ public class Operand {
         return description != null;
     }
 
+    public Operand ofType(Class<?> type) {
+        return ofType(coercerFor(type));
+    }
+
+    public Operand ofType(TypeCoercer<?> type) {
+        this.typeCoercer = type;
+        return this;
+    }
+
+    public Operand using(Map<Class<?>, TypeCoercer<?>> coercers) {
+        this.coercers.putAll(coercers);
+        return this;
+    }
+
+    private TypeCoercer<?> coercerFor(Class<?> type) {
+        if (!coercers.containsKey(type))
+            throw new IllegalArgumentException("Don't know how to coerce type " + type.getName());
+
+        return coercers.get(type);
+    }
+
     public String getValue(Args detected) {
         return detected.get(name);
     }
 
     public void printTo(Help help) {
-        help.printOperand(this);
+        help.print(this);
     }
 
     public void consume(Args detected, Input args) throws ParsingException {

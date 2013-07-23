@@ -34,7 +34,7 @@ public class OptionTest
     @Test public void
     optionCanRequireAnArgument() throws ParsingException {
         Option option = new Option("option");
-        option.setArgument("ARG");
+        option.takingArgument("ARG");
 
         try {
             option.handle(detected, listOf());
@@ -50,7 +50,7 @@ public class OptionTest
     @Test public void
     optionTypeCanBeEnforced() throws ParsingException {
         Option option = new Option("block size", new IntegerCoercer());
-        option.setArgument("SIZE");
+        option.takingArgument("SIZE");
 
         option.handle(detected, listOf("1024"));
         assertEquals(1024, option.getValue(detected));
@@ -59,7 +59,7 @@ public class OptionTest
     @Test public void
     optionCanHaveADefaultValue() throws ParsingException {
         Option option = new Option("block size");
-        option.setDefaultValue(1024);
+        option.defaultingTo(1024);
 
         assertTrue(option.hasDefaultValue());
         assertEquals(1024, option.getDefaultValue());

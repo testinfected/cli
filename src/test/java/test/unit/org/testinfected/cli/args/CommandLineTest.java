@@ -10,9 +10,8 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.MissingOperandException;
-import org.testinfected.cli.args.OperandSpec;
+import org.testinfected.cli.args.Operand;
 import org.testinfected.cli.args.Option;
-import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.gnu.GnuParser;
 
 import static java.lang.Boolean.TRUE;
@@ -22,8 +21,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.testinfected.cli.args.OperandSpec.operand;
-import static org.testinfected.cli.args.OptionSpec.option;
 
 @RunWith(JMock.class)
 public class CommandLineTest {
@@ -38,8 +35,8 @@ public class CommandLineTest {
 
     @Test public void
     detectsSpecifiedOptionsWhenPresent() throws ParsingException {
-        add(option("debug").withShortForm("x"));
-        add(option("verbose").withShortForm("v"));
+        cl.add(Option.named("debug").withShortForm("x"));
+        cl.add(Option.named("verbose").withShortForm("v"));
 
         Args args = cl.parse("-x");
         assertTrue(args.has("debug"));
@@ -51,10 +48,10 @@ public class CommandLineTest {
     @Test public void
     triggersActionsOnDetectedOptions() throws Exception {
         final Option.Action turnDebugOn = context.mock(Option.Action.class, "turn debug on");
-        add(option("debug").withShortForm("d").whenPresent(turnDebugOn));
+        cl.add(Option.named("debug").withShortForm("d").whenPresent(turnDebugOn));
 
         final Option.Action setLocale = context.mock(Option.Action.class, "set locale");
-        add(option("locale").withShortForm("l").whenPresent(setLocale));
+        cl.add(Option.named("locale").withShortForm("l").whenPresent(setLocale));
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
@@ -66,8 +63,8 @@ public class CommandLineTest {
 
     @Test public void
     detectsSpecifiedOperandsWhenPresent() throws Exception {
-        add(operand("input"));
-        add(operand("output"));
+        cl.add(Operand.named("input"));
+        cl.add(Operand.named("output"));
 
         Args args = cl.parse("input", "output");
 
@@ -77,8 +74,8 @@ public class CommandLineTest {
 
     @Test public void
     detectsBothOptionsAndOperands() throws Exception {
-        add(option("verbose").withShortForm("v"));
-        add(operand("input"));
+        cl.add(Option.named("verbose").withShortForm("v"));
+        cl.add(Operand.named("input"));
 
         Args args = cl.parse("-v", "input");
         assertEquals(2, args.size());
@@ -86,8 +83,8 @@ public class CommandLineTest {
 
     @Test public void
     complainsWhenRequiredOperandsAreMissing() throws Exception {
-        add(operand("input"));
-        add(operand("output"));
+        cl.add(Operand.named("input"));
+        cl.add(Operand.named("output"));
 
         try {
             cl.parse("input");
@@ -99,17 +96,9 @@ public class CommandLineTest {
 
     @Test public void
     returnsUnprocessedArguments() throws Exception {
-        add(operand("input"));
+        cl.add(Operand.named("input"));
 
         Args args = cl.parse("input", "output");
         assertEquals(asList("output"), args.others());
-    }
-
-    private void add(OperandSpec operand) {
-        cl.addOperand(operand.make());
-    }
-
-    private void add(OptionSpec option) {
-        cl.addOption(option.make());
     }
 }

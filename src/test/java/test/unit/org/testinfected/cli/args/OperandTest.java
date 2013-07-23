@@ -10,7 +10,7 @@ public class OperandTest {
     @Test public void
     acceptsAnOptionalDisplayName() {
         Operand operand = new Operand("file");
-        operand.setDisplayName("FILENAME");
+        operand.as("FILENAME");
         assertEquals("argument", "FILENAME", operand.getDisplayName());
     }
 

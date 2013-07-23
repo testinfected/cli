@@ -46,11 +46,11 @@ public class GnuHelp implements Help {
         this.epilog = epilog;
     }
 
-    public void printOption(Option option) {
+    public void print(Option option) {
         options.add(option);
     }
 
-    public void printOperand(Operand operand) {
+    public void print(Operand operand) {
         operands.add(operand);
     }
 

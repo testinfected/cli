@@ -3,13 +3,13 @@ package test.unit.org.testinfected.cli.gnu;
 import org.junit.Test;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.Help;
+import org.testinfected.cli.args.Operand;
+import org.testinfected.cli.args.Option;
 import org.testinfected.cli.gnu.GnuHelp;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
-import static org.testinfected.cli.args.OperandSpec.operand;
-import static org.testinfected.cli.args.OptionSpec.option;
 
 public class GnuHelpTest
 {
@@ -23,8 +23,8 @@ public class GnuHelpTest
 
     @Test public void
     describesPositionalArguments() throws IOException {
-        help.printOperand(operand("input").as("IN").describedAs("The source file").make());
-        help.printOperand(operand("output").as("OUT").describedAs("The destination file").make());
+        help.print(Operand.named("input").as("IN").describedAs("The source file"));
+        help.print(Operand.named("output").as("OUT").describedAs("The destination file"));
         assertHelp(
                 "Usage: IN OUT",
                 "",
@@ -68,9 +68,9 @@ public class GnuHelpTest
 
     @Test public void
     includesDescriptionsOfOptions() throws ParsingException, IOException {
-        help.printOption(option("raw").withLongForm("raw").describedAs("Specifies raw output format").make());
-        help.printOption(option("block size").withShortForm("b").withLongForm("block-size").takingArgument("SIZE").describedAs("Specifies block size").make());
-        help.printOption(option("debug").withShortForm("x").describedAs("Turn debugging on").make());
+        help.print(Option.named("raw").withLongForm("raw").describedAs("Specifies raw output format"));
+        help.print(Option.named("block size").withShortForm("b").withLongForm("block-size").takingArgument("SIZE").describedAs("Specifies block size"));
+        help.print(Option.named("debug").withShortForm("x").describedAs("Turn debugging on"));
 
         assertHelp(
                 "Usage: [--raw] [-b SIZE] [-x]",
@@ -85,7 +85,7 @@ public class GnuHelpTest
     @Test public void
     endsWithEpilog() throws ParsingException, IOException {
         help.printEnding("use \"program --help\" to get help");
-        help.printOption(option("debug").withShortForm("x").describedAs("Turn debugging on").make());
+        help.print(Option.named("debug").withShortForm("x").describedAs("Turn debugging on"));
         assertHelp(
                 "Usage: [-x]",
                 "",
