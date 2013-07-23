@@ -7,7 +7,7 @@ import org.testinfected.cli.coercion.TypeCoercer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Operand {
+public class Operand implements OperandSpec {
 
     private final Map<Class<?>, TypeCoercer<?>> coercers = new HashMap<Class<?>, TypeCoercer<?>>();
 

@@ -26,7 +26,7 @@ import org.testinfected.cli.coercion.TypeCoercer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Option {
+public class Option implements OptionSpec {
     private final Map<Class, TypeCoercer<?>> coercers = new HashMap<Class, TypeCoercer<?>>();
 
     private static final Boolean ON = Boolean.TRUE;

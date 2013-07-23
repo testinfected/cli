@@ -23,7 +23,9 @@ import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.Help;
 import org.testinfected.cli.args.Operand;
+import org.testinfected.cli.args.OperandSpec;
 import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.Syntax;
 import org.testinfected.cli.coercion.ClassCoercer;
@@ -104,19 +106,19 @@ public class CLI
         commandLine.setEnding(epilog);
     }
 
-    public Option option(String name, String... definition) {
+    public OptionSpec option(String name, String... definition) {
         return define(syntax.defineOption(name, definition).using(typeCoercers));
     }
 
-    public Operand operand(String name) {
+    public OperandSpec operand(String name) {
         return define(Operand.named(name).using(typeCoercers));
     }
 
-    public Operand operand(String name, String displayName) {
+    public OperandSpec operand(String name, String displayName) {
         return operand(name).as(displayName);
     }
 
-    public Operand operand(String name, String displayName, String help) {
+    public OperandSpec operand(String name, String displayName, String help) {
         return operand(name, displayName).describedAs(help);
     }
 
