@@ -23,17 +23,17 @@ import org.testinfected.cli.ParsingException;
 
 public class UnrecognizedOptionException extends ParsingException
 {
-    private final String trigger;
+    private final String option;
 
-    public UnrecognizedOptionException(String trigger) {
-        this.trigger = trigger;
+    public UnrecognizedOptionException(String option) {
+        this.option = option;
     }
 
-    public String getTrigger() {
-        return trigger;
+    public String getOption() {
+        return option;
     }
 
     public String getMessage() {
-        return "unrecognized option: " + trigger;
+        return "unrecognized option: " + option;
     }
 }

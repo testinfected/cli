@@ -12,7 +12,10 @@ import org.testinfected.cli.args.CommandLine;
 import org.testinfected.cli.args.MissingOperandException;
 import org.testinfected.cli.args.Operand;
 import org.testinfected.cli.args.Option;
+import org.testinfected.cli.coercion.LocaleCoercer;
 import org.testinfected.cli.gnu.GnuParser;
+
+import java.util.Locale;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
@@ -45,13 +48,14 @@ public class CommandLineTest {
         assertNull(args.get("verbose"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test public void
     triggersActionsOnDetectedOptions() throws Exception {
-        final Option.Action turnDebugOn = context.mock(Option.Action.class, "turn debug on");
+        final Option.Action<Boolean> turnDebugOn = context.mock(Option.Action.class, "turn debug on");
         cl.add(Option.named("debug").withShortForm("d").whenPresent(turnDebugOn));
 
-        final Option.Action setLocale = context.mock(Option.Action.class, "set locale");
-        cl.add(Option.named("locale").withShortForm("l").whenPresent(setLocale));
+        final Option.Action<Locale> setLocale = context.mock(Option.Action.class, "set locale");
+        cl.add(Option.named("locale").withShortForm("l").ofType(new LocaleCoercer()).whenPresent(setLocale));
 
         context.checking(new Expectations() {{
             never(turnDebugOn);

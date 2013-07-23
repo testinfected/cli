@@ -20,20 +20,20 @@ public class OptionTest
 
     @Test public void
     optionValueIsNullByDefault() throws ParsingException {
-        Option option = new Option("option");
-        assertNull(option.getValue(detected));
+        Option<?> option = Option.named("option");
+        assertNull(option.get(detected));
     }
 
     @Test public void
     optionWithoutArgumentIsConsideredBoolean() throws ParsingException {
-        Option option = new Option("option");
+        Option<Boolean> option = Option.named("option");
         option.handle(detected, listOf());
-        assertEquals(TRUE, option.getValue(detected));
+        assertEquals(TRUE, option.get(detected));
     }
 
     @Test public void
     optionCanRequireAnArgument() throws ParsingException {
-        Option option = new Option("option");
+        Option<?> option = Option.named("option");
         option.takingArgument("ARG");
 
         try {
@@ -44,22 +44,22 @@ public class OptionTest
         }
 
         option.handle(detected, listOf("value"));
-        assertEquals("value", option.getValue(detected));
+        assertEquals("value", option.get(detected));
     }
 
     @Test public void
     optionTypeCanBeEnforced() throws ParsingException {
-        Option option = new Option("block size", new IntegerCoercer());
-        option.takingArgument("SIZE");
+        Option<Boolean> option = Option.named("block size");
+        option.takingArgument("SIZE").ofType(new IntegerCoercer());
 
         option.handle(detected, listOf("1024"));
-        assertEquals(1024, option.getValue(detected));
+        assertEquals(1024, option.get(detected));
     }
 
     @Test public void
     optionCanHaveADefaultValue() throws ParsingException {
-        Option option = new Option("block size");
-        option.defaultingTo(1024);
+        Option<Boolean> option = Option.named("block size");
+        option.ofType(new IntegerCoercer()).defaultingTo(1024);
 
         assertTrue(option.hasDefaultValue());
         assertEquals(1024, option.getDefaultValue());

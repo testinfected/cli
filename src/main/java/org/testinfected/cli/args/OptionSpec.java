@@ -2,25 +2,23 @@ package org.testinfected.cli.args;
 
 import org.testinfected.cli.coercion.TypeCoercer;
 
-import java.util.Map;
+public interface OptionSpec<T> {
 
-public interface OptionSpec {
+    OptionSpec<T> withShortForm(String shortForm);
 
-    OptionSpec withShortForm(String shortForm);
+    OptionSpec<T> withLongForm(String longForm);
 
-    OptionSpec withLongForm(String longForm);
+    OptionSpec<T> describedAs(String description);
 
-    OptionSpec describedAs(String description);
+    OptionSpec<String> takingArgument(String argument);
 
-    OptionSpec takingArgument(String argument);
+    <V extends T> OptionSpec<T> defaultingTo(V value);
 
-    OptionSpec defaultingTo(Object value);
+    <S> OptionSpec<S> ofType(Class<? extends S> type);
 
-    OptionSpec ofType(Class type);
+    <S> OptionSpec<S> ofType(TypeCoercer<? extends S> type);
 
-    OptionSpec using(Map<Class<?>, TypeCoercer<?>> coercers);
+    OptionSpec<T> whenPresent(Option.Action<T> action);
 
-    OptionSpec ofType(TypeCoercer type);
-
-    OptionSpec whenPresent(Option.Action action);
+    T get(Args args);
 }

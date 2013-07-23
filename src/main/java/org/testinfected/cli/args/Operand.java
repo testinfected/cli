@@ -7,25 +7,21 @@ import org.testinfected.cli.coercion.TypeCoercer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Operand implements OperandSpec {
+public class Operand<T> implements OperandSpec<T> {
 
     private final Map<Class<?>, TypeCoercer<?>> coercers = new HashMap<Class<?>, TypeCoercer<?>>();
 
     private final String name;
-    private TypeCoercer<?> typeCoercer;
+    private TypeCoercer<? extends T> typeCoercer;
 
     private String displayName;
     private String description;
 
-    public static Operand named(String name) {
-        return new Operand(name);
+    public static Operand<String> named(String name) {
+        return new Operand<String>(name, new StringCoercer());
     }
 
-    public Operand(String name) {
-        this(name, new StringCoercer());
-    }
-
-    public Operand(String name, TypeCoercer type) {
+    protected Operand(String name, TypeCoercer<? extends T> type) {
         this.name = name;
         this.typeCoercer = type;
     }
@@ -34,7 +30,7 @@ public class Operand implements OperandSpec {
         return name;
     }
 
-    public Operand as(String argument) {
+    public Operand<T> as(String argument) {
         this.displayName = argument;
         return this;
     }
@@ -43,7 +39,7 @@ public class Operand implements OperandSpec {
         return displayName != null ? displayName : name.toUpperCase();
     }
 
-    public Operand describedAs(String message) {
+    public Operand<T> describedAs(String message) {
         this.description = message;
         return this;
     }
@@ -56,29 +52,31 @@ public class Operand implements OperandSpec {
         return description != null;
     }
 
-    public Operand ofType(Class<?> type) {
+    public <S> Operand<S> ofType(Class<? extends S> type) {
         return ofType(coercerFor(type));
     }
 
-    public Operand ofType(TypeCoercer<?> type) {
-        this.typeCoercer = type;
-        return this;
+    @SuppressWarnings("unchecked")
+    public <S> Operand<S> ofType(TypeCoercer<? extends S> type) {
+        this.typeCoercer = (TypeCoercer<? extends T>) type;
+        return (Operand<S>) this;
     }
 
-    public Operand using(Map<Class<?>, TypeCoercer<?>> coercers) {
+    public Operand<T> using(Map<Class<?>, TypeCoercer<?>> coercers) {
         this.coercers.putAll(coercers);
         return this;
     }
 
-    private TypeCoercer<?> coercerFor(Class<?> type) {
+    @SuppressWarnings("unchecked")
+    private <S> TypeCoercer<? extends S> coercerFor(Class<? extends S> type) {
         if (!coercers.containsKey(type))
             throw new IllegalArgumentException("Don't know how to coerce type " + type.getName());
 
-        return coercers.get(type);
+        return (TypeCoercer<? extends S>) coercers.get(type);
     }
 
-    public String getValue(Args detected) {
-        return detected.get(name);
+    public T get(Args args) {
+        return args.get(name);
     }
 
     public void printTo(Help help) {
@@ -90,11 +88,11 @@ public class Operand implements OperandSpec {
         detected.put(name, value(args));
     }
 
-    private Object value(Input args) throws InvalidArgumentException {
+    private T value(Input args) throws InvalidArgumentException {
         return convert(args.next());
     }
 
-    private Object convert(String value) throws InvalidArgumentException {
+    private T convert(String value) throws InvalidArgumentException {
         try {
             return typeCoercer.convert(value);
         } catch (Exception e) {

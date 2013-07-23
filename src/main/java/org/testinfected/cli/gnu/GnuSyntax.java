@@ -15,8 +15,8 @@ public class GnuSyntax implements Syntax
     private static final int IDENTIFIER = 1;
     private static final int ARGUMENT = 2;
 
-    public Option defineOption(String name, String... definition) {
-        Option option = Option.named(name);
+    public Option<?> defineOption(String name, String... definition) {
+        Option<Boolean> option = Option.named(name);
 
         Schema schema = new Schema(option);
         for (String token : definition) {
@@ -54,34 +54,34 @@ public class GnuSyntax implements Syntax
 
     private static class Schema
     {
-        private final Option option;
+        private final Option<?> option;
 
-        public Schema(Option option) {
+        public Schema(Option<?> option) {
             this.option = option;
         }
 
         public String validateShortForm(String shortForm) {
-            if (option.hasShortForm()) throw new IllegalArgumentException("Short form given twice for option " + quote(option));
+            if (option.hasShortForm()) throw new IllegalArgumentException("Short form given twice for option " + quoteName(option));
             return shortForm;
         }
 
         public String validateLongForm(String longForm) {
-            if (option.hasLongForm()) throw new IllegalArgumentException("Long form given twice for option " + quote(option));
+            if (option.hasLongForm()) throw new IllegalArgumentException("Long form given twice for option " + quoteName(option));
             return longForm;
         }
 
         public String validateArgument(String argument) {
             if (Strings.blank(argument)) return null;
-            if (option.takesArgument()) throw new IllegalArgumentException("Argument pattern given twice for option " + quote(option));
+            if (option.takesArgument()) throw new IllegalArgumentException("Argument pattern given twice for option " + quoteName(option));
             return argument;
         }
 
         public String validateDescription(String description) {
-            if (option.hasDescription()) throw new IllegalArgumentException("Description given twice for option " + quote(option));
+            if (option.hasDescription()) throw new IllegalArgumentException("Description given twice for option " + quoteName(option));
             return description;
         }
 
-        private String quote(Option option) {
+        private String quoteName(Option<?> option) {
             return "'" + option.getName() + "'";
         }
     }

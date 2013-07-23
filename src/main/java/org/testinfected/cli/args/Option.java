@@ -20,16 +20,17 @@
 package org.testinfected.cli.args;
 
 import org.testinfected.cli.ParsingException;
+import org.testinfected.cli.coercion.BooleanCoercer;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Option implements OptionSpec {
-    private final Map<Class, TypeCoercer<?>> coercers = new HashMap<Class, TypeCoercer<?>>();
+public class Option<T> implements OptionSpec<T> {
+    private static final String ON = Boolean.TRUE.toString();
 
-    private static final Boolean ON = Boolean.TRUE;
+    private final Map<Class, TypeCoercer<?>> coercers = new HashMap<Class, TypeCoercer<?>>();
 
     private final String name;
 
@@ -37,19 +38,18 @@ public class Option implements OptionSpec {
     private String longForm;
     private String argument;
     private String description;
-    private Object defaultValue;
-    private TypeCoercer typeCoercer;
-    private Action action = Action.NOTHING;
+    private T defaultValue;
+    private TypeCoercer<? extends T> typeCoercer;
+    private Action<T> action = new Action<T>() {
+        public void call(Args detected, Option<T> option) {
+        }
+    };
 
-    public static Option named(String name) {
-        return new Option(name);
+    public static Option<Boolean> named(String name) {
+        return new Option<Boolean>(name, new BooleanCoercer());
     }
 
-    public Option(String name) {
-        this(name, new StringCoercer());
-    }
-
-    public Option(String name, TypeCoercer type) {
+    protected Option(String name, TypeCoercer<? extends T> type) {
         this.name = name;
         this.typeCoercer = type;
     }
@@ -58,7 +58,7 @@ public class Option implements OptionSpec {
         return name;
     }
 
-    public Option withShortForm(String shortForm) {
+    public Option<T> withShortForm(String shortForm) {
         this.shortForm = shortForm;
         return this;
     }
@@ -71,7 +71,7 @@ public class Option implements OptionSpec {
         return shortForm != null;
     }
 
-    public Option withLongForm(String longForm) {
+    public Option<T> withLongForm(String longForm) {
         this.longForm = longForm;
         return this;
     }
@@ -84,7 +84,7 @@ public class Option implements OptionSpec {
         return longForm != null;
     }
 
-    public Option describedAs(String description) {
+    public Option<T> describedAs(String description) {
         this.description = description;
         return this;
     }
@@ -97,9 +97,10 @@ public class Option implements OptionSpec {
         return description != null;
     }
 
-    public Option takingArgument(String argument) {
+    @SuppressWarnings("unchecked")
+    public Option<String> takingArgument(String argument) {
         this.argument = argument;
-        return this;
+        return ofType(new StringCoercer());
     }
 
     public String getArgument() {
@@ -110,12 +111,12 @@ public class Option implements OptionSpec {
         return argument != null;
     }
 
-    public Option defaultingTo(Object value) {
+    public <S extends T> Option<T> defaultingTo(S value) {
         this.defaultValue = value;
         return this;
     }
 
-    public Object getDefaultValue() {
+    public T getDefaultValue() {
         return defaultValue;
     }
 
@@ -123,34 +124,28 @@ public class Option implements OptionSpec {
         return defaultValue != null;
     }
 
-    public Option ofType(Class type) {
+    public <S> Option<S> ofType(Class<? extends S> type) {
         return ofType(coercerFor(type));
     }
 
-    public Option using(Map<Class<?>, TypeCoercer<?>> coercers) {
+    public Option<T> using(Map<Class<?>, TypeCoercer<?>> coercers) {
         this.coercers.putAll(coercers);
         return this;
     }
 
-    public Option ofType(TypeCoercer type) {
-        this.typeCoercer = type;
-        return this;
+    @SuppressWarnings("unchecked")
+    public <S> Option<S> ofType(TypeCoercer<? extends S> type) {
+        this.typeCoercer = (TypeCoercer<? extends T>) type;
+        return (Option<S>) this;
     }
 
-    public Option whenPresent(Option.Action action) {
+    public Option<T> whenPresent(Option.Action<T> action) {
         this.action = action;
         return this;
     }
 
-    public interface Action {
-        public static final Action NOTHING = new NoOp();
-
-        public static class NoOp implements Action {
-            public void call(Args detected, Option option) {
-            }
-        }
-
-        void call(Args detected, Option option);
+    public interface Action<T> {
+        void call(Args detected, Option<T> option);
     }
 
     public boolean matches(String identifier) {
@@ -165,7 +160,7 @@ public class Option implements OptionSpec {
         action.call(detected, this);
     }
 
-    public <T> T getValue(Args args) {
+    public T get(Args args) {
         return args.get(name);
     }
 
@@ -178,11 +173,11 @@ public class Option implements OptionSpec {
         help.print(this);
     }
 
-    private Object value(Input args) throws InvalidArgumentException {
-        return takesArgument() ? convert(args.next()) : ON;
+    private T value(Input args) throws InvalidArgumentException {
+        return takesArgument() ? convert(args.next()) : convert(ON);
     }
 
-    private Object convert(String value) throws InvalidArgumentException {
+    private T convert(String value) throws InvalidArgumentException {
         try {
             return typeCoercer.convert(value);
         } catch (Exception e) {
@@ -190,11 +185,12 @@ public class Option implements OptionSpec {
         }
     }
 
-    private TypeCoercer coercerFor(Class type) {
+    @SuppressWarnings("unchecked")
+    private <S> TypeCoercer<? extends S> coercerFor(Class<? extends S> type) {
         if (!coercers.containsKey(type))
             throw new IllegalArgumentException("Don't know how to coerce type " + type.getName());
 
-        return coercers.get(type);
+        return (TypeCoercer<? extends S>) coercers.get(type);
     }
 }
 

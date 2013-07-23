@@ -12,8 +12,8 @@ import java.util.List;
 public class GnuHelp implements Help {
     private static final int MEDIUM_WIDTH = 30;
 
-    private final List<Option> options = new ArrayList<Option>();
-    private final List<Operand> operands = new ArrayList<Operand>();
+    private final List<Option<?>> options = new ArrayList<Option<?>>();
+    private final List<Operand<?>> operands = new ArrayList<Operand<?>>();
 
     private final int columnWidth;
 
@@ -46,11 +46,11 @@ public class GnuHelp implements Help {
         this.epilog = epilog;
     }
 
-    public void print(Option option) {
+    public void print(Option<?> option) {
         options.add(option);
     }
 
-    public void print(Operand operand) {
+    public void print(Operand<?> operand) {
         operands.add(operand);
     }
 
@@ -91,12 +91,12 @@ public class GnuHelp implements Help {
     private void formatOperands(Formatter help) {
         if (operands.isEmpty()) return;
         help.format("%nArguments:%n");
-        for (Operand operand : operands) {
+        for (Operand<?> operand : operands) {
             help.format("%s%n", descriptionOf(operand));
         }
     }
 
-    private String descriptionOf(Operand operand) {
+    private String descriptionOf(Operand<?> operand) {
         final Formatter line = new Formatter();
         line.format(firstColumnLayout(), operand.getDisplayName());
         if (operand.hasDescription()) {
@@ -106,23 +106,23 @@ public class GnuHelp implements Help {
         return line.toString();
     }
 
-    private String shortestFormOf(Option option) {
+    private String shortestFormOf(Option<?> option) {
         return option.hasShortForm() ? shortFormOf(option) : longFormOf(option);
     }
 
-    private String argumentIfAny(Option option) {
+    private String argumentIfAny(Option<?> option) {
         return option.takesArgument() ? " " + option.getArgument() : "";
     }
 
     private void formatOptions(Formatter help) throws IOException {
         if (options.isEmpty()) return;
         help.format("%nOptions:%n");
-        for (Option option : options) {
+        for (Option<?> option : options) {
             help.format("%s%n", descriptionOf(option));
         }
     }
 
-    private String descriptionOf(Option option) {
+    private String descriptionOf(Option<?> option) {
         final Formatter line = new Formatter();
         line.format(firstColumnLayout(), allFormsOf(option) + argumentIfAny(option));
         if (option.hasDescription()) {
@@ -136,17 +136,17 @@ public class GnuHelp implements Help {
         return "%-" + columnWidth + "s";
     }
 
-    private String allFormsOf(Option option) {
+    private String allFormsOf(Option<?> option) {
         if (option.hasShortForm() && option.hasLongForm()) return shortFormOf(option) + ", " + longFormOf(option);
         if (option.hasShortForm()) return shortFormOf(option);
         return noShortForm() + longFormOf(option);
     }
 
-    private String shortFormOf(Option option) {
+    private String shortFormOf(Option<?> option) {
         return String.format("-%s", option.getShortForm());
     }
 
-    private String longFormOf(Option option) {
+    private String longFormOf(Option<?> option) {
         return String.format("--%s", option.getLongForm());
     }
 

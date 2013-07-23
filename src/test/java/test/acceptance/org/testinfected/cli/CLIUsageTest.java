@@ -27,14 +27,15 @@ import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.ArgumentMissingException;
 import org.testinfected.cli.args.InvalidArgumentException;
 import org.testinfected.cli.args.MissingOperandException;
+import org.testinfected.cli.args.OperandSpec;
 import org.testinfected.cli.args.Option;
+import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.coercion.TypeCoercer;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Locale;
 
 import static java.util.Arrays.asList;
@@ -66,8 +67,8 @@ public class CLIUsageTest {
         cli = new CLI() {{
             operand("input");
         }};
-        List<String> others = cli.parse("input", "output", "encoding");
-        assertEquals(asList("output", "encoding"), others);
+        Args args = cli.parse("input", "output", "encoding");
+        assertEquals(asList("output", "encoding"), args.others());
     }
 
     @Test public void
@@ -127,6 +128,22 @@ public class CLIUsageTest {
         }};
         cli.parse();
         assertEquals(1024, cli.get("block"));
+    }
+
+    @Test public void
+    retrievingArgumentsInATypeSafeWay() throws ParsingException {
+        cli = new CLI();
+        OptionSpec<Boolean> verbose = cli.option("verbose").withShortForm("v").ofType(Boolean.class);
+        OptionSpec<Integer> size = cli.option("size").withLongForm("block-size").takingArgument("SIZE").ofType(int.class).defaultingTo(1024);
+        OperandSpec<File> input = cli.operand("input").ofType(File.class);
+        Args args = cli.parse("-v", "--block-size", "2048", "/path/to/input");
+
+        File inputFile = input.get(args);
+        assertEquals("/path/to/input", inputFile.getAbsolutePath());
+        boolean verboseFlag = verbose.get(args);
+        assertEquals(true, verboseFlag);
+        int blockSize = size.get(args);
+        assertEquals(2048, blockSize);
     }
 
     @Test public void
@@ -244,7 +261,7 @@ public class CLIUsageTest {
             fail("Expected exception " + UnrecognizedOptionException.class.getName());
         }
         catch (UnrecognizedOptionException expected) {
-            assertEquals("-whatever", expected.getTrigger());
+            assertEquals("-whatever", expected.getOption());
             assertThat(expected.getMessage(), containsString("whatever"));
         }
     }
@@ -320,11 +337,11 @@ public class CLIUsageTest {
         return output.toString();
     }
 
-    public static class CaptureLocale implements Option.Action {
+    public static class CaptureLocale implements Option.Action<Locale> {
         public Locale locale = Locale.ENGLISH;
 
-        public void call(Args detected, Option option) {
-            locale = option.getValue(detected);
+        public void call(Args detected, Option<Locale> option) {
+            locale = option.get(detected);
         }
     }
 

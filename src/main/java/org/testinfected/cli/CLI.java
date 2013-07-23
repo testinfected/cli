@@ -28,6 +28,7 @@ import org.testinfected.cli.args.Option;
 import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.Parser;
 import org.testinfected.cli.args.Syntax;
+import org.testinfected.cli.coercion.BooleanCoercer;
 import org.testinfected.cli.coercion.ClassCoercer;
 import org.testinfected.cli.coercion.FileCoercer;
 import org.testinfected.cli.coercion.IntegerCoercer;
@@ -56,6 +57,7 @@ public class CLI
 
     {
         coerceType(String.class).using(new StringCoercer());
+        coerceType(Boolean.class).using(new BooleanCoercer());
         coerceType(Integer.class).using(new IntegerCoercer());
         coerceType(int.class).using(new IntegerCoercer());
         coerceType(Locale.class).using(new LocaleCoercer());
@@ -85,7 +87,7 @@ public class CLI
             this.type = type;
         }
 
-        public void using(TypeCoercer<T> typeCoercer) {
+        public void using(TypeCoercer<? extends T> typeCoercer) {
             typeCoercers.put(type, typeCoercer);
         }
     }
@@ -106,35 +108,35 @@ public class CLI
         commandLine.setEnding(epilog);
     }
 
-    public OptionSpec option(String name, String... definition) {
+    public OptionSpec<?> option(String name, String... definition) {
         return define(syntax.defineOption(name, definition).using(typeCoercers));
     }
 
-    public OperandSpec operand(String name) {
+    public OperandSpec<String> operand(String name) {
         return define(Operand.named(name).using(typeCoercers));
     }
 
-    public OperandSpec operand(String name, String displayName) {
+    public OperandSpec<String> operand(String name, String displayName) {
         return operand(name).as(displayName);
     }
 
-    public OperandSpec operand(String name, String displayName, String help) {
+    public OperandSpec<String> operand(String name, String displayName, String help) {
         return operand(name, displayName).describedAs(help);
     }
 
-    private Option define(Option option) {
+    private <T> Option<T> define(Option<T> option) {
         commandLine.add(option);
         return option;
     }
 
-    private Operand define(Operand option) {
-        commandLine.add(option);
-        return option;
+    private <T> Operand<T> define(Operand<T> operand) {
+        commandLine.add(operand);
+        return operand;
     }
 
-    public List<String> parse(String... args) throws ParsingException {
+    public Args parse(String... args) throws ParsingException {
         detected = new Args(commandLine.parse(args));
-        return detected.others();
+        return detected;
     }
 
     public boolean has(String name) {

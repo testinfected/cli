@@ -9,14 +9,14 @@ public class OperandTest {
 
     @Test public void
     acceptsAnOptionalDisplayName() {
-        Operand operand = new Operand("file");
+        Operand<String> operand = Operand.named("file");
         operand.as("FILENAME");
         assertEquals("argument", "FILENAME", operand.getDisplayName());
     }
 
     @Test public void
     displaysByDefaultAsUpperCaseName() {
-        Operand operand = new Operand("file");
+        Operand<String> operand = Operand.named("file");
         assertEquals("argument", "FILE", operand.getDisplayName());
     }
 }

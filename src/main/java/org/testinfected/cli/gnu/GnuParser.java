@@ -49,7 +49,7 @@ public class GnuParser implements Parser
 
             Matcher longForm = LONG_OPTION.matcher(currentToken);
             if (detected(longForm)) {
-                Option option = options.find(identifier(longForm));
+                Option<?> option = options.find(identifier(longForm));
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
                 option.handle(detected, args);
                 continue;
@@ -57,7 +57,7 @@ public class GnuParser implements Parser
 
             Matcher shortForm = SHORT_OPTION.matcher(currentToken);
             if (detected(shortForm)) {
-                Option option = options.find(identifier(shortForm));
+                Option<?> option = options.find(identifier(shortForm));
                 if (option == null) throw new UnrecognizedOptionException(currentToken);
                 option.handle(detected, args);
                 continue;

@@ -23,9 +23,9 @@ import org.testinfected.cli.ParsingException;
 
 public class ArgumentMissingException extends ParsingException
 {
-    private final Option option;
+    private final Option<?> option;
 
-    public ArgumentMissingException(Option option) {
+    public ArgumentMissingException(Option<?> option) {
         this.option = option;
     }
 

@@ -42,7 +42,7 @@ public class GnuParserTest
 {
     GnuParser parser = new GnuParser();
 
-    Collection<Option> options = new ArrayList<Option>();
+    Collection<Option<?>> options = new ArrayList<Option<?>>();
     Collection<String> nonOptions = new ArrayList<String>();
     Args detected = new Args();
 
@@ -55,32 +55,32 @@ public class GnuParserTest
 
     @Test public void
     detectsDefinedOptionsByTheirShortForm() throws ParsingException {
-        Option debug = define(named("debug").withShortForm("x"));
-        Option verbose = define(named("verbose").withShortForm("v"));
+        Option<Boolean> debug = define(named("debug").withShortForm("x"));
+        Option<Boolean> verbose = define(named("verbose").withShortForm("v"));
 
         parse("-x");
-        assertEquals(true, debug.getValue(detected));
-        assertNull(verbose.getValue(detected));
+        assertEquals(true, debug.get(detected));
+        assertNull(verbose.get(detected));
     }
 
     @Test public void
     detectsDefinedOptionsByTheirLongForm() throws ParsingException {
-        Option raw = define(named("raw").withLongForm("raw"));
+        Option<Boolean> raw = define(named("raw").withLongForm("raw"));
 
         parse("--raw");
-        assertEquals(TRUE, raw.getValue(detected));
+        assertEquals(TRUE, raw.get(detected));
     }
 
     @Test public void
     detectsDefinedOptionsParameters() throws ParsingException {
-        Option blockSize = define(named("block").withShortForm("b").withLongForm("block-size").takingArgument("SIZE"));
+        Option<String> blockSize = define(named("block").withShortForm("b").withLongForm("block-size").takingArgument("SIZE"));
         parse("-b", "1024");
-        assertEquals("1024", blockSize.getValue(detected));
+        assertEquals("1024", blockSize.get(detected));
     }
 
     @Test public void
     returnNonOptionArguments() throws ParsingException {
-        define(named("raw").withLongForm("raw"));
+        define(Option.named("raw").withLongForm("raw"));
 
         parse("--raw", "input", "output");
         assertEquals(asList("input", "output"), nonOptions);
@@ -88,14 +88,14 @@ public class GnuParserTest
 
     @Test public void
     supportsMultipleOptionsWithParameters() throws ParsingException {
-        Option human = define(named("human").withShortForm("h").describedAs("Human readable format"));
-        Option blockSize = define(named("block").withLongForm("block-size").takingArgument("SIZE"));
-        Option debug = define(named("debug").withShortForm("x"));
+        Option<Boolean> human = define(named("human").withShortForm("h").describedAs("Human readable format"));
+        Option<String> blockSize = define(named("block").withLongForm("block-size").takingArgument("SIZE"));
+        Option<Boolean> debug = define(named("debug").withShortForm("x"));
 
         parse("-h", "--block-size", "1024", "-x", "input", "output");
-        assertEquals(TRUE, human.getValue(detected));
-        assertEquals("1024", blockSize.getValue(detected));
-        assertEquals(TRUE, debug.getValue(detected));
+        assertEquals(TRUE, human.get(detected));
+        assertEquals("1024", blockSize.get(detected));
+        assertEquals(TRUE, debug.get(detected));
         assertEquals(asList("input", "output"), nonOptions);
     }
 
@@ -106,11 +106,11 @@ public class GnuParserTest
             fail();
         }
         catch (UnrecognizedOptionException expected) {
-            assertEquals("-x", expected.getTrigger());
+            assertEquals("-x", expected.getOption());
         }
     }
 
-    private Option define(Option option) {
+    private <T> Option<T> define(Option<T> option) {
         options.add(option);
         return option;
     }

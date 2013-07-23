@@ -2,17 +2,15 @@ package org.testinfected.cli.args;
 
 import org.testinfected.cli.coercion.TypeCoercer;
 
-import java.util.Map;
+public interface OperandSpec<T> {
 
-public interface OperandSpec {
+    OperandSpec<T> as(String argument);
 
-    OperandSpec as(String argument);
+    OperandSpec<T> describedAs(String message);
 
-    OperandSpec describedAs(String message);
+    <S> OperandSpec<S> ofType(Class<? extends S> type);
 
-    OperandSpec ofType(Class<?> type);
+    <S> OperandSpec<S> ofType(TypeCoercer<? extends S> type);
 
-    OperandSpec ofType(TypeCoercer<?> type);
-
-    OperandSpec using(Map<Class<?>, TypeCoercer<?>> coercers);
+    T get(Args args);
 }

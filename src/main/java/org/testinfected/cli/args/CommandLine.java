@@ -8,8 +8,8 @@ import java.util.List;
 public class CommandLine
 {
     private final Parser parser;
-    private final List<Option> options = new ArrayList<Option>();
-    private final List<Operand> operands = new ArrayList<Operand>();
+    private final List<Option<?>> options = new ArrayList<Option<?>>();
+    private final List<Operand<?>> operands = new ArrayList<Operand<?>>();
 
     private String program;
     private String description;
@@ -36,11 +36,11 @@ public class CommandLine
         this.ending = epilog;
     }
 
-    public void add(Option option) {
+    public void add(Option<?> option) {
         options.add(option);
     }
 
-    public void add(Operand operand) {
+    public void add(Operand<?> operand) {
         operands.add(operand);
     }
 
@@ -55,7 +55,7 @@ public class CommandLine
     }
 
     private void addDefaultOptions(Args detected) {
-        for (Option option : options) {
+        for (Option<?> option : options) {
             if (option.hasDefaultValue()) detected.put(option.getName(), option.getDefaultValue());
         }
     }
@@ -65,14 +65,14 @@ public class CommandLine
     }
 
     private List<String> parseOperands(Args detected, Input args) throws ParsingException {
-         for (Operand operand : operands) {
+         for (Operand<?> operand : operands) {
              operand.consume(detected, args);
          }
          return args.remaining();
      }
 
     private void callDetectedOptions(Args detected) {
-        for (Option option : options) {
+        for (Option<?> option : options) {
             if (option.isIn(detected)) option.call(detected);
         }
     }
@@ -81,10 +81,10 @@ public class CommandLine
         help.printProgram(program);
         help.printVersion(version);
         help.printDescription(description);
-        for (Option option : options) {
+        for (Option<?> option : options) {
             option.printTo(help);
         }
-        for (Operand operand : operands) {
+        for (Operand<?> operand : operands) {
             operand.printTo(help);
         }
         help.printEnding(ending);

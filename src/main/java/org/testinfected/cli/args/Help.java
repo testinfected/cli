@@ -10,9 +10,9 @@ public interface Help
 
     void printDescription(String description);
 
-    void print(Option option);
+    void print(Option<?> option);
 
-    void print(Operand operand);
+    void print(Operand<?> operand);
 
     void printEnding(String epilog);
 
