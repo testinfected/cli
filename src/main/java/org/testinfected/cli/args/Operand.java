@@ -4,15 +4,9 @@ import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.coercion.StringCoercer;
 import org.testinfected.cli.coercion.TypeCoercer;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class Operand<T> implements OperandSpec<T> {
-
-    private final Map<Class<?>, TypeCoercer<?>> coercers = new HashMap<Class<?>, TypeCoercer<?>>();
-
-    private final String name;
-    private TypeCoercer<? extends T> typeCoercer;
+public class Operand<T> extends Argument<T> implements OperandSpec<T> {
 
     private String displayName;
     private String description;
@@ -22,8 +16,7 @@ public class Operand<T> implements OperandSpec<T> {
     }
 
     protected Operand(String name, TypeCoercer<? extends T> type) {
-        this.name = name;
-        this.typeCoercer = type;
+        super(name, type);
     }
 
     public String getName() {
@@ -67,14 +60,6 @@ public class Operand<T> implements OperandSpec<T> {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    private <S> TypeCoercer<? extends S> coercerFor(Class<? extends S> type) {
-        if (!coercers.containsKey(type))
-            throw new IllegalArgumentException("Don't know how to coerce type " + type.getName());
-
-        return (TypeCoercer<? extends S>) coercers.get(type);
-    }
-
     public T get(Args args) {
         return args.get(name);
     }
@@ -83,20 +68,16 @@ public class Operand<T> implements OperandSpec<T> {
         help.print(this);
     }
 
-    public void consume(Args detected, Input args) throws ParsingException {
+    public void handle(Args detected, Input args) throws ParsingException {
         if (args.empty()) throw new MissingOperandException(this);
-        detected.put(name, value(args));
+        detected.put(this, value(args));
+    }
+
+    public boolean matches(String identifier) {
+        return name.equals(identifier);
     }
 
     private T value(Input args) throws InvalidArgumentException {
         return convert(args.next());
-    }
-
-    private T convert(String value) throws InvalidArgumentException {
-        try {
-            return typeCoercer.convert(value);
-        } catch (Exception e) {
-            throw new InvalidArgumentException(name, value, e);
-        }
     }
 }

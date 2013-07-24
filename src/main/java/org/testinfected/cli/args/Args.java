@@ -8,35 +8,43 @@ import java.util.Map;
 
 public class Args {
 
-    private final Map<String, Object> options = new HashMap<String, Object>();
+    private final Map<Argument<?>, Object> arguments = new HashMap<Argument<?>, Object>();
     private final List<String> others = new ArrayList<String>();
 
     public Args() {}
 
     public Args(Args args) {
-        options.putAll(args.options);
+        arguments.putAll(args.arguments);
         others.addAll(args.others);
     }
 
     public int size() {
-        return options.size();
+        return arguments.size();
+    }
+
+    public <T> void put(Argument<T> arg, T value) {
+        arguments.put(arg, value);
+    }
+
+    public boolean has(String name) {
+        return get(name) != null;
     }
 
     @SuppressWarnings("unchecked")
     public <T> T get(String name) {
-        return (T) options.get(name);
+        for (Argument<?> arg : arguments.keySet()) {
+            // This is a safe cast now that the put method is typed
+            if (arg.getName().equals(name)) return (T) arguments.get(arg);
+        }
+        return null;
     }
 
     public Map<String, ?> values() {
-        return options;
-    }
-
-    public void put(String name, Object value) {
-        options.put(name, value);
-    }
-
-    public boolean has(String name) {
-        return options.containsKey(name);
+        Map<String, Object> values = new HashMap<String, Object>();
+        for (Argument<?> arg : arguments.keySet()) {
+            values.put(arg.getName(), arguments.get(arg));
+        }
+        return values;
     }
 
     public List<String> others() {

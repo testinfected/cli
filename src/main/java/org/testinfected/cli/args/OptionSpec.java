@@ -2,7 +2,7 @@ package org.testinfected.cli.args;
 
 import org.testinfected.cli.coercion.TypeCoercer;
 
-public interface OptionSpec<T> {
+public interface OptionSpec<T> extends ArgumentSpec<T> {
 
     OptionSpec<T> withShortForm(String shortForm);
 
@@ -12,13 +12,12 @@ public interface OptionSpec<T> {
 
     OptionSpec<String> takingArgument(String argument);
 
-    <V extends T> OptionSpec<T> defaultingTo(V value);
-
     <S> OptionSpec<S> ofType(Class<? extends S> type);
 
     <S> OptionSpec<S> ofType(TypeCoercer<? extends S> type);
 
+    <V extends T> OptionSpec<T> defaultingTo(V value);
+
     OptionSpec<T> whenPresent(Option.Action<T> action);
 
-    T get(Args args);
 }

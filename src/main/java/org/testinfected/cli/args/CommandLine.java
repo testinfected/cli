@@ -56,8 +56,12 @@ public class CommandLine
 
     private void addDefaultOptions(Args detected) {
         for (Option<?> option : options) {
-            if (option.hasDefaultValue()) detected.put(option.getName(), option.getDefaultValue());
+            if (option.hasDefaultValue()) put(detected, option);
         }
+    }
+
+    private <T> void put(Args detected, Option<T> option) {
+        detected.put(option, option.getDefaultValue());
     }
 
     private List<String> parseOptions(Args detected, Input args) throws ParsingException {
@@ -66,7 +70,7 @@ public class CommandLine
 
     private List<String> parseOperands(Args detected, Input args) throws ParsingException {
          for (Operand<?> operand : operands) {
-             operand.consume(detected, args);
+             operand.handle(detected, args);
          }
          return args.remaining();
      }

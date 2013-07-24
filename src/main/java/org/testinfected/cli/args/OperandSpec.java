@@ -2,7 +2,7 @@ package org.testinfected.cli.args;
 
 import org.testinfected.cli.coercion.TypeCoercer;
 
-public interface OperandSpec<T> {
+public interface OperandSpec<T> extends ArgumentSpec<T> {
 
     OperandSpec<T> as(String argument);
 
@@ -11,6 +11,4 @@ public interface OperandSpec<T> {
     <S> OperandSpec<S> ofType(Class<? extends S> type);
 
     <S> OperandSpec<S> ofType(TypeCoercer<? extends S> type);
-
-    T get(Args args);
 }

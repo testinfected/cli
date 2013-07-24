@@ -25,11 +25,11 @@ import org.testinfected.cli.CLI;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.ArgumentMissingException;
+import org.testinfected.cli.args.ArgumentSpec;
 import org.testinfected.cli.args.InvalidArgumentException;
 import org.testinfected.cli.args.MissingOperandException;
 import org.testinfected.cli.args.OperandSpec;
 import org.testinfected.cli.args.Option;
-import org.testinfected.cli.args.OptionSpec;
 import org.testinfected.cli.args.UnrecognizedOptionException;
 import org.testinfected.cli.coercion.TypeCoercer;
 
@@ -133,8 +133,8 @@ public class CLIUsageTest {
     @Test public void
     retrievingArgumentsInATypeSafeWay() throws ParsingException {
         cli = new CLI();
-        OptionSpec<Boolean> verbose = cli.option("verbose").withShortForm("v").ofType(Boolean.class);
-        OptionSpec<Integer> size = cli.option("size").withLongForm("block-size").takingArgument("SIZE").ofType(int.class).defaultingTo(1024);
+        ArgumentSpec<Boolean> verbose = cli.option("verbose").withShortForm("v").ofType(Boolean.class);
+        ArgumentSpec<Integer> size = cli.option("size").withLongForm("block-size").takingArgument("SIZE").ofType(int.class).defaultingTo(1024);
         OperandSpec<File> input = cli.operand("input").ofType(File.class);
         Args args = cli.parse("-v", "--block-size", "2048", "/path/to/input");
 
