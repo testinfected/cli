@@ -2,13 +2,13 @@
 
 
 ### Getting Started
-Build yourself using Buildr or Maven (for latest and greatest version), or simply download from Maven Central:
+Build yourself (for latest version), or simply download from Maven Central:
 
 ```xml
 <dependency>
       <groupId>org.testinfected.cli</groupId>
       <artifactId>cli</artifactId>
-      <version>1.0</version>
+      <version>1.1-SNAPSHOT</version>
 </dependency>
 ```
 
