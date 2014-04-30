@@ -22,8 +22,8 @@ public class GnuHelpTest
 
     @Test public void
     describesPositionalArguments() throws IOException {
-        help.print(Operand.named("input").as("IN").describedAs("The source file"));
-        help.print(Operand.named("output").as("OUT").describedAs("The destination file"));
+        help.add(Operand.named("input").as("IN").describedAs("The source file"));
+        help.add(Operand.named("output").as("OUT").describedAs("The destination file"));
         assertHelp(
                 "Usage: IN OUT",
                 "",
@@ -35,7 +35,7 @@ public class GnuHelpTest
 
     @Test public void
     startsWithProgramNameIfSpecified() throws IOException {
-        help.printProgram("program");
+        help.setProgram("program");
         assertHelp(
                 "program",
                 "",
@@ -44,8 +44,8 @@ public class GnuHelpTest
 
     @Test public void
     displaysVersionAlongProgramNameWhenGiven() throws IOException {
-        help.printProgram("program");
-        help.printVersion("1.0");
+        help.setProgram("program");
+        help.setVersion("1.0");
         assertHelp(
                 "program version 1.0",
                 "",
@@ -55,8 +55,8 @@ public class GnuHelpTest
 
     @Test public void
     descriptionFollowsProgramNameWhenGiven() throws IOException {
-        help.printProgram("program");
-        help.printDescription("My cool program.");
+        help.setProgram("program");
+        help.setDescription("My cool program.");
         assertHelp(
                 "program",
                 "",
@@ -67,9 +67,9 @@ public class GnuHelpTest
 
     @Test public void
     includesDescriptionsOfOptions() throws ParsingException, IOException {
-        help.print(Option.named("raw").withLongForm("raw").describedAs("Specifies raw output format"));
-        help.print(Option.named("block size").withShortForm("b").withLongForm("block-size").takingArgument("SIZE").describedAs("Specifies block size"));
-        help.print(Option.named("debug").withShortForm("x").describedAs("Turn debugging on"));
+        help.add(Option.flag("raw").withLongForm("raw").describedAs("Specifies raw output format"));
+        help.add(Option.named("block size").withShortForm("b").withLongForm("block-size").takingArgument("SIZE").describedAs("Specifies block size"));
+        help.add(Option.flag("debug").withShortForm("x").describedAs("Turn debugging on"));
 
         assertHelp(
                 "Usage: [--raw] [-b SIZE] [-x]",
@@ -83,8 +83,8 @@ public class GnuHelpTest
 
     @Test public void
     endsWithEpilog() throws ParsingException, IOException {
-        help.printEnding("use \"program --help\" to get help");
-        help.print(Option.named("debug").withShortForm("x").describedAs("Turn debugging on"));
+        help.setEnding("use \"program --help\" to get help");
+        help.add(Option.flag("debug").withShortForm("x").describedAs("Turn debugging on"));
         assertHelp(
                 "Usage: [-x]",
                 "",
@@ -104,7 +104,7 @@ public class GnuHelpTest
 
     private String format(Help help) throws IOException {
         StringBuilder output = new StringBuilder();
-        help.appendTo(output);
+        help.printTo(output);
         return output.toString();
     }
 }

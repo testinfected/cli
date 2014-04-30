@@ -4,7 +4,6 @@ import org.junit.Test;
 import com.vtence.cli.ParsingException;
 import com.vtence.cli.coercion.IntegerCoercer;
 
-import static java.lang.Boolean.TRUE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -22,10 +21,14 @@ public class OptionTest
     }
 
     @Test public void
-    optionWithoutArgumentIsConsideredBoolean() throws ParsingException {
-        Option<Boolean> option = Option.named("option");
+    optionWithoutArgumentIsConsideredOn() throws ParsingException {
+        Option<String> option = Option.named("option");
         option.handle(detected, listOf());
-        assertEquals(TRUE, option.get(detected));
+        assertEquals("true", option.get(detected));
+
+        Option<Boolean> flag = Option.flag("flag");
+        flag.handle(detected, listOf());
+        assertEquals(true, flag.get(detected));
     }
 
     @Test public void
@@ -36,8 +39,8 @@ public class OptionTest
         try {
             option.handle(detected, listOf());
             fail();
-        }
-        catch (ArgumentMissingException expected) {
+        } catch (ArgumentMissingException expected) {
+            assertTrue(true);
         }
 
         option.handle(detected, listOf("value"));
@@ -46,7 +49,7 @@ public class OptionTest
 
     @Test public void
     optionTypeCanBeEnforced() throws ParsingException {
-        Option<Boolean> option = Option.named("block size");
+        Option<String> option = Option.named("block size");
         option.takingArgument("SIZE").ofType(new IntegerCoercer());
 
         option.handle(detected, listOf("1024"));
@@ -55,10 +58,10 @@ public class OptionTest
 
     @Test public void
     optionCanHaveADefaultValue() throws ParsingException {
-        Option<Boolean> option = Option.named("block size");
-        option.ofType(new IntegerCoercer()).defaultingTo(1024);
+        Option<String> option = Option.named("host");
+        option.defaultingTo("localhost");
 
         assertTrue(option.hasDefaultValue());
-        assertEquals(1024, option.getDefaultValue());
+        assertEquals("localhost", option.getDefaultValue());
     }
 }

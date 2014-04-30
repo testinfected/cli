@@ -4,17 +4,17 @@ import java.io.IOException;
 
 public interface Help
 {
-    void printProgram(String name);
+    void setProgram(String name);
 
-    void printVersion(String number);
+    void setVersion(String number);
 
-    void printDescription(String description);
+    void setDescription(String description);
 
-    void print(Option<?> option);
+    void add(Option<?> option);
 
-    void print(Operand<?> operand);
+    void add(Operand<?> operand);
 
-    void printEnding(String epilog);
+    void setEnding(String epilog);
 
-    void appendTo(Appendable output) throws IOException;
+    void printTo(Appendable output) throws IOException;
 }

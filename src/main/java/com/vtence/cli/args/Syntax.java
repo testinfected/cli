@@ -2,5 +2,5 @@ package com.vtence.cli.args;
 
 public interface Syntax
 {
-    Option<?> defineOption(String name, String... definition);
+    Option<String> defineOption(String name, String... definition);
 }

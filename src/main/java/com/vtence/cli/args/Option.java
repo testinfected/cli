@@ -40,7 +40,11 @@ public class Option<T> extends Argument<T> implements OptionSpec<T> {
         }
     };
 
-    public static Option<Boolean> named(String name) {
+    public static Option<String> named(String name) {
+        return new Option<String>(name, new StringCoercer());
+    }
+
+    public static Option<Boolean> flag(String name) {
         return new Option<Boolean>(name, new BooleanCoercer());
     }
 
@@ -160,7 +164,7 @@ public class Option<T> extends Argument<T> implements OptionSpec<T> {
     }
 
     public void printTo(Help help) {
-        help.print(this);
+        help.add(this);
     }
 
     private T value(Input args) throws InvalidArgumentException {

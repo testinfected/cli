@@ -65,7 +65,7 @@ public class Operand<T> extends Argument<T> implements OperandSpec<T> {
     }
 
     public void printTo(Help help) {
-        help.print(this);
+        help.add(this);
     }
 
     public void handle(Args detected, Input args) throws ParsingException {

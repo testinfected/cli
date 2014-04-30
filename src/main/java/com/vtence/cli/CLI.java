@@ -108,8 +108,12 @@ public class CLI
         commandLine.setEnding(epilog);
     }
 
-    public OptionSpec<?> option(String name, String... definition) {
+    public OptionSpec<String> option(String name, String... definition) {
         return define(syntax.defineOption(name, definition).using(typeCoercers));
+    }
+
+    public OptionSpec<Boolean> flag(String name, String... definition) {
+        return define(syntax.defineOption(name, definition).using(typeCoercers).ofType(Boolean.class));
     }
 
     public OperandSpec<String> operand(String name) {
@@ -156,7 +160,7 @@ public class CLI
     }
 
     public void printHelp(Appendable appendable) throws IOException {
-        commandLine.printTo(help);
-        help.appendTo(appendable);
+        commandLine.describeTo(help);
+        help.printTo(appendable);
     }
 }

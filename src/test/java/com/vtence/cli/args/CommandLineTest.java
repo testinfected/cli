@@ -30,8 +30,8 @@ public class CommandLineTest {
 
     @Test public void
     detectsSpecifiedOptionsWhenPresent() throws ParsingException {
-        cl.add(Option.named("debug").withShortForm("x"));
-        cl.add(Option.named("verbose").withShortForm("v"));
+        cl.add(Option.flag("debug").withShortForm("x"));
+        cl.add(Option.flag("verbose").withShortForm("v"));
 
         Args args = cl.parse("-x");
         assertTrue(args.has("debug"));
@@ -44,17 +44,17 @@ public class CommandLineTest {
     @Test public void
     triggersActionsOnDetectedOptions() throws Exception {
         final Option.Action<Boolean> turnDebugOn = context.mock(Option.Action.class, "turn debug on");
-        cl.add(Option.named("debug").withShortForm("d").whenPresent(turnDebugOn));
+        cl.add(Option.flag("debug").withShortForm("d").whenPresent(turnDebugOn));
 
         final Option.Action<Locale> setLocale = context.mock(Option.Action.class, "set locale");
-        cl.add(Option.named("locale").withShortForm("l").ofType(new LocaleCoercer()).whenPresent(setLocale));
+        cl.add(Option.named("locale").withShortForm("l").takingArgument("LOCALE").ofType(new LocaleCoercer()).whenPresent(setLocale));
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
             oneOf(setLocale).call(with(any(Args.class)), with(any(Option.class)));
         }});
 
-        cl.parse("-l");
+        cl.parse("-l", "en");
     }
 
     @Test public void
@@ -70,7 +70,7 @@ public class CommandLineTest {
 
     @Test public void
     detectsBothOptionsAndOperands() throws Exception {
-        cl.add(Option.named("verbose").withShortForm("v"));
+        cl.add(Option.flag("verbose").withShortForm("v"));
         cl.add(Operand.named("input"));
 
         Args args = cl.parse("-v", "input");

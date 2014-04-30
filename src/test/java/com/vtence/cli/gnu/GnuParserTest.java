@@ -29,6 +29,7 @@ import com.vtence.cli.args.UnrecognizedOptionException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static com.vtence.cli.args.Option.flag;
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -54,8 +55,8 @@ public class GnuParserTest
 
     @Test public void
     detectsDefinedOptionsByTheirShortForm() throws ParsingException {
-        Option<Boolean> debug = define(named("debug").withShortForm("x"));
-        Option<Boolean> verbose = define(named("verbose").withShortForm("v"));
+        Option<Boolean> debug = define(flag("debug").withShortForm("x"));
+        Option<Boolean> verbose = define(flag("verbose").withShortForm("v"));
 
         parse("-x");
         assertEquals(true, debug.get(detected));
@@ -64,7 +65,7 @@ public class GnuParserTest
 
     @Test public void
     detectsDefinedOptionsByTheirLongForm() throws ParsingException {
-        Option<Boolean> raw = define(named("raw").withLongForm("raw"));
+        Option<Boolean> raw = define(flag("raw").withLongForm("raw"));
 
         parse("--raw");
         assertEquals(TRUE, raw.get(detected));
@@ -78,8 +79,8 @@ public class GnuParserTest
     }
 
     @Test public void
-    returnNonOptionArguments() throws ParsingException {
-        define(Option.named("raw").withLongForm("raw"));
+    returnsNonOptionArguments() throws ParsingException {
+        define(Option.flag("raw").withLongForm("raw"));
 
         parse("--raw", "input", "output");
         assertEquals(asList("input", "output"), nonOptions);
@@ -87,9 +88,9 @@ public class GnuParserTest
 
     @Test public void
     supportsMultipleOptionsWithParameters() throws ParsingException {
-        Option<Boolean> human = define(named("human").withShortForm("h").describedAs("Human readable format"));
+        Option<Boolean> human = define(flag("human").withShortForm("h").describedAs("Human readable format"));
         Option<String> blockSize = define(named("block").withLongForm("block-size").takingArgument("SIZE"));
-        Option<Boolean> debug = define(named("debug").withShortForm("x"));
+        Option<Boolean> debug = define(flag("debug").withShortForm("x"));
 
         parse("-h", "--block-size", "1024", "-x", "input", "output");
         assertEquals(TRUE, human.get(detected));

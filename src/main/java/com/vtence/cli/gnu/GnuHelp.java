@@ -30,31 +30,31 @@ public class GnuHelp implements Help {
         this.columnWidth = columnWidth;
     }
 
-    public void printProgram(String name) {
+    public void setProgram(String name) {
         this.program = name;
     }
 
-    public void printVersion(String number) {
+    public void setVersion(String number) {
         versionNumber = number;
     }
 
-    public void printDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public void printEnding(String epilog) {
+    public void setEnding(String epilog) {
         this.epilog = epilog;
     }
 
-    public void print(Option<?> option) {
+    public void add(Option<?> option) {
         options.add(option);
     }
 
-    public void print(Operand<?> operand) {
+    public void add(Operand<?> operand) {
         operands.add(operand);
     }
 
-    public void appendTo(Appendable output) throws IOException {
+    public void printTo(Appendable output) throws IOException {
         final Formatter usage = new Formatter(output);
         formatProgram(usage);
         formatDescription(usage);

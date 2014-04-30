@@ -147,11 +147,11 @@ public class CLIUsageTest {
     @Test public void
     specifyingAnOptionInLiteralForm() throws Exception {
         cli = new CLI() {{
-            option("block", "-b", "--block-size SIZE", "Specifies block size");
+            option("host", "-h", "--host HOSTNAME", "Hostname to bind to");
         }};
-        cli.parse("--block-size", "1024");
-        assertTrue(cli.has("block"));
-        assertEquals("1024", cli.get("block"));
+        cli.parse("--host", "0.0.0.0");
+        assertTrue(cli.has("host"));
+        assertEquals("0.0.0.0", cli.get("host"));
     }
 
     @Test public void
@@ -211,9 +211,9 @@ public class CLIUsageTest {
         cli = new CLI() {{
             name("program"); version("1.0");
             description("Does some cool things.");
-            option("raw", "--raw", "Specifies raw output format");
+            flag("raw", "--raw", "Specifies raw output format");
             option("block", "-b", "--block-size SIZE", "Specifies block size");
-            option("debug", "-x", "Turn debugging on");
+            flag("debug", "-x", "Turn debugging on");
             operand("in", "INPUT", "The source file");
             operand("out", "OUTPUT", "The destination file");
             ending("use --help to show this help message");

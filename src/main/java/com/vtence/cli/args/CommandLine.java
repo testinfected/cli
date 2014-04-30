@@ -81,16 +81,16 @@ public class CommandLine
         }
     }
 
-    public void printTo(Help help) {
-        help.printProgram(program);
-        help.printVersion(version);
-        help.printDescription(description);
+    public void describeTo(Help help) {
+        help.setProgram(program);
+        help.setVersion(version);
+        help.setDescription(description);
         for (Option<?> option : options) {
             option.printTo(help);
         }
         for (Operand<?> operand : operands) {
             operand.printTo(help);
         }
-        help.printEnding(ending);
+        help.setEnding(ending);
     }
 }

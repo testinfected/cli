@@ -15,8 +15,8 @@ public class GnuSyntax implements Syntax
     private static final int IDENTIFIER = 1;
     private static final int ARGUMENT = 2;
 
-    public Option<?> defineOption(String name, String... definition) {
-        Option<?> option = Option.named(name);
+    public Option<String> defineOption(String name, String... definition) {
+        Option<String> option = Option.named(name);
 
         Schema schema = new Schema(option);
         for (String token : definition) {
