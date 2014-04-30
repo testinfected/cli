@@ -4,3 +4,6 @@ target
 *.iws
 *.iml
 *.ipr
+build
+.gradle
+.DS_Store

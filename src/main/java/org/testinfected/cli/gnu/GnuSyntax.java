@@ -16,7 +16,7 @@ public class GnuSyntax implements Syntax
     private static final int ARGUMENT = 2;
 
     public Option<?> defineOption(String name, String... definition) {
-        Option<Boolean> option = Option.named(name);
+        Option<?> option = Option.named(name);
 
         Schema schema = new Schema(option);
         for (String token : definition) {

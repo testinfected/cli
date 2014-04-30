@@ -1,11 +1,9 @@
 package test.unit.org.testinfected.cli.args;
 
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.integration.junit4.JUnit4Mockery;
+import org.jmock.integration.junit4.JUnitRuleMockery;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.testinfected.cli.ParsingException;
 import org.testinfected.cli.args.Args;
 import org.testinfected.cli.args.CommandLine;
@@ -25,9 +23,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(JMock.class)
 public class CommandLineTest {
-    Mockery context = new JUnit4Mockery();
+    @Rule public JUnitRuleMockery context = new JUnitRuleMockery();
     CommandLine cl = new CommandLine(new GnuParser());
 
     @Test public void
@@ -59,7 +56,7 @@ public class CommandLineTest {
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
-            one(setLocale).call(with(any(Args.class)), with(any(Option.class)));
+            oneOf(setLocale).call(with(any(Args.class)), with(any(Option.class)));
         }});
 
         cl.parse("-l");

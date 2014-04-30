@@ -32,8 +32,8 @@ import java.util.Collection;
 
 import static java.lang.Boolean.TRUE;
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.testinfected.cli.args.Input.listOf;
 import static org.testinfected.cli.args.Option.named;
