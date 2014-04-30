@@ -17,7 +17,7 @@ apply from: 'gradle/publish.gradle'
 
 defaultTasks 'build'
 
-group = 'org.testinfected.cli'
+group = 'com.vtence.cli'
 version = '1.1-SNAPSHOT'
 
 sourceCompatibility = 1.5

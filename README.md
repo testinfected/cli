@@ -6,7 +6,7 @@ Build yourself (for latest version), or simply download from Maven Central:
 
 ```xml
 <dependency>
-      <groupId>org.testinfected.cli</groupId>
+      <groupId>com.vtence.cli</groupId>
       <artifactId>cli</artifactId>
       <version>1.1-SNAPSHOT</version>
 </dependency>
@@ -42,4 +42,4 @@ File webroot = args.get("webroot");
 
 ### Want to know more?
 
-Checkout out examples in the [acceptance tests](https://github.com/testinfected/cli/blob/master/src/test/java/test/acceptance/org/testinfected/cli/CLIUsageTest.java)
+Checkout out examples in the [acceptance tests](https://github.com/testinfected/cli/blob/master/src/test/java/com/vtence/cli/CLIUsageTest.java)
