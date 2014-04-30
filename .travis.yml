@@ -5,8 +5,8 @@ jdk:
 
 env:
   global:
-    - secure: HQ4jAQ9/TwBD1lqiPG3JGEkUYqAQ9WezrNv9ip2hfKe9AqThDvi3GTnmNksQ0xgl875IbCucos1i4/i9zGLZq3Wa0fuPU3ZLc5mMWch/qhX1NFAaQsSU/WI7BZowoLdLdDZToEKEcxHzX3PVoRXvYoVKkIXDZUT2N1KE4RgBZTU=
-    - secure: bB3Tkk8PmzhuJcmBcljWWIAI9a30ro1lcuok4K/XMywUH0FYwfIja4gdRbMRLxTyWEiYdT6WMaF7PmANSwrd9WNeFmeT+q/4uk5KZms9qBNeet87pYCyJQCC6hffVtGM/qWFefUm3MfKcZvwcP4+hlIayD5Iyxhl7TpSIDyUYCU=
+    - secure: fDUH31GtDiN1FV5plwzkIV8+stMYzJwc14XCT/R+IpE/mWutFpBh3bXhijeo0mR6xFg9k1kKgUtslLL19CM3NH1ewsWJ7AkAeIBT7gw7UotW+A0Yi8GIiWPjrDroILbf973LhkKSSP7l3L7Nx+DSapCjqSrfgUB5wVnBca0wL1I=
+    - secure: k8Ei5bNj+FxMX1Utdkj+AoyuiHah5NMj76OGYr7r8cdII1GoD+rLcTYcSH1r6w1KRktBzFPcCUdnlg8QSnER5NF/7GSa/yNXglDizs6pS8lkDWMlB1v2oGJsD+GkGsQiAcxMgjMwUijxMiWFS1Pb6Gp+L7824VVTJERktMrp0vk=
     - TERM=dumb
 
 after_success:
