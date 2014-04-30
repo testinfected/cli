@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/testinfected/cli.png?branch=master)](https://travis-ci.org/testinfected/cli)
-
+[![Coverage Status](https://coveralls.io/repos/testinfected/cli/badge.png)](https://coveralls.io/r/testinfected/cli)
 
 ### Getting Started
 Build yourself (for latest version), or simply download from Maven Central:
