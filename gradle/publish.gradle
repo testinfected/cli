@@ -7,9 +7,9 @@ ext {
 
 modifyPom {
     project {
-        name 'Molecule'
-        description 'A Rack inspired web micro-framework for Java'
-        url 'http://vtence.com/molecule'
+        name 'CLI'
+        description 'A lightweight Command Line Interface for Java'
+        url 'http://vtence.com/cli'
         packaging 'jar'
         licenses {
             license {
@@ -19,9 +19,9 @@ modifyPom {
             }
         }
         scm {
-            url 'https://github.com/testinfected/molecule'
-            connection 'scm:git:https://github.com/testinfected/molecule.git'
-            developerConnection 'scm:git@github.com:testinfected/molecule.git'
+            url 'https://github.com/testinfected/cli'
+            connection 'scm:git:https://github.com/testinfected/cli.git'
+            developerConnection 'scm:git@github.com:testinfected/cli.git'
         }
         developers {
             developer {
