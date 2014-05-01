@@ -30,6 +30,7 @@ CLI cli = new CLI() {{
     
     ending("use --help to show this help message");
 }};
+```
 
 Now assuming program is started with:
 
@@ -40,8 +41,9 @@ Here's how we would parse the arguments:
 ```java
 cli.parse(args); // Typical program args
 
-int port = cli.get("-p");
 String env = cli.get("-e");
+String host = cli.get("-h");
+int port = cli.get("-p");
 int timeout = cli.get("--timeout");
 boolean quiet = cli.has("-q");
 
