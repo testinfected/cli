@@ -2,7 +2,7 @@ package com.vtence.cli.util;
 
 public final class Strings
 {
-    private Strings() {}
+    Strings() {}
 
     public static boolean empty(String s) {
         return s == null || s.isEmpty();

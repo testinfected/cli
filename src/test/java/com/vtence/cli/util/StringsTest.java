@@ -2,11 +2,14 @@ package com.vtence.cli.util;
 
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class StringsTest {
+
     @Test public void
     recognizesEmptyStrings() {
         assertTrue(Strings.empty(""));
@@ -37,5 +40,10 @@ public class StringsTest {
     @Test public void
     quotesStrings() {
         assertEquals("`quoted'", Strings.quote("quoted"));
+    }
+
+    @Test public void
+    perfect() {
+        new Strings();
     }
 }
