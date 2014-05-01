@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/testinfected/cli/badge.png)](https://coveralls.io/r/testinfected/cli)
 
 ### Getting Started
-Build yourself (for latest version), or simply download from Maven Central:
+Build yourself (for latest version) using Gradle or Maven, or simply download from Maven Central:
 
 ```xml
 <dependency>
@@ -12,34 +12,42 @@ Build yourself (for latest version), or simply download from Maven Central:
 </dependency>
 ```
 
+First let's define a command line:
+
 ```java
 CLI cli = new CLI() {{
     name("petstore"); version("1.0");
     description("A web application built without frameworks");
 
-    option("env", "-e", "--environment ENV", "Specifies the server environment").defaultingTo("development");
-    option("port", "-p", "--port PORT", "Runs the server on this port").asType(int.class).defaultingTo(8080);
-    option("timeout", "--timeout SECONDS", "Sets session expiration time").asType(int.class).defaultingTo(4500);
-    option("encoding", "--encoding ENCODING", "Specifies the server output encoding").defaultingTo("UTF-8");
-    option("quiet", "-q", "--quiet", "Sets the server to operate quietly").defaultingTo(false);
-    
-    operand("webroot", "webroot", "Location of the web application").ofType(File.class);
+    option("-e", "--environment ENV", "Environment to use for configuration (default: development)").defaultingTo("development");
+    option("-h", "--host HOST", "Host address to bind to (default: 0.0.0.0)").defaultingTo("0.0.0.0");
+    option("-p", "--port PORT", "Port to listen on (default: 8080)").ofType(int.class).defaultingTo(8080);
+    option("--timeout SECONDS", "Session timeout in seconds (default: 15 min)").ofType(int.class).defaultingTo(900);
+    flag("-q", "--quiet", "Operate quietly");
+    flag("-h", "--help", "Print this help message");
+
+    operand("webroot", "Location of the web application").ofType(File.class);
     
     ending("use --help to show this help message");
 }};
 
-// Assuming command line:
-// petstore -p 8088 -e production --timeout 9000 /path/to/webapp/root 
-Args args = cli.parse("-p", "8088", "-e", "production", "--timeout", "9000", "/path/to/webapp/root")
+Now assuming program is started with:
 
-int port = args.get("port");
-String env = args.get("env");
-int timeout = args.get("timeout");
-boolean quiet = args.has("quiet");
+```-p 8088 -e production --timeout 9000 /path/to/webapp/root```
 
-File webroot = args.get("webroot");
+Here's how we would parse the arguments:
+
+```java
+cli.parse(args); // Typical program args
+
+int port = cli.get("-p");
+String env = cli.get("-e");
+int timeout = cli.get("--timeout");
+boolean quiet = cli.has("-q");
+
+File webroot = cli.get("webroot");
 ```
 
 ### Want to know more?
 
-Checkout out examples in the [acceptance tests](https://github.com/testinfected/cli/blob/master/src/test/java/com/vtence/cli/CLIUsageTest.java)
+Checkout out [usage examples](https://github.com/testinfected/cli/blob/master/src/test/java/com/vtence/cli/CLIUsageTest.java)
