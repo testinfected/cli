@@ -23,31 +23,31 @@ public class CommandLineTest {
     CommandLine cl = new CommandLine(new GnuParser());
 
     @Test public void
-    detectsInitiallyNoArgument() throws ParsingException {
+    startsWithoutArgument() throws ParsingException {
         Args args = cl.parse();
         assertEquals(0, args.size());
     }
 
     @Test public void
     detectsSpecifiedOptionsWhenPresent() throws ParsingException {
-        cl.add(Option.flag("debug").withShortForm("x"));
-        cl.add(Option.flag("verbose").withShortForm("v"));
+        cl.add(Option.flag("-x"));
+        cl.add(Option.flag("-v"));
 
         Args args = cl.parse("-x");
-        assertTrue(args.has("debug"));
-        assertEquals(TRUE, args.get("debug"));
-        assertFalse(args.has("verbose"));
-        assertNull(args.get("verbose"));
+        assertTrue(args.has("-x"));
+        assertEquals(TRUE, args.get("-x"));
+        assertFalse(args.has("-v"));
+        assertNull(args.get("-v"));
     }
 
     @SuppressWarnings("unchecked")
     @Test public void
     triggersActionsOnDetectedOptions() throws Exception {
         final Option.Action<Boolean> turnDebugOn = context.mock(Option.Action.class, "turn debug on");
-        cl.add(Option.flag("debug").withShortForm("d").whenPresent(turnDebugOn));
+        cl.add(Option.flag("-d").whenPresent(turnDebugOn));
 
         final Option.Action<Locale> setLocale = context.mock(Option.Action.class, "set locale");
-        cl.add(Option.named("locale").withShortForm("l").takingArgument("LOCALE").ofType(new LocaleCoercer()).whenPresent(setLocale));
+        cl.add(Option.option("-l").takingArgument("LOCALE").ofType(new LocaleCoercer()).whenPresent(setLocale));
 
         context.checking(new Expectations() {{
             never(turnDebugOn);
@@ -70,7 +70,7 @@ public class CommandLineTest {
 
     @Test public void
     detectsBothOptionsAndOperands() throws Exception {
-        cl.add(Option.flag("verbose").withShortForm("v"));
+        cl.add(Option.flag("-v"));
         cl.add(Operand.named("input"));
 
         Args args = cl.parse("-v", "input");

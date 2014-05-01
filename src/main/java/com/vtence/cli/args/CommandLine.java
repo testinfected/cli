@@ -47,7 +47,7 @@ public class CommandLine
     public Args parse(String... args) throws ParsingException {
         Args detected =  new Args();
         addDefaultOptions(detected);
-        List<String> nonOptionArguments = parseOptions(detected, Input.listOf(args));
+        List<String> nonOptionArguments = parseOptions(detected, Input.input(args));
         List<String> others = parseOperands(detected, new Input(nonOptionArguments));
         detected.addOthers(others);
         callDetectedOptions(detected);
@@ -56,12 +56,8 @@ public class CommandLine
 
     private void addDefaultOptions(Args detected) {
         for (Option<?> option : options) {
-            if (option.hasDefaultValue()) put(detected, option);
+            option.initialize(detected);
         }
-    }
-
-    private <T> void put(Args detected, Option<T> option) {
-        detected.put(option, option.getDefaultValue());
     }
 
     private List<String> parseOptions(Args detected, Input args) throws ParsingException {
@@ -77,7 +73,7 @@ public class CommandLine
 
     private void callDetectedOptions(Args detected) {
         for (Option<?> option : options) {
-            if (option.isIn(detected)) option.call(detected);
+            if (option.in(detected)) option.call(detected);
         }
     }
 

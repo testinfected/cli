@@ -11,7 +11,7 @@ public class Input {
     private final List<String> args;
     private int head = 0;
 
-    public static Input listOf(String... args) {
+    public static Input input(String... args) {
         return new Input(asList(args));
     }
 

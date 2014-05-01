@@ -1,22 +1,3 @@
-/*
- * Copyright (c) 2006 Pyxis Technologies inc.
- *
- * This is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA,
- * or see the FSF site: http://www.fsf.org.
- */
-
 package com.vtence.cli.args;
 
 import com.vtence.cli.ParsingException;
@@ -24,14 +5,15 @@ import com.vtence.cli.coercion.BooleanCoercer;
 import com.vtence.cli.coercion.StringCoercer;
 import com.vtence.cli.coercion.TypeCoercer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Option<T> extends Argument<T> implements OptionSpec<T> {
 
     private static final String ON = Boolean.TRUE.toString();
 
-    private String shortForm;
-    private String longForm;
+    private final List<String> forms = new ArrayList<String>();
     private String argument;
     private String description;
     private T defaultValue;
@@ -40,42 +22,35 @@ public class Option<T> extends Argument<T> implements OptionSpec<T> {
         }
     };
 
-    public static Option<String> named(String name) {
-        return new Option<String>(name, new StringCoercer());
+    public static Option<String> option(String form) {
+        return new Option<String>(form, new StringCoercer());
     }
 
-    public static Option<Boolean> flag(String name) {
-        return new Option<Boolean>(name, new BooleanCoercer());
+    public static Option<Boolean> flag(String form) {
+        return new Option<Boolean>(form, new BooleanCoercer());
     }
 
-    protected Option(String name, TypeCoercer<? extends T> type) {
-        super(name, type);
+    protected Option(String form, TypeCoercer<? extends T> type) {
+        super(form, type);
+        alias(form);
     }
 
-    public Option<T> withShortForm(String shortForm) {
-        this.shortForm = shortForm;
+    public boolean matches(String name) {
+        return forms.contains(name);
+    }
+
+    public Option<T> alias(String form) {
+        forms.add(form);
         return this;
     }
 
-    public String getShortForm() {
-        return shortForm;
-    }
-
-    public boolean hasShortForm() {
-        return shortForm != null;
-    }
-
-    public Option<T> withLongForm(String longForm) {
-        this.longForm = longForm;
-        return this;
-    }
-
-    public String getLongForm() {
-        return longForm;
-    }
-
-    public boolean hasLongForm() {
-        return longForm != null;
+    public String formMatching(String pattern) {
+        for (String form : forms) {
+            if (form.matches(pattern)) {
+                return form;
+            }
+        }
+        return null;
     }
 
     public Option<T> describedAs(String description) {
@@ -110,14 +85,6 @@ public class Option<T> extends Argument<T> implements OptionSpec<T> {
         return this;
     }
 
-    public T getDefaultValue() {
-        return defaultValue;
-    }
-
-    public boolean hasDefaultValue() {
-        return defaultValue != null;
-    }
-
     public <S> Option<S> ofType(Class<? extends S> type) {
         return ofType(coercerFor(type));
     }
@@ -138,15 +105,17 @@ public class Option<T> extends Argument<T> implements OptionSpec<T> {
         return this;
     }
 
+    public void initialize(Args args) {
+        for (String form : forms) {
+            args.put(form, defaultValue);
+        }
+    }
+
     public interface Action<T> {
         void call(Args detected, Option<T> option);
     }
 
-    public boolean matches(String identifier) {
-        return identifier.equals(shortForm) || identifier.equals(longForm);
-    }
-
-    public boolean isIn(Args detected) {
+    public boolean in(Args detected) {
         return detected.has(name);
     }
 
@@ -159,8 +128,11 @@ public class Option<T> extends Argument<T> implements OptionSpec<T> {
     }
 
     public void handle(Args detected, Input args) throws ParsingException {
-        if (takesArgument() && args.empty()) throw new ArgumentMissingException(this);
-        detected.put(this, value(args));
+        if (takesArgument() && args.empty()) throw new ArgumentMissingException(name, argument);
+        T value = value(args);
+        for (String form : forms) {
+            detected.put(form, value);
+        }
     }
 
     public void printTo(Help help) {

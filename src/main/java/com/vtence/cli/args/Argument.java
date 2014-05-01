@@ -18,10 +18,6 @@ public abstract class Argument<T> implements ArgumentSpec<T> {
         this.typeCoercer = type;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public abstract void handle(Args detected, Input args) throws ParsingException;
 
     public abstract void printTo(Help help);

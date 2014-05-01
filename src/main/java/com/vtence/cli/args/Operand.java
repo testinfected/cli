@@ -19,10 +19,6 @@ public class Operand<T> extends Argument<T> implements OperandSpec<T> {
         super(name, type);
     }
 
-    public String getName() {
-        return name;
-    }
-
     public Operand<T> as(String argument) {
         this.displayName = argument;
         return this;
@@ -69,12 +65,8 @@ public class Operand<T> extends Argument<T> implements OperandSpec<T> {
     }
 
     public void handle(Args detected, Input args) throws ParsingException {
-        if (args.empty()) throw new MissingOperandException(this);
-        detected.put(this, value(args));
-    }
-
-    public boolean matches(String identifier) {
-        return name.equals(identifier);
+        if (args.empty()) throw new MissingOperandException(name);
+        detected.put(name, value(args));
     }
 
     private T value(Input args) throws InvalidArgumentException {

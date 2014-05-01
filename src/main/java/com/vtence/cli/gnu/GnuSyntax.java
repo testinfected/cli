@@ -7,41 +7,38 @@ import com.vtence.cli.util.Strings;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.vtence.cli.util.Strings.quote;
+
 public class GnuSyntax implements Syntax
 {
-    private static final Pattern LONG_FORM = Pattern.compile("--([^\\s]+)(?:\\s(.+))?");
-    private static final Pattern SHORT_FORM = Pattern.compile("-([^\\s]+)(?:\\s+(.+))?");
+    private static final Pattern SHORT_FORM = Pattern.compile("(-[^-\\s])(?:\\s(.+))?");
+    private static final Pattern LONG_FORM = Pattern.compile("(--[^-\\s][^\\s]+)(?:\\s(.+))?");
 
     private static final int IDENTIFIER = 1;
     private static final int ARGUMENT = 2;
 
-    public Option<String> defineOption(String name, String... definition) {
-        Option<String> option = Option.named(name);
+    public Option<String> defineOption(String... definition) {
+        OptionDefinition option = new OptionDefinition();
 
-        Schema schema = new Schema(option);
         for (String token : definition) {
             Matcher longForm = LONG_FORM.matcher(token);
-            if (detected(longForm)) {
-                option.withLongForm(schema.validateLongForm(identifier(longForm)));
-                option.takingArgument(schema.validateArgument(argument(longForm)));
+            if (longForm.matches()) {
+                option.longForm(identifier(longForm));
+                option.argument(argument(longForm));
                 continue;
             }
 
             Matcher shortForm = SHORT_FORM.matcher(token);
-            if (detected(shortForm)) {
-                option.withShortForm(schema.validateShortForm(identifier(shortForm)));
-                option.takingArgument(schema.validateArgument(argument(shortForm)));
+            if (shortForm.matches()) {
+                option.shortForm(identifier(shortForm));
+                option.argument(argument(shortForm));
                 continue;
             }
 
-            option.describedAs(schema.validateDescription(token));
+            option.description(token);
         }
 
-        return option;
-    }
-
-    private boolean detected(Matcher longForm) {
-        return longForm.matches();
+        return option.define();
     }
 
     private String identifier(Matcher matcher) {
@@ -52,37 +49,54 @@ public class GnuSyntax implements Syntax
         return matcher.group(ARGUMENT);
     }
 
-    private static class Schema
-    {
-        private final Option<?> option;
+    private static class OptionDefinition {
+        private String shortForm;
+        private String longForm;
+        private String argument;
+        private String description;
 
-        public Schema(Option<?> option) {
-            this.option = option;
+        public void shortForm(String form) {
+            if (shortForm != null)
+                throw new IllegalArgumentException("Short form given twice: " + quote(shortForm) + " and " + quote(form));
+            this.shortForm = form;
         }
 
-        public String validateShortForm(String shortForm) {
-            if (option.hasShortForm()) throw new IllegalArgumentException("Short form given twice for option " + quoteName(option));
-            return shortForm;
+        public void longForm(String form) {
+            if (longForm != null)
+                throw new IllegalArgumentException("Long form given twice: " + quote(longForm) + " and " + quote(form));
+            this.longForm = form;
         }
 
-        public String validateLongForm(String longForm) {
-            if (option.hasLongForm()) throw new IllegalArgumentException("Long form given twice for option " + quoteName(option));
-            return longForm;
+        public void argument(String name) {
+            if (Strings.blank(name)) return;
+            if (argument != null)
+                throw new IllegalArgumentException("Argument given twice: " + quote(argument) + " and " + quote(name));
+            this.argument = name;
         }
 
-        public String validateArgument(String argument) {
-            if (Strings.blank(argument)) return null;
-            if (option.takesArgument()) throw new IllegalArgumentException("Argument pattern given twice for option " + quoteName(option));
-            return argument;
+        public void description(String desc) {
+            if (description != null)
+                throw new IllegalArgumentException("Description given twice: " + quote(description) + " and " + quote(desc));
+            this.description = desc;
         }
 
-        public String validateDescription(String description) {
-            if (option.hasDescription()) throw new IllegalArgumentException("Description given twice for option " + quoteName(option));
-            return description;
-        }
+        public Option<String> define() {
+            Option<String> option;
+            if (shortForm == null && longForm == null) {
+                throw new IllegalArgumentException("Option require a short and/or long form");
+            }
+            if (shortForm != null && longForm != null) {
+                option = Option.option(shortForm);
+                option.alias(longForm);
+            } else if (shortForm != null) {
+                option = Option.option(shortForm);
+            } else {
+                option = Option.option(longForm);
+            }
+            option.takingArgument(argument);
+            option.describedAs(description);
 
-        private String quoteName(Option<?> option) {
-            return "'" + option.getName() + "'";
+            return option;
         }
     }
 }

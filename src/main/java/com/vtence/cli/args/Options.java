@@ -10,9 +10,9 @@ public class Options {
         this.options = options;
     }
 
-    public Option<?> find(String option) {
+    public Option<?> find(String form) {
         for (Option<?> candidate : options) {
-            if (candidate.matches(option)) return candidate;
+            if (candidate.matches(form)) return candidate;
         }
         return null;
     }

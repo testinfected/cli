@@ -4,9 +4,7 @@ import com.vtence.cli.coercion.TypeCoercer;
 
 public interface OptionSpec<T> extends ArgumentSpec<T> {
 
-    OptionSpec<T> withShortForm(String shortForm);
-
-    OptionSpec<T> withLongForm(String longForm);
+    OptionSpec<T> alias(String form);
 
     OptionSpec<T> describedAs(String description);
 
@@ -19,5 +17,4 @@ public interface OptionSpec<T> extends ArgumentSpec<T> {
     <V extends T> OptionSpec<T> defaultingTo(V value);
 
     OptionSpec<T> whenPresent(Option.Action<T> action);
-
 }

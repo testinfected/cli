@@ -88,6 +88,14 @@ public class GnuHelp implements Help {
         help.format("%n");
     }
 
+    private String shortestFormOf(Option<?> option) {
+        return hasShortForm(option) ? shortFormOf(option) : longFormOf(option);
+    }
+
+    private String argumentIfAny(Option<?> option) {
+        return option.takesArgument() ? " " + option.getArgument() : "";
+    }
+
     private void formatOperands(Formatter help) {
         if (operands.isEmpty()) return;
         help.format("%nArguments:%n");
@@ -104,14 +112,6 @@ public class GnuHelp implements Help {
             line.format(secondColumnLayout(), operand.getDescription());
         }
         return line.toString();
-    }
-
-    private String shortestFormOf(Option<?> option) {
-        return option.hasShortForm() ? shortFormOf(option) : longFormOf(option);
-    }
-
-    private String argumentIfAny(Option<?> option) {
-        return option.takesArgument() ? " " + option.getArgument() : "";
     }
 
     private void formatOptions(Formatter help) throws IOException {
@@ -137,17 +137,25 @@ public class GnuHelp implements Help {
     }
 
     private String allFormsOf(Option<?> option) {
-        if (option.hasShortForm() && option.hasLongForm()) return shortFormOf(option) + ", " + longFormOf(option);
-        if (option.hasShortForm()) return shortFormOf(option);
+        if (hasShortForm(option) && hasLongForm(option)) return shortFormOf(option) + ", " + longFormOf(option);
+        if (hasShortForm(option)) return shortFormOf(option);
         return noShortForm() + longFormOf(option);
     }
 
+    private boolean hasShortForm(Option<?> option) {
+        return shortFormOf(option) != null;
+    }
+
+    private boolean hasLongForm(Option<?> option) {
+        return longFormOf(option) != null;
+    }
+
     private String shortFormOf(Option<?> option) {
-        return String.format("-%s", option.getShortForm());
+        return option.formMatching("(-[^-\\s])");
     }
 
     private String longFormOf(Option<?> option) {
-        return String.format("--%s", option.getLongForm());
+        return option.formMatching("(--[^-\\s][^\\s]+)");
     }
 
     private String noShortForm() {

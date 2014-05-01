@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Args {
 
-    private final Map<Argument<?>, Object> arguments = new HashMap<Argument<?>, Object>();
+    private final Map<String, Object> arguments = new HashMap<String, Object>();
     private final List<String> others = new ArrayList<String>();
 
     public Args() {}
@@ -22,8 +22,8 @@ public class Args {
         return arguments.size();
     }
 
-    public <T> void put(Argument<T> arg, T value) {
-        arguments.put(arg, value);
+    public <T> void put(String name, T value) {
+        arguments.put(name, value);
     }
 
     public boolean has(String name) {
@@ -32,17 +32,13 @@ public class Args {
 
     @SuppressWarnings("unchecked")
     public <T> T get(String name) {
-        for (Argument<?> arg : arguments.keySet()) {
-            // This is a safe cast now that the put method is typed
-            if (arg.getName().equals(name)) return (T) arguments.get(arg);
-        }
-        return null;
+        return (T) arguments.get(name);
     }
 
     public Map<String, ?> values() {
         Map<String, Object> values = new HashMap<String, Object>();
-        for (Argument<?> arg : arguments.keySet()) {
-            values.put(arg.getName(), arguments.get(arg));
+        for (String name : arguments.keySet()) {
+            values.put(name, arguments.get(name));
         }
         return values;
     }
