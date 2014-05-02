@@ -85,8 +85,8 @@ public class CLI
         commandLine.setDescription(desc);
     }
 
-    public void ending(String epilog) {
-        commandLine.setEnding(epilog);
+    public void epilog(String epilog) {
+        commandLine.setEpilog(epilog);
     }
 
     public OptionSpec<String> option(String... definition) {

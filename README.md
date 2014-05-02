@@ -8,7 +8,7 @@ Build yourself (for latest version) using Gradle or Maven, or simply download fr
 <dependency>
       <groupId>com.vtence.cli</groupId>
       <artifactId>cli</artifactId>
-      <version>1.1-SNAPSHOT</version>
+      <version>1.1</version>
 </dependency>
 ```
 
@@ -28,7 +28,7 @@ CLI cli = new CLI() {{
 
     operand("webroot", "Location of the web application").ofType(File.class);
     
-    ending("use --help to show this help message");
+    epilog("use --help to show this help message");
 }};
 ```
 

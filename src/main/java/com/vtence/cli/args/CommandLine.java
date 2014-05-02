@@ -32,7 +32,7 @@ public class CommandLine
         this.description = text;
     }
 
-    public void setEnding(String epilog) {
+    public void setEpilog(String epilog) {
         this.ending = epilog;
     }
 

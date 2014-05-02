@@ -198,7 +198,7 @@ public class CLIUsageTest {
             flag("-x", "Turn debugging on");
             operand("in", "INPUT", "The source file");
             operand("out", "OUTPUT", "The destination file");
-            ending("use --help to show this help message");
+            epilog("use --help to show this help message");
         }};
         assertEquals(
                 "program version 1.0" + NL +
